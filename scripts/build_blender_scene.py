@@ -1952,12 +1952,54 @@ def add_cult_tree(name, x, y, scale=1.0, dark=False, purple=False):
         co = bpy.context.active_object; co.name = f"{name}_Couronne_{i}"; co.scale = (1.05, 0.95, 0.85)
         co.data.materials.append(mat); scene.collection.objects.unlink(co); link_obj(co, "VEGETATION")
 
+# Helper: crisp curb / low stone boundary wall along a polyline
+def create_curb_chain(name, pts, z0, z1, thickness, mat, col_name=COL_CULT):
+    if len(pts) < 2:
+        return None
+    mesh = bpy.data.meshes.new(name)
+    obj = bpy.data.objects.new(name, mesh)
+    link_obj(obj, col_name)
+    bm = bmesh.new()
+    hw = thickness * 0.5
+    for i in range(len(pts) - 1):
+        p1 = Vector((pts[i][0], pts[i][1], z0))
+        p2 = Vector((pts[i + 1][0], pts[i + 1][1], z0))
+        d = p2 - p1
+        if d.length < 0.15:
+            continue
+        n = Vector((-d.y, d.x, 0)).normalized() * hw
+        b = [bm.verts.new(p1 - n), bm.verts.new(p2 - n), bm.verts.new(p2 + n), bm.verts.new(p1 + n)]
+        t = [bm.verts.new(Vector((v.co.x, v.co.y, z1))) for v in b]
+        bm.faces.new(list(reversed(b)))
+        bm.faces.new(t)
+        for k in range(4):
+            nk = (k + 1) % 4
+            bm.faces.new([b[k], b[nk], t[nk], t[k]])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(mesh); bm.free()
+    obj.data.materials.append(mat)
+    return obj
+
+# Real IGN roads enclosing the entire Parc de la Mediatheque & Centre Culturel de La Ville Robert!
+build_road_mesh("Route_Rue_de_l_Ic_Parc", [
+    (-241.5, 122.7), (-250.9, 139.2), (-258.5, 153.0), (-268.9, 168.8),
+    (-279.6, 184.2), (-292.9, 201.9), (-305.8, 219.2), (-313.9, 228.5),
+], width=3.2, z_rd=-0.018)
+build_road_mesh("Route_Parc_Transversale_Nord", [
+    (-313.9, 228.5), (-268.0, 233.5), (-221.7, 238.4), (-193.3, 236.2),
+], width=3.0, z_rd=-0.018)
+build_road_mesh("Route_Place_Jean_Audouard_Est", [
+    (-193.3, 236.2), (-173.4, 234.6), (-150.2, 232.6), (-142.3, 231.0),
+    (-135.2, 228.7), (-130.3, 224.5), (-122.4, 215.2), (-116.3, 204.7),
+    (-113.0, 189.6), (-116.9, 184.4), (-135.1, 165.9),
+], width=3.0, z_rd=-0.018)
+
 # ----------------------------------------------------------
-# 10B-1. MEDIATHEQUE DE L'IC (CONFORME A LA VIDEO 360°!)
-#   +u (+23.8 deg) = ENE front gable facing beige forecourt & Ville Robert (frames 00:13-00:15!)
-#   -u             = WSW back gable facing wooded park + burgundy ornamental tree (frames 00:04-00:08!)
-#   -v (-66.2 deg) = SSE roof slope + central projecting masonry dormer + 2-flight switchback steel staircase (frames 00:00-00:03!)
-#   +v (+113.8 deg)= NNW roof slope + massive central cream stone chimney + 2 dormers (frames 00:09-00:12!)
+# 10B-1. MEDIATHEQUE DE L'IC & PARC DE LA MEDIATHEQUE / VILLE ROBERT (CONTOURS EXACTS IGN + PHOTO SATELLITE!)
+#   +u (+23.8 deg) = ENE front gable facing beige forecourt & Ville Robert
+#   -u             = WSW back gable facing wooded park + burgundy ornamental tree
+#   -v (-66.2 deg) = SSE roof slope + central projecting masonry dormer + 2-flight switchback steel staircase
+#   +v (+113.8 deg)= NNW roof slope + massive central cream stone chimney + 2 dormers
 # ----------------------------------------------------------
 med_cx, med_cy = -226.7, 177.6
 med_deg = 23.8
@@ -1965,15 +2007,121 @@ med_deg = 23.8
 def med_pt(u, v):
     return local_to_world(med_cx, med_cy, u, v, med_deg)
 
-# Sunlit beige forecourt / parvis connecting Manor, Annexe & Rue Massignon
-med_parvis_poly = [
-    (-240.0, 165.0), (-212.0, 160.0), (-195.0, 174.0), (-201.0, 200.0),
-    (-213.0, 218.0), (-234.0, 214.0), (-239.0, 186.0)
+# 1A. FULL PARC DE LA MEDIATHEQUE / PARC DE LA VILLE ROBERT (green lawn bounded cleanly by Rue de l'Ic, Route Nord & Mediatheque!)
+PARC_MEDIATHEQUE_POLY = [
+    (-308.5, 226.2),  # NW corner inside Rue de l'Ic & Route Nord
+    (-225.5, 235.0),  # NE corner West of Rue Louis Massignon
+    (-221.5, 222.5),  # East of small stone cottage
+    (-228.5, 206.5),  # Back (West) of Annexe
+    (-223.5, 188.0),  # North corner of Mediatheque Manor
+    (-216.0, 167.0),  # South-East garden corner below Mediatheque
+    (-200.5, 152.5),  # South garden grove
+    (-218.5, 141.5),  # South boundary behind apartment block
+    (-235.5, 134.0),  # SE corner along Rue de l'Ic
+    (-246.5, 140.5),  # Along Rue de l'Ic inner curb
+    (-256.5, 156.0),  # Along Rue de l'Ic inner curb
+    (-267.0, 171.5),  # Along Rue de l'Ic inner curb
+    (-277.8, 186.8),  # Along Rue de l'Ic inner curb
+    (-290.8, 204.2),  # Along Rue de l'Ic inner curb
+    (-302.5, 219.5),  # Approaching NW park corner
 ]
-create_poly_mesh("Parvis_Mediatheque_Ic", med_parvis_poly, 0.04, 0.13, MAT_PARVIS, COL_CULT)
-# Lush green garden lawn on WSW & SSE garden sides of the Mediatheque (visible frames 00:04-00:08!)
-med_lawn_poly = [med_pt(-17.0, -14.0), med_pt(-6.5, -14.0), med_pt(-6.5, 14.0), med_pt(-17.0, 14.0)]
-create_poly_mesh("Pelouse_Mediatheque_Parc", med_lawn_poly, 0.04, 0.14, MAT_GRASS, COL_CULT)
+create_poly_mesh("Parc_Mediatheque_Pelouse", PARC_MEDIATHEQUE_POLY, 0.02, 0.10, MAT_GRASS, COL_CULT)
+
+# Low Breton granite perimeter wall along Rue de l'Ic & Route Nord framing the park cleanly (with pedestrian entrances!)
+create_curb_chain("Muret_Parc_Rue_Ic", [
+    (-236.0, 134.5), (-246.5, 140.5), (-256.5, 156.0), (-267.0, 171.5),
+    (-277.8, 186.8), (-290.8, 204.2), (-301.5, 218.2),
+], 0.04, 0.92, 0.36, MAT_BRETON_STONE, COL_CULT)
+create_curb_chain("Muret_Parc_Route_Nord", [
+    (-304.5, 226.4), (-272.0, 230.0), (-234.0, 234.0),
+], 0.04, 0.85, 0.34, MAT_BRETON_STONE, COL_CULT)
+
+# 1B. RAZOR-SHARP SUNLIT BEIGE PARVIS STRICTLY BETWEEN MANOR, ANNEXE & RUE LOUIS MASSIGNON (exact satellite contour!)
+med_parvis_poly = [
+    (-233.2, 204.5),  # SW corner of Annexe
+    (-215.2, 214.2),  # SE corner of Annexe along Rue Louis Massignon curb
+    (-210.2, 205.0),  # West curb of Rue Louis Massignon
+    (-191.0, 170.5),  # West curb of Rue Louis Massignon opposite Double Porche
+    (-196.2, 166.0),  # Graceful South-East corner curve
+    (-214.8, 167.2),  # Front/South edge of Mediatheque terrace
+    (-231.0, 164.0),  # Around South staircase terrace inside retaining wall
+    (-234.2, 173.5),  # SW corner of Manor
+    (-223.8, 187.5),  # North corner of Manor
+]
+create_poly_mesh("Parvis_Mediatheque_Ic", med_parvis_poly, 0.04, 0.145, MAT_PARVIS, COL_CULT)
+# Crisp granite curb edging the entire beige parvis cleanly against road & grass!
+create_curb_chain("Bordure_Parvis_Mediatheque", [
+    (-215.2, 214.2), (-210.2, 205.0), (-191.0, 170.5), (-196.2, 166.0), (-214.8, 167.2),
+], 0.04, 0.19, 0.28, MAT_CURB, COL_CULT)
+
+# Paved pedestrian link crossing Rue Louis Massignon seamlessly into the Double Porche + roadside parking bay strip & triangular island!
+create_poly_mesh("Parvis_Passage_VilleRobert", [(-193.5, 174.5), (-188.0, 165.0), (-178.5, 172.5), (-183.8, 182.2)], 0.04, 0.145, MAT_PARVIS, COL_CULT)
+create_poly_mesh("Trottoir_Est_Massignon", [
+    (-211.0, 224.5), (-201.5, 222.5), (-195.0, 211.0), (-186.5, 195.5),
+    (-189.0, 192.0), (-198.5, 209.0), (-205.0, 218.5), (-212.5, 220.5),
+], 0.02, 0.12, MAT_PARVIS, COL_CULT)
+create_poly_mesh("Ilot_Triangle_Massignon", [(-214.5, 232.0), (-206.5, 234.5), (-205.5, 225.5)], 0.02, 0.16, MAT_PARVIS_ACCENT, COL_CULT)
+create_curb_chain("Ilot_Triangle_Bordure", [(-214.5, 232.0), (-206.5, 234.5), (-205.5, 225.5), (-214.5, 232.0)], 0.02, 0.20, 0.22, MAT_CURB, COL_CULT)
+for k_rm, (rx_m, ry_m) in enumerate([(-201.5, 215.5), (-199.0, 211.0), (-196.5, 206.5), (-194.0, 202.0)], 1):
+    create_box(f"Parking_Massignon_Ligne_{k_rm}", (rx_m, ry_m, 0.13), (4.0, 0.13, 0.015), MAT_LINE_WHITE, COL_CULT, 28.0)
+
+# 1C. WINDING STABILIZED WALKWAY, 2 CHILDREN'S PLAYGROUNDS & FURNITURE INSIDE PARC DE LA MEDIATHEQUE (exact satellite layout!)
+create_curb_chain("Sentier_Parc_Mediatheque", [
+    (-228.0, 165.0), (-239.0, 168.0), (-246.5, 177.0), (-255.0, 189.0),
+    (-265.0, 198.5), (-278.0, 207.5), (-293.0, 218.0), (-303.5, 225.0),
+], 0.10, 0.135, 2.2, MAT_TRACK_SAND, COL_CULT)
+create_curb_chain("Sentier_Parc_BrancheSud", [
+    (-228.0, 165.0), (-218.0, 155.0), (-205.0, 144.0),
+], 0.10, 0.135, 2.0, MAT_TRACK_SAND, COL_CULT)
+
+# Children's Playground 1: Square beige/sand soft-surface pad (c=(-276.0, 199.0), 9.6m x 9.2m, exact photo position!)
+pg1_cx, pg1_cy, pg1_deg = -276.0, 199.0, 14.0
+create_poly_mesh("Aire_Jeux_Parc_Med_Cadre", rot_rect(pg1_cx, pg1_cy, 10.0, 9.6, pg1_deg), 0.10, 0.16, MAT_WOOD, COL_CULT)
+create_poly_mesh("Aire_Jeux_Parc_Med_Sol", rot_rect(pg1_cx, pg1_cy, 9.4, 9.0, pg1_deg), 0.10, 0.175, MAT_TRACK_SAND, COL_CULT)
+# Multi-play wooden tower + colorful roof + slide (toboggan)
+tx_j, ty_j = local_to_world(pg1_cx, pg1_cy, -1.8, 1.5, pg1_deg)
+create_box("Jeu_Parc_Tour_Base", (tx_j, ty_j, 0.95), (1.7, 1.7, 1.6), MAT_WOOD, COL_CULT, pg1_deg)
+create_box("Jeu_Parc_Tour_Plateforme", (tx_j, ty_j, 1.60), (1.9, 1.9, 0.16), MAT_PLAY_BLUE, COL_CULT, pg1_deg)
+create_breton_gable_roof("Toit_Jeu_Parc_Tour", tx_j, ty_j, 2.0, 2.0, pg1_deg, z_eave=2.55, ridge_h=0.75, mat_roof=MAT_PLAY_RED, mat_gable=MAT_PLAY_YELLOW, overhang=0.12)
+for sx_p in (-0.75, 0.75):
+    for sy_p in (-0.75, 0.75):
+        px_j, py_j = local_to_world(tx_j, ty_j, sx_p, sy_p, pg1_deg)
+        create_box(f"Jeu_Parc_Tour_Poteau_{sx_p}_{sy_p}", (px_j, py_j, 1.40), (0.14, 0.14, 2.5), MAT_WOOD, COL_CULT, pg1_deg)
+sl_x, sl_y = local_to_world(tx_j, ty_j, 1.65, 0.0, pg1_deg)
+create_box("Jeu_Parc_Toboggan", (sl_x, sl_y, 0.95), (2.2, 0.62, 0.14), MAT_PLAY_YELLOW, COL_CULT, rot_z_deg=pg1_deg, rot_y_deg=34.0)
+# Swing set (portique balancoire)
+sw_cx, sw_cy = local_to_world(pg1_cx, pg1_cy, 1.8, -1.6, pg1_deg)
+create_box("Jeu_Parc_Balancoire_Barre", (sw_cx, sw_cy, 2.35), (3.4, 0.14, 0.14), MAT_WOOD, COL_CULT, pg1_deg)
+for s_side in (-1.55, 1.55):
+    for s_leg in (-0.55, 0.55):
+        lx_s, ly_s = local_to_world(sw_cx, sw_cy, s_side, s_leg, pg1_deg)
+        create_box(f"Jeu_Parc_Balancoire_Pied_{s_side}_{s_leg}", (lx_s, ly_s, 1.25), (0.12, 0.12, 2.45), MAT_WOOD, COL_CULT, rot_z_deg=pg1_deg, rot_x_deg=-s_leg * 28.0)
+for s_seat in (-0.75, 0.75):
+    bx_st, by_st = local_to_world(sw_cx, sw_cy, s_seat, 0.0, pg1_deg)
+    create_box(f"Jeu_Parc_Balancoire_Siege_{s_seat}", (bx_st, by_st, 0.65), (0.55, 0.28, 0.08), MAT_PLAY_RED, COL_CULT, pg1_deg)
+# Two colorful spring rockers (jeux a ressort 2-8 ans)
+for k_sp, (sp_u, sp_v, sp_mat) in enumerate([(-2.0, -2.0, MAT_PLAY_BLUE), (-0.4, -2.3, MAT_PLAY_YELLOW)], 1):
+    spx, spy = local_to_world(pg1_cx, pg1_cy, sp_u, sp_v, pg1_deg)
+    create_box(f"Jeu_Parc_Ressort_{k_sp}", (spx, spy, 0.52), (0.85, 0.35, 0.62), sp_mat, COL_CULT, pg1_deg)
+
+# Children's Playground 2: Small angled soft-surface pad right NE of Playground 1 (exact match to satellite photo!)
+pg2_cx, pg2_cy, pg2_deg = -263.5, 205.5, -34.0
+create_poly_mesh("Aire_Jeux_Parc_Med2_Sol", rot_rect(pg2_cx, pg2_cy, 7.2, 3.8, pg2_deg), 0.10, 0.165, MAT_TRACK_SAND, COL_CULT)
+create_box("Jeu_Parc_Bascule_Poutre", (pg2_cx, pg2_cy, 0.65), (3.6, 0.24, 0.16), MAT_PLAY_RED, COL_CULT, rot_z_deg=pg2_deg, rot_y_deg=11.0)
+create_box("Jeu_Parc_Bascule_Pivot", (pg2_cx, pg2_cy, 0.40), (0.28, 0.35, 0.52), MAT_METAL_DARK, COL_CULT, pg2_deg)
+
+# Park benches & wooden picnic tables overlooking the playground & meadow
+for b_i, (bx_pk, by_pk, bang_pk) in enumerate([
+    (-270.0, 193.5, 45.0), (-262.0, 199.5, -45.0),
+    (-283.0, 203.0, -75.0), (-244.0, 174.0, 35.0),
+], 1):
+    add_detailed_bench(f"Banc_Parc_Mediatheque_{b_i:02d}", bx_pk, by_pk, bang_pk)
+for pt_i, (ptx_p, pty_p, ptang) in enumerate([(-284.0, 211.0, 25.0), (-294.0, 212.0, -15.0)], 1):
+    create_box(f"Table_PiqueNique_Plateau_{pt_i}", (ptx_p, pty_p, 0.78), (1.9, 0.85, 0.08), MAT_WOOD, COL_CULT, ptang)
+    for sb in (-0.68, 0.68):
+        sbx, sby = local_to_world(ptx_p, pty_p, 0.0, sb, ptang)
+        create_box(f"Table_PiqueNique_Banc_{pt_i}_{sb}", (sbx, sby, 0.46), (1.9, 0.30, 0.07), MAT_WOOD, COL_CULT, ptang)
+
 # Low stone garden retaining wall with pillars along the South edge of the Mediatheque terrace (frames 00:00-00:03!)
 sw_w1, sw_w2 = med_pt(-7.5, -11.2), med_pt(6.5, -11.2)
 create_box("Mediatheque_Muret_Sud", ((sw_w1[0]+sw_w2[0])*0.5, (sw_w1[1]+sw_w2[1])*0.5, 0.58), (14.2, 0.36, 0.92), MAT_BRETON_STONE_LIGHT, COL_CULT, med_deg)
@@ -2125,21 +2273,42 @@ cot_cx, cot_cy, cot_deg = -228.85, 231.28, 118.4
 create_poly_mesh("Murs_Mediatheque_PavillonNord", rot_rect(cot_cx, cot_cy, 11.0, 5.0, cot_deg), 0.12, 3.2, MAT_BRETON_STONE, COL_CULT)
 create_breton_gable_roof("Toit_Mediatheque_PavillonNord", cot_cx, cot_cy, 11.0, 5.0, cot_deg, z_eave=3.2, ridge_h=1.95, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE)
 
-# 4. Lush Wooded Park enveloping the Mediatheque (exact dense canopy visible throughout 360-degree video!)
+# 4. Exact Lush Wooded Park Canopy of Parc de la Mediatheque / Ville Robert (matched 1:1 to Google Earth satellite photo!)
 MED_TREES = [
-    (-224.0, 160.0, 1.62, True),   # Iconic mature tree in front of South corner (frames 00:00-00:03!)
-    (-216.0, 155.0, 1.48, False),
-    (-239.0, 165.0, 1.65, True),
-    (-246.0, 178.0, 1.75, True),
-    (-247.0, 193.0, 1.72, False),
-    (-239.5, 198.5, 1.52, True),
-    (-231.0, 193.0, 1.42, True),
-    (-247.0, 209.0, 1.68, True),
-    (-241.0, 223.0, 1.58, False),
-    (-222.0, 227.0, 1.62, True),
-    (-210.0, 227.0, 1.55, True),
-    (-201.0, 235.0, 1.60, False),
-    (-218.0, 239.0, 1.65, True),
+    # South garden grove between Mediatheque Manor & South apartments
+    (-222.0, 158.0, 1.62, True),
+    (-213.0, 155.0, 1.48, False),
+    (-204.5, 154.0, 1.38, True),
+    (-229.0, 150.0, 1.65, True),
+    (-219.5, 147.0, 1.52, True),
+    (-236.5, 143.5, 1.62, True),
+    # Continuous lush mature tree belt lining Rue de l'Ic (bottom of satellite photo!)
+    (-244.5, 146.5, 1.72, True),
+    (-251.5, 155.5, 1.68, False),
+    (-258.5, 165.0, 1.75, True),
+    (-265.5, 174.5, 1.65, True),
+    (-273.0, 182.0, 1.55, False),
+    (-282.5, 190.5, 1.45, True),
+    (-290.5, 200.5, 1.40, False),
+    (-296.5, 210.0, 1.32, True),
+    # Central stately wooded heart shading the back of the Mediatheque & East edge of playgrounds
+    (-242.0, 180.0, 1.78, True),
+    (-250.5, 184.0, 1.85, True),
+    (-246.5, 194.5, 1.75, False),
+    (-255.0, 196.5, 1.70, True),
+    (-239.0, 196.5, 1.58, True),
+    (-233.0, 191.5, 1.35, True),
+    (-248.5, 206.5, 1.82, True),
+    (-257.5, 212.5, 1.72, False),
+    # North grove framing the Annexe, North cottage & Route Nord
+    (-242.5, 218.5, 1.68, True),
+    (-251.0, 223.5, 1.72, True),
+    (-262.0, 224.0, 1.65, False),
+    (-234.5, 222.5, 1.50, True),
+    (-214.0, 232.0, 1.48, True),
+    (-204.0, 235.5, 1.55, False),
+    # Signature small isolated ornamental tree in the sunny West meadow (bottom-left of satellite photo!)
+    (-288.5, 214.5, 0.72, False),
 ]
 for idx_t, (tx_m, ty_m, ts_m, tdk) in enumerate(MED_TREES, 1):
     add_cult_tree(f"Arbre_Parc_Mediatheque_{idx_t:02d}", tx_m, ty_m, ts_m, dark=tdk)
@@ -2168,9 +2337,22 @@ for k_p, vp in enumerate([-11.0, -5.5, 0.0], 1):
     px_v, py_v = vr_pt(10.5, vp)
     create_box(f"VilleRobert_Cour_Banc_{k_p}", (px_v, py_v, 0.40), (0.92, 2.4, 0.46), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
 
-# Lush green lawns framing the South longere & modern theater front
-create_poly_mesh("Pelouse_VilleRobert_SudOuest", vr_rect(-23.5, 5.4, -26.5, -14.2), 0.04, 0.15, MAT_GRASS, COL_CULT)
-create_poly_mesh("Pelouse_VilleRobert_SudEst", vr_rect(12.6, 33.5, -34.5, -27.5), 0.04, 0.15, MAT_GRASS, COL_CULT)
+# Lush green contoured lawns framing the South longere & modern theater front (exact curved borders + granite curbs!)
+pel_vr_so_poly = [
+    vr_pt(-22.8, -14.4), vr_pt(5.4, -14.4), vr_pt(5.4, -27.2),
+    vr_pt(-2.0, -25.8), vr_pt(-9.5, -24.8), vr_pt(-17.0, -24.4), vr_pt(-22.8, -24.6),
+]
+create_poly_mesh("Pelouse_VilleRobert_SudOuest", pel_vr_so_poly, 0.04, 0.16, MAT_GRASS, COL_CULT)
+create_curb_chain("Bordure_Pelouse_VilleRobert_SO", [
+    vr_pt(5.4, -27.2), vr_pt(-2.0, -25.8), vr_pt(-9.5, -24.8), vr_pt(-17.0, -24.4), vr_pt(-22.8, -24.6), vr_pt(-22.8, -14.4),
+], 0.04, 0.21, 0.24, MAT_CURB, COL_CULT)
+pel_vr_se_poly = [vr_pt(12.6, -27.5), vr_pt(31.5, -27.5), vr_pt(35.5, -22.0), vr_pt(36.0, -33.5), vr_pt(12.6, -34.5)]
+create_poly_mesh("Pelouse_VilleRobert_SudEst", pel_vr_se_poly, 0.04, 0.16, MAT_GRASS, COL_CULT)
+create_curb_chain("Bordure_Pelouse_VilleRobert_SE", [
+    vr_pt(12.6, -27.5), vr_pt(12.6, -34.5), vr_pt(36.0, -33.5), vr_pt(35.5, -22.0),
+], 0.04, 0.21, 0.24, MAT_CURB, COL_CULT)
+# Clean grass border strip along East flank of modern theater under the tree line
+create_poly_mesh("Pelouse_VilleRobert_Est", vr_rect(30.5, 36.2, -28.0, 2.0), 0.04, 0.15, MAT_GRASS, COL_CULT)
 
 # Grand horizontal granite staircase descending South between the South longere & modern theater (with dark risers & central handrail!)
 for st_v in range(10):
@@ -2394,34 +2576,26 @@ for out_path in (GLB_OUT_ROOT, GLB_OUT_WEB):
 scene.render.engine = 'BLENDER_EEVEE_NEXT' if 'BLENDER_EEVEE_NEXT' in [e.identifier for e in bpy.types.RenderSettings.bl_rna.properties['engine'].enum_items] else 'BLENDER_EEVEE'
 scene.render.resolution_x = 1280
 scene.render.resolution_y = 720
-# Render 1: Mediatheque de l'Ic close-up from ENE-SSE (matching video frames 00:00 + 00:15: noble front gable + switchback steel stair!)
-scene.render.filepath = os.path.join(RENDER_DIR, "vue_mediatheque_face.png")
-cam.location = Vector((-195, 146, 26))
-direction = Vector((-226, 177, 6)) - cam.location
+# Render 1: Top-down satellite-angle check of Parc de la Mediatheque, Parvis & Ville Robert contours (matching user's uploaded photo!)
+scene.render.filepath = os.path.join(RENDER_DIR, "vue_parc_mediatheque_dessus.png")
+cam.location = Vector((-250, 186, 178))
+direction = Vector((-250, 188, 0)) - cam.location
 cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
 bpy.ops.render.render(write_still=True)
-print("Rendered vue_mediatheque_face.png")
+print("Rendered vue_parc_mediatheque_dessus.png")
 
-# Render 2: Mediatheque de l'Ic back WSW gable + NNW chimney (matching video frames 00:07 + 00:11!)
-scene.render.filepath = os.path.join(RENDER_DIR, "vue_mediatheque_dos.png")
-cam.location = Vector((-258, 166, 28))
-direction = Vector((-226, 178, 6)) - cam.location
+# Render 2: Oblique hero view across Parc de la Mediatheque, Playground, Mediatheque & Ville Robert!
+scene.render.filepath = os.path.join(RENDER_DIR, "vue_parc_mediatheque_oblique.png")
+cam.location = Vector((-318, 128, 52))
+direction = Vector((-242, 192, 4)) - cam.location
 cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
 bpy.ops.render.render(write_still=True)
-print("Rendered vue_mediatheque_dos.png")
+print("Rendered vue_parc_mediatheque_oblique.png")
 
-# Render 3: Centre Culturel de La Ville Robert hero angle (matching video frames 00:24-00:26: double porche + courtyard + zinc frontons!)
+# Render 3: Centre Culturel de La Ville Robert + Parvis Mediatheque combined overview
 scene.render.filepath = os.path.join(RENDER_DIR, "vue_pole_culturel.png")
-cam.location = Vector((-186, 134, 48))
-direction = Vector((-166, 198, 5)) - cam.location
+cam.location = Vector((-198, 108, 72))
+direction = Vector((-196, 194, 4)) - cam.location
 cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
 bpy.ops.render.render(write_still=True)
 print("Rendered vue_pole_culturel.png")
-
-# Render 4: High combined overview of Mediatheque + Ville Robert
-scene.render.filepath = os.path.join(RENDER_DIR, "vue_pole_culturel_dessus.png")
-cam.location = Vector((-212, 114, 78))
-direction = Vector((-188, 196, 5)) - cam.location
-cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
-bpy.ops.render.render(write_still=True)
-print("Rendered vue_pole_culturel_dessus.png")
