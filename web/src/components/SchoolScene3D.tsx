@@ -283,7 +283,8 @@ export const SchoolScene3D: React.FC<Props> = ({
             if (isClassroomRoofObject(mesh)) {
               classroomRoofs.push(mesh);
             }
-            if (mesh.name.startsWith('Classe_')) {
+            const matchedRoom = data.rooms.find((r) => r.id === mesh.name || mesh.name.startsWith(`${r.id}_`));
+            if (matchedRoom) {
               roomMap.set(mesh.name, mesh);
             }
           }
@@ -330,7 +331,7 @@ export const SchoolScene3D: React.FC<Props> = ({
       for (const hit of hits) {
         if (!hit.object.visible) continue;
         const name = hit.object.name;
-        const room = data.rooms.find((r) => r.id === name);
+        const room = data.rooms.find((r) => r.id === name || name.startsWith(`${r.id}_`));
         if (room) {
           onSelectRoom(room);
           return;
@@ -430,9 +431,7 @@ export const SchoolScene3D: React.FC<Props> = ({
           const bottomBound = !freeExploreRef.current && !isHeroRef.current && w <= 860 ? h * 0.52 : h - 12;
 
           const items = hideRoofsRef.current
-            ? data.rooms
-              .filter((r) => r.category === 'classe')
-              .map((r) => ({ id: r.id, label: r.name, color: r.color, pos: r.position, kind: 'room' as const }))
+            ? data.rooms.map((r) => ({ id: r.id, label: r.name, color: r.color, pos: r.position, kind: 'room' as const }))
             : data.buildings
               .filter((b) => !focusIds || focusIds.includes(b.id))
               .map((b) => ({
@@ -546,7 +545,7 @@ export const SchoolScene3D: React.FC<Props> = ({
     roomMeshesRef.current.forEach((mesh, id) => {
       const mat = mesh.material as THREE.MeshStandardMaterial;
       if (!mat) return;
-      if (selectedRoom && selectedRoom.id === id) {
+      if (selectedRoom && (selectedRoom.id === id || id.startsWith(`${selectedRoom.id}_`))) {
         mat.emissive = new THREE.Color('#1e5f8a');
         mat.emissiveIntensity = 0.55;
       } else {

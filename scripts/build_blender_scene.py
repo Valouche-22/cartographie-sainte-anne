@@ -928,33 +928,64 @@ if INCLUDE_EXTRA_DETAILS:
         create_box(f"Extra_Jeu_Sol_Y_NO_{ang_y}", (-21.0 + 0.8 * math.cos(ry), 21.5 + 0.8 * math.sin(ry), 0.066), (1.7, 0.32, 0.014), MAT_LINE_WHITE, "COURS", rot_z_deg=ang_y - 10)
 
 # ==========================================================
-# 7. INTERIOR ROOMS
+# 7. INTERIOR ROOMS (EXACT MAPPING FOR S1, PREAU MATERNELLES S4/S5 & PREFABRIQUE S2!)
 # ==========================================================
-CLASS_COLORS = [
-    (0.36, 0.65, 0.88), (0.42, 0.74, 0.56), (0.92, 0.68, 0.34),
-    (0.84, 0.45, 0.48), (0.62, 0.52, 0.86), (0.34, 0.76, 0.76),
-    (0.88, 0.56, 0.72), (0.72, 0.78, 0.38), (0.48, 0.62, 0.88),
-    (0.90, 0.54, 0.36),
-]
-
 def add_room_block(name, loc, size, rot_deg, color, col_name):
     m = get_mat(f"Mat_{name}", color, roughness=0.55)
     return create_box(name, (loc[0], loc[1], loc[2] + size[2] * 0.5), size, m, col_name, rot_deg)
 
-rooms_spec = [
-    ("Classe_01", (8.8, 5.8, 0.15), (6.5, 5.5, 2.6), GRID_DEG),
-    ("Classe_02", (-0.5, -2.5, 0.15), (5.5, 5.2, 2.6), GRID_DEG),
-    ("Classe_03", (8.5, -5.5, 0.15), (5.8, 5.2, 2.6), GRID_DEG),
-    ("Classe_04", (15.0, -8.0, 0.15), (5.2, 5.0, 2.6), GRID_DEG),
-    ("Classe_05", (11.5, -16.0, 0.15), (5.2, 4.5, 2.6), GRID_DEG),
-    ("Classe_06", (-17.0, 35.8, 0.15), (7.8, 5.8, 2.8), 18.1),
-    ("Classe_07", (-5.5, 39.2, 0.15), (7.8, 5.8, 2.8), 18.1),
-    ("Classe_08", (45.2, 24.5, 0.15), (4.4, 6.6, 2.8), 21.5),
-    ("Classe_09", (48.5, 13.5, 0.15), (4.4, 6.6, 2.8), 21.5),
-    ("Classe_10", (52.0, 3.0, 0.15), (4.4, 5.6, 2.8), 21.5),
+def add_room_poly(name, pts, z0, z1, color, col_name):
+    m = get_mat(f"Mat_{name}", color, roughness=0.55)
+    return create_poly_mesh(name, pts, z0, z1, m, col_name)
+
+# Exact S1 orthogonal coordinate system matching building walls (origin at S1 NE corner 13.42, 12.41)
+_s1_ox, _s1_oy = 13.42, 12.41
+_s1_ang = math.atan2(-24.89, 9.23)  # +U along S1 East facade (SSE)
+_s1_ux, _s1_uy = math.cos(_s1_ang), math.sin(_s1_ang)
+_s1_vx, _s1_vy = -_s1_uy, _s1_ux    # +V toward Preau E1 (ENE)
+def s1_uv(u, v):
+    return (_s1_ox + u * _s1_ux + v * _s1_vx, _s1_oy + u * _s1_uy + v * _s1_vy)
+def s1_rect(u0, u1, v0, v1):
+    return [s1_uv(u0, v0), s1_uv(u1, v0), s1_uv(u1, v1), s1_uv(u0, v1)]
+
+Z_RM0, Z_RM1 = 0.16, 2.65
+
+# 1. Bleu : Salle de sieste et de motricite
+add_room_poly("Salle_Sieste_Motricite", s1_rect(0.45, 11.55, -12.00, -0.45), Z_RM0, Z_RM1, (0.07, 0.20, 0.78), "CLASSES")
+# 2. Vert : Sanitaires / toilettes
+add_room_poly("Sanitaires_Ecole", s1_rect(11.85, 17.35, -12.00, -0.45), Z_RM0, Z_RM1, (0.07, 0.48, 0.12), "CLASSES")
+# 3. Jaune : Salle des profs
+add_room_poly("Salle_Profs", s1_rect(17.65, 26.10, -4.15, -0.45), Z_RM0, Z_RM1, (0.90, 0.65, 0.04), "CLASSES")
+# 4. Orange clair : Classe de PS/MS
+add_room_poly("Classe_PS_MS", s1_rect(25.10, 32.20, -11.35, -4.10), Z_RM0, Z_RM1, (0.95, 0.44, 0.10), "CLASSES")
+# 5. Orange fonce : Classe de TPS/PS/MS (chamfered to follow S1 SE diagonal wall cleanly!)
+tps_poly = [s1_uv(23.40, -11.70), s1_uv(30.40, -11.70), s1_uv(30.40, -16.85), s1_uv(27.75, -19.30), s1_uv(23.40, -19.30)]
+add_room_poly("Classe_TPS_PS_MS", tps_poly, Z_RM0, Z_RM1, (0.78, 0.16, 0.02), "CLASSES")
+# 6. Noir : Classe de GS
+add_room_poly("Classe_GS", s1_rect(2.15, 9.35, -23.95, -14.80), Z_RM0, Z_RM1, (0.04, 0.05, 0.06), "CLASSES")
+# 7. Violet : Classe de CP
+add_room_poly("Classe_CP", s1_rect(9.65, 16.95, -23.95, -14.80), Z_RM0, Z_RM1, (0.36, 0.08, 0.72), "CLASSES")
+
+# 8. Rouge : Preau des maternelles (exact inset of Pavillon S4 + Annexe S5)
+if "batiment.34015558" in by_id:
+    add_room_poly("Preau_Maternelles", offset_poly_2d(by_id["batiment.34015558"]["pts"], -0.42), Z_RM0, Z_RM1, (0.68, 0.06, 0.06), "CLASSES")
+if "batiment.34015559" in by_id:
+    add_room_poly("Preau_Maternelles_Sud", offset_poly_2d(by_id["batiment.34015559"]["pts"], -0.42), Z_RM0, Z_RM1, (0.68, 0.06, 0.06), "CLASSES")
+
+# 9. Rose : Prefabrique (exact inset of Batiment Sud S2)
+if "batiment.34015560" in by_id:
+    add_room_poly("Prefabrique", offset_poly_2d(by_id["batiment.34015560"]["pts"], -0.42), Z_RM0, Z_RM1, (0.76, 0.12, 0.36), "CLASSES")
+
+# Remaining provisional rooms in Batiment Nord N1 & Batiment Est E2 (awaiting room assignments)
+other_rooms_spec = [
+    ("Classe_06", (-17.0, 35.8, 0.15), (7.8, 5.8, 2.6), 18.1, (0.34, 0.76, 0.76)),
+    ("Classe_07", (-5.5, 39.2, 0.15), (7.8, 5.8, 2.6), 18.1, (0.88, 0.56, 0.72)),
+    ("Classe_08", (45.2, 24.5, 0.15), (4.4, 6.6, 2.6), 21.5, (0.72, 0.78, 0.38)),
+    ("Classe_09", (48.5, 13.5, 0.15), (4.4, 6.6, 2.6), 21.5, (0.48, 0.62, 0.88)),
+    ("Classe_10", (52.0, 3.0, 0.15), (4.4, 5.6, 2.6), 21.5, (0.90, 0.54, 0.36)),
 ]
-for idx, (rname, loc, size, rot) in enumerate(rooms_spec):
-    add_room_block(rname, loc, size, rot, CLASS_COLORS[idx % len(CLASS_COLORS)], "CLASSES")
+for rname, loc, size, rot, col in other_rooms_spec:
+    add_room_block(rname, loc, size, rot, col, "CLASSES")
 
 add_room_block("Salle_Cantine", (20.0, -43.5, 0.15), (24.0, 5.0, 2.0), 21.2, (0.28, 0.72, 0.42), "CANTINE")
 add_room_block("Salle_Periscolaire", (peri_cx, peri_cy, 0.15), (24.0, 6.5, 2.6), peri_deg, (0.76, 0.36, 0.78), "PERISCOLAIRE")
