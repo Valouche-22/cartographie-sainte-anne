@@ -374,7 +374,6 @@ export const App: React.FC = () => {
                   <button
                     key={sc.id}
                     type="button"
-                    data-scene={sc.id}
                     className={`step-dot ${idx === activeSceneIndex ? 'active' : ''}`}
                     onClick={() => goToSection(idx + 1)}
                     title={sc.title}
@@ -400,9 +399,9 @@ export const App: React.FC = () => {
         <aside
           className="info-panel"
           style={
-            selectedRoom
-              ? ({ '--panel-accent': selectedRoom.color } as React.CSSProperties)
-              : undefined
+            {
+              '--panel-accent': selectedRoom?.color || '#1d4ed8',
+            } as React.CSSProperties
           }
         >
           <div className="info-panel-header">
