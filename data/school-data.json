@@ -215,14 +215,14 @@
       ],
       "color": "#e0d8c4",
       "verified": true,
-      "description": "Installée dans une élégante demeure bourgeoise bretonne en pierre claire à toit d'ardoise à quatre pans, cheminées, lucarnes et escalier extérieur métallique, bordée par sa dépendance en pierre et son parc arboré."
+      "description": "Installée 4 rue Louis Massignon dans une demeure bretonne en pierre claire à toiture d'ardoise à deux pans et pignons triangulaires, grande cheminée centrale, lucarnes Nord, avant-corps Sud avec escalier de secours métallique en double volée, dépendance à trois baies bordeaux et parc boisé."
     },
     {
       "id": "Centre_Culturel_Ville_Robert",
-      "meshPrefix": "VilleRobert_",
+      "meshPrefix": "Centre_Culturel_Ville_Robert",
       "roofName": "Toit_VilleRobert_",
       "name": "Centre Culturel de La Ville Robert",
-      "role": "Salle de spectacles, expositions & cour patrimoniale",
+      "role": "Ancienne ferme fortifiée réhabilitée · Salle Massignon & cour patrimoniale",
       "area_m2": 1650.0,
       "height_m": 9.6,
       "position": [
@@ -237,7 +237,7 @@
       ],
       "color": "#c95b8c",
       "verified": true,
-      "description": "Ensemble culturel emblématique de Pordic mêlant d'anciennes longères bretonnes en pierre dorée (toits d'ardoise, lucarne centrale, muret à arche) et une grande salle de spectacle contemporaine à toiture-terrasse autour d'une cour pavée, prolongée par un escalier piéton, des pelouses et un parking arboré."
+      "description": "Ancien corps de ferme fortifié (en activité jusqu'en 1996, inauguré en 2001) organisé autour de sa cour pavée et de son remarquable double porche d'entrée en granit, associant longères bretonnes en pierre dorée (lucarne gerbière centrale) et salle de spectacle contemporaine Massignon (toit zinc à deux frontons sur cour, grand escalier et parking arboré)."
     },
     {
       "id": "Stade_Louis_Auffray",
