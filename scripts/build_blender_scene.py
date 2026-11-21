@@ -2534,6 +2534,101 @@ for idx_vt, (vu, vv, vsc, vdk) in enumerate(VR_TREES, 1):
     vtx, vty = vr_pt(vu, vv)
     add_cult_tree(f"Arbre_VilleRobert_{idx_vt:02d}", vtx, vty, vsc, dark=vdk)
 
+# ----------------------------------------------------------
+# 10B-3. ABORDS & ENVIRONNEMENT IMMEDIAT DU POLE CULTUREL
+#   (Aire de jeux du centre, Square Nord, Parking Place Jean Audouard, Trottoirs, Passages pietons & Jardins!)
+# ----------------------------------------------------------
+def add_crosswalk(name, cx_cw, cy_cw, deg_cw, width_road=5.6, n_stripes=5):
+    for i_s in range(n_stripes):
+        off_l = (i_s - (n_stripes - 1) * 0.5) * 0.95
+        sx_cw, sy_cw = local_to_world(cx_cw, cy_cw, 0.0, off_l, deg_cw)
+        create_box(f"{name}_Bande_{i_s+1}", (sx_cw, sy_cw, 0.015), (width_road * 0.55, 0.45, 0.018), MAT_LINE_WHITE, COL_CULT, deg_cw)
+
+# 1. "AIRE DE JEUX DU CENTRE" — Grande esplanade sablee au Nord-Est de la Mediatheque / Ville Robert (top-right of photo 1!)
+AIRE_CENTRE_POLY = [
+    (-220.5, 242.5), (-190.5, 240.0), (-154.0, 237.5), (-154.0, 250.5),
+    (-190.5, 251.5), (-190.5, 286.0), (-222.0, 285.0),
+]
+create_poly_mesh("Aire_Jeux_Centre_Esplanade", AIRE_CENTRE_POLY, 0.02, 0.11, MAT_TRACK_SAND, COL_CULT)
+create_curb_chain("Aire_Jeux_Centre_Bordure", AIRE_CENTRE_POLY + [AIRE_CENTRE_POLY[0]], 0.02, 0.17, 0.26, MAT_CURB, COL_CULT)
+# Lush green verge + mature tree cluster framing the SW corner of Aire de jeux du centre (very prominent in photo 1!)
+create_poly_mesh("Aire_Jeux_Centre_PelouseSO", [(-221.0, 242.5), (-196.0, 240.5), (-196.0, 253.0), (-221.0, 254.0)], 0.11, 0.145, MAT_GRASS, COL_CULT)
+for idx_ac, (ax_t, ay_t, asc_t, adk_t) in enumerate([
+    (-216.0, 247.5, 1.55, True), (-207.5, 247.0, 1.62, True),
+    (-199.5, 245.5, 1.48, False), (-212.0, 254.5, 1.38, True),
+], 1):
+    add_cult_tree(f"Arbre_Aire_Centre_{idx_ac:02d}", ax_t, ay_t, asc_t, dark=adk_t)
+# Small wooden benches & petanque timber frame inside Aire de jeux du centre
+add_detailed_bench("Banc_Aire_Centre_01", -182.0, 240.5, 5.0)
+add_detailed_bench("Banc_Aire_Centre_02", -168.0, 239.5, 5.0)
+add_detailed_bench("Banc_Aire_Centre_03", -193.0, 265.0, 90.0)
+
+# 2. SQUARE & PARKING NORD ENTRE L'ILOT TRIANGULAIRE ET LE MANOIR DE LA VILLE ROBERT (fills the empty triangle cleanly!)
+create_poly_mesh("Square_Nord_VilleRobert_Parking", [
+    (-205.5, 226.0), (-193.0, 233.5), (-178.0, 231.5), (-188.0, 212.0), (-197.5, 211.0),
+], 0.02, 0.10, MAT_PARKING, COL_CULT)
+# Landscaped green islands & shrubs separating the parking pocket from the Ville Robert Manor & Place Jean Audouard
+create_poly_mesh("Square_Nord_VilleRobert_Massif1", [
+    (-193.5, 233.0), (-174.0, 232.0), (-176.5, 224.5), (-192.0, 224.0),
+], 0.04, 0.16, MAT_GRASS, COL_CULT)
+create_curb_chain("Square_Nord_Bordure1", [(-193.5, 233.0), (-174.0, 232.0), (-176.5, 224.5), (-192.0, 224.0), (-193.5, 233.0)], 0.04, 0.21, 0.22, MAT_CURB, COL_CULT)
+for idx_sn, (snx, sny) in enumerate([(-188.0, 228.5), (-182.0, 228.5), (-177.5, 228.0)], 1):
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=1.05, location=(snx, sny, 0.85))
+    sh = bpy.context.active_object; sh.name = f"Arbuste_Square_Nord_{idx_sn}"; sh.scale = (1.15, 1.0, 0.68)
+    sh.data.materials.append(MAT_FOLIAGE_MID if idx_sn % 2 else MAT_FOLIAGE_DARK)
+    scene.collection.objects.unlink(sh); link_obj(sh, "VEGETATION")
+# Clean white parking bays in the North square pocket
+for k_np in range(5):
+    npx = -195.5 + k_np * 2.7
+    npy = 221.5 - k_np * 0.4
+    create_box(f"Parking_Square_Nord_Ligne_{k_np+1}", (npx, npy, 0.112), (0.13, 4.2, 0.015), MAT_LINE_WHITE, COL_CULT, 12.0)
+
+# 3. PLACE JEAN AUDOUARD EST — PARKING PUBLIC & TROTTOIRS FACE A LA SALLE DE SPECTACLE (right of video frames 00:20-00:25!)
+create_poly_mesh("Parking_Place_Jean_Audouard", [
+    (-110.5, 228.0), (-94.0, 225.0), (-92.5, 182.0), (-110.0, 182.5),
+], 0.02, 0.10, MAT_PARKING, COL_CULT)
+create_curb_chain("Bordure_Parking_Jean_Audouard", [
+    (-110.5, 228.0), (-94.0, 225.0), (-92.5, 182.0), (-110.0, 182.5), (-110.5, 228.0),
+], 0.02, 0.16, 0.24, MAT_CURB, COL_CULT)
+for row_x in (-106.5, -96.5):
+    for j_ja in range(11):
+        create_box(f"Parking_Audouard_Ligne_{row_x}_{j_ja}", (row_x, 188.0 + j_ja * 3.1, 0.112), (4.6, 0.13, 0.015), MAT_LINE_WHITE, COL_CULT, 0.0)
+# Green planted verge + trees along Place Jean Audouard parking border
+create_poly_mesh("Pelouse_Place_Jean_Audouard_Nord", [(-112.0, 232.0), (-93.0, 230.0), (-93.5, 225.5), (-111.5, 228.0)], 0.02, 0.14, MAT_GRASS, COL_CULT)
+add_cult_tree("Arbre_Place_Audouard_01", -107.0, 229.5, 1.15, dark=True)
+add_cult_tree("Arbre_Place_Audouard_02", -98.0, 228.0, 1.10, dark=False)
+
+# 4. TROTTOIRS CONTINUS, PASSAGES PIETONS & JARDINS D'ACCOMPAGNEMENT LE LONG DES RUES (Rue Massignon, Rue de l'Ic, Place Audouard)
+# Sidewalks along Rue de l'Ic (SW side across from the park) + green residential garden hedge border!
+create_curb_chain("Trottoir_Rue_Ic_SO", [
+    (-245.5, 120.5), (-254.8, 137.0), (-262.4, 150.8), (-272.8, 166.6),
+    (-283.5, 182.0), (-296.8, 199.7), (-309.7, 217.0), (-317.8, 226.3),
+], 0.01, 0.11, 1.65, MAT_CURB, COL_CULT)
+create_poly_mesh("Jardins_Rue_Ic_SO", [
+    (-247.5, 119.5), (-257.0, 136.0), (-275.0, 165.5), (-299.0, 198.5),
+    (-319.5, 225.0), (-332.0, 216.0), (-308.0, 184.0), (-282.0, 148.0), (-258.0, 113.0),
+], 0.01, 0.09, MAT_GRASS, COL_CULT)
+# Lush green hedge & garden trees along SW side of Rue de l'Ic
+for idx_jh, (jhx, jhy, jhs) in enumerate([
+    (-262.0, 134.0, 1.25), (-274.0, 152.0, 1.35), (-288.0, 172.0, 1.20),
+    (-302.0, 192.0, 1.30), (-316.0, 210.0, 1.25),
+], 1):
+    add_cult_tree(f"Arbre_Jardin_RueIc_{idx_jh:02d}", jhx, jhy, jhs, dark=(idx_jh % 2 == 1))
+
+# Sidewalk along South-East side of Rue Louis Massignon leading from Ville Robert down toward town center
+create_curb_chain("Trottoir_Massignon_SudEst", [
+    (-173.5, 151.0), (-183.5, 169.5), (-195.0, 190.5),
+], 0.01, 0.12, 1.75, MAT_PARVIS, COL_CULT)
+# Green residential lawn & shrub border behind the SW houses along Rue Louis Massignon (bottom-left of photo 1!)
+create_poly_mesh("Pelouse_Abords_Massignon_Sud", [
+    (-202.0, 152.5), (-184.0, 156.5), (-179.0, 149.0), (-197.0, 141.0),
+], 0.02, 0.11, MAT_GRASS, COL_CULT)
+
+# Crisp white pedestrian crosswalks at key intersections around the cultural pole!
+add_crosswalk("PassagePieton_RueIc_Nord", -310.5, 224.8, 38.0, width_road=5.4, n_stripes=5)
+add_crosswalk("PassagePieton_Massignon_Nord", -220.2, 234.5, -26.0, width_road=5.2, n_stripes=5)
+add_crosswalk("PassagePieton_Audouard_Escalier", -143.5, 167.2, 78.0, width_road=5.2, n_stripes=5)
+
 # ==========================================================
 # 11. LIGHTING, SAVE, EXPORT GLB & VERIFICATION RENDERS
 # ==========================================================
@@ -2592,10 +2687,10 @@ cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
 bpy.ops.render.render(write_still=True)
 print("Rendered vue_parc_mediatheque_oblique.png")
 
-# Render 3: Centre Culturel de La Ville Robert + Parvis Mediatheque combined overview
+# Render 3: Wide overview of Mediatheque, Parc, Ville Robert, Aire de jeux du centre & Place Jean Audouard!
 scene.render.filepath = os.path.join(RENDER_DIR, "vue_pole_culturel.png")
-cam.location = Vector((-198, 108, 72))
-direction = Vector((-196, 194, 4)) - cam.location
+cam.location = Vector((-218, 86, 112))
+direction = Vector((-198, 204, 4)) - cam.location
 cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
 bpy.ops.render.render(write_still=True)
 print("Rendered vue_pole_culturel.png")
