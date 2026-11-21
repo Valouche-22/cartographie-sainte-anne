@@ -7,76 +7,85 @@
   --ink-muted: #64748b;
   --line: #e2e8f0;
 
-  /* Default primary accent (Cobalt Bretagne) */
-  --accent: #1d4ed8;
-  --accent-hover: #1e40af;
-  --accent-soft: #eff6ff;
-  --accent-border: #bfdbfe;
-  --accent-glow: rgba(29, 78, 216, 0.22);
+  /* Rainbow spectrum + default primary accent */
+  --rainbow: linear-gradient(90deg, #ef4444 0%, #f97316 18%, #eab308 36%, #22c55e 55%, #0ea5e9 76%, #8b5cf6 100%);
+  --accent: #ef4444;
+  --accent-text: #dc2626;
+  --accent-hover: #dc2626;
+  --accent-soft: #fef2f2;
+  --accent-border: #fecaca;
+  --accent-glow: rgba(239, 68, 68, 0.22);
 }
 
-/* Per-chapter thematic accents */
+/* Per-chapter rainbow spectrum accents (red -> orange -> yellow -> green -> sky -> indigo -> violet) */
 [data-active-scene='ecole'],
 [data-scene='ecole'] {
-  --accent: #1d4ed8;
-  --accent-hover: #1e40af;
-  --accent-soft: #eff6ff;
-  --accent-border: #bfdbfe;
-  --accent-glow: rgba(29, 78, 216, 0.22);
+  --accent: #ef4444;
+  --accent-text: #dc2626;
+  --accent-hover: #dc2626;
+  --accent-soft: #fef2f2;
+  --accent-border: #fecaca;
+  --accent-glow: rgba(239, 68, 68, 0.22);
 }
 
 [data-active-scene='cour'],
 [data-scene='cour'] {
-  --accent: #059669;
-  --accent-hover: #047857;
-  --accent-soft: #ecfdf5;
-  --accent-border: #a7f3d0;
-  --accent-glow: rgba(5, 150, 105, 0.22);
+  --accent: #f97316;
+  --accent-text: #ea580c;
+  --accent-hover: #ea580c;
+  --accent-soft: #fff7ed;
+  --accent-border: #fed7aa;
+  --accent-glow: rgba(249, 115, 22, 0.22);
 }
 
 [data-active-scene='classes'],
 [data-scene='classes'] {
-  --accent: #7c3aed;
-  --accent-hover: #6d28d9;
-  --accent-soft: #f5f3ff;
-  --accent-border: #ddd6fe;
-  --accent-glow: rgba(124, 58, 237, 0.22);
+  --accent: #eab308;
+  --accent-text: #ca8a04;
+  --accent-hover: #ca8a04;
+  --accent-soft: #fefce8;
+  --accent-border: #fef08a;
+  --accent-glow: rgba(234, 179, 8, 0.22);
 }
 
 [data-active-scene='cantine-periscolaire'],
 [data-scene='cantine-periscolaire'] {
-  --accent: #d97706;
-  --accent-hover: #b45309;
-  --accent-soft: #fffbeb;
-  --accent-border: #fde68a;
-  --accent-glow: rgba(217, 119, 6, 0.22);
+  --accent: #22c55e;
+  --accent-text: #16a34a;
+  --accent-hover: #16a34a;
+  --accent-soft: #f0fdf4;
+  --accent-border: #bbf7d0;
+  --accent-glow: rgba(34, 197, 94, 0.22);
 }
 
 [data-active-scene='eglise'],
 [data-scene='eglise'] {
-  --accent: #be123c;
-  --accent-hover: #9f1239;
-  --accent-soft: #fff1f2;
-  --accent-border: #fecdd3;
-  --accent-glow: rgba(190, 18, 60, 0.22);
+  --accent: #0ea5e9;
+  --accent-text: #0284c7;
+  --accent-hover: #0284c7;
+  --accent-soft: #f0f9ff;
+  --accent-border: #bae6fd;
+  --accent-glow: rgba(14, 165, 233, 0.22);
 }
 
 [data-active-scene='sport'],
 [data-scene='sport'] {
-  --accent: #0284c7;
-  --accent-hover: #0369a1;
-  --accent-soft: #f0f9ff;
-  --accent-border: #bae6fd;
-  --accent-glow: rgba(2, 132, 199, 0.22);
+  --accent: #4f46e5;
+  --accent-text: #4338ca;
+  --accent-hover: #4338ca;
+  --accent-soft: #eef2ff;
+  --accent-border: #c7d2fe;
+  --accent-glow: rgba(79, 70, 229, 0.22);
 }
 
 [data-active-scene='culture'],
 [data-scene='culture'] {
-  --accent: #c2410c;
-  --accent-hover: #9a3412;
-  --accent-soft: #fff7ed;
-  --accent-border: #fed7aa;
-  --accent-glow: rgba(194, 65, 12, 0.22);
+  --accent: #9333ea;
+  --accent-text: #7e22ce;
+  --accent-hover: #7e22ce;
+  --accent-soft: #faf5ff;
+  --accent-border: #e9d5ff;
+  --accent-glow: rgba(147, 51, 234, 0.22);
 }
 
 * {
@@ -225,26 +234,38 @@ body {
 }
 
 .hero-start-btn {
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 10px 20px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: #ffffff;
+  color: var(--ink);
   font-family: inherit;
   font-size: 0.86rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(29, 78, 216, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.24);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
+.hero-start-btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2.5px;
+  background: var(--rainbow);
+}
+
 .hero-start-btn:hover {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: #f8fafc;
   transform: translateY(-1px);
-  box-shadow: 0 10px 28px rgba(29, 78, 216, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.3);
 }
 
 .scroll-cue {
@@ -345,8 +366,9 @@ body {
 
 .col-progress-fill {
   height: 100%;
-  background: var(--accent);
-  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.35s ease;
+  background: var(--rainbow);
+  background-size: var(--col-w) 100%;
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .col-brand {
@@ -359,13 +381,13 @@ body {
 }
 
 .col-brand:hover {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .col-step-badge {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
   border: 1px solid var(--accent-border);
   padding: 3px 9px;
@@ -395,6 +417,9 @@ body {
 
 .chapter-title {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
@@ -403,6 +428,15 @@ body {
   color: var(--ink);
   padding-bottom: 14px;
   margin-bottom: 20px;
+}
+
+.chapter-title::before {
+  content: '';
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 
 .chapter-title::after {
@@ -446,7 +480,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .fact-value {
@@ -489,10 +523,28 @@ body {
 }
 
 .building-focus-btn.active {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--ink);
+  border-color: var(--ink);
   color: #ffffff;
-  box-shadow: 0 4px 12px var(--accent-glow);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+}
+
+.building-focus-btn:nth-child(2).active {
+  background: #ea580c;
+  border-color: #ea580c;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.24);
+}
+
+.building-focus-btn:nth-child(3).active {
+  background: #0ea5e9;
+  border-color: #0ea5e9;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.24);
+}
+
+.building-focus-btn:nth-child(4).active {
+  background: #9333ea;
+  border-color: #9333ea;
+  box-shadow: 0 4px 12px rgba(147, 51, 234, 0.24);
 }
 
 .col-sticky-bottom {
@@ -532,8 +584,8 @@ body {
 }
 
 .step-nav-btn.primary:not(:disabled) {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--accent-text);
+  border-color: var(--accent-text);
   color: #ffffff;
   box-shadow: 0 4px 12px var(--accent-glow);
 }
@@ -561,18 +613,19 @@ body {
   padding: 0;
   border-radius: 999px;
   border: none;
-  background: #cbd5e1;
+  background: var(--accent);
+  opacity: 0.35;
   cursor: pointer;
-  transition: width 0.25s ease, background-color 0.25s ease, transform 0.2s ease;
+  transition: width 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .step-dot:hover {
-  background: #94a3b8;
+  opacity: 0.78;
 }
 
 .step-dot.active {
   width: 20px;
-  background: var(--accent);
+  opacity: 1;
 }
 
 /* 3D Labels */
@@ -798,7 +851,8 @@ body {
 .loader-bar {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #2563eb, #0ea5e9);
+  background: var(--rainbow);
+  background-size: 200px 100%;
   transition: width 0.2s ease;
 }
 
@@ -813,6 +867,10 @@ body {
 
   .col-sticky-top {
     top: 0;
+  }
+
+  .col-progress-fill {
+    background-size: 100vw 100%;
   }
 
   .chapter-panel {

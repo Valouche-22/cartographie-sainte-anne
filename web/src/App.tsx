@@ -374,6 +374,7 @@ export const App: React.FC = () => {
                   <button
                     key={sc.id}
                     type="button"
+                    data-scene={sc.id}
                     className={`step-dot ${idx === activeSceneIndex ? 'active' : ''}`}
                     onClick={() => goToSection(idx + 1)}
                     title={sc.title}
