@@ -899,7 +899,7 @@ body {
   background: var(--rainbow);
   transform-origin: left center;
   will-change: transform;
-  animation: loaderFill 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: loaderFill 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes loaderFill {

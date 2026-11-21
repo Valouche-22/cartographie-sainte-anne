@@ -31,9 +31,9 @@ export const App: React.FC = () => {
   const wheelLockUntilRef = useRef(0);
   const labelDelayTimerRef = useRef<number | null>(null);
 
-  // Enforce a 2-second minimum loading screen duration (bar animates smoothly via GPU CSS keyframes)
+  // Enforce a 1.5-second minimum loading screen duration (bar animates smoothly via GPU CSS keyframes)
   useEffect(() => {
-    const timer = window.setTimeout(() => setMinLoadDone(true), 2000);
+    const timer = window.setTimeout(() => setMinLoadDone(true), 1500);
     return () => window.clearTimeout(timer);
   }, []);
 
