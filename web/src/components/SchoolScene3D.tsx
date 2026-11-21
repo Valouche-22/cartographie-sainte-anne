@@ -150,6 +150,56 @@ function isClassroomRoofObject(obj: THREE.Object3D): boolean {
   return false;
 }
 
+const MOBILE_BREAKPOINT = 860;
+const MOBILE_FOV = 52;
+
+const MOBILE_SCENE_MULTS: Record<string, number> = {
+  hero: 1.0,
+  ecole: 1.0,
+  cour: 1.08,
+  classes: 1.0,
+  'cantine-periscolaire': 1.04,
+  eglise: 0.8,
+  sport: 1.0,
+  culture: 1.48,
+  S1: 1.0,
+  N1: 0.92,
+  E2: 1.0,
+  general: 1.0,
+  cantine: 1.04,
+  church: 0.8,
+  stadium: 1.0,
+};
+
+function adaptPoseForMobile(
+  pos: [number, number, number],
+  target: [number, number, number],
+  sceneKey: string,
+  w: number,
+  h: number
+): { pos: [number, number, number]; target: [number, number, number] } {
+  // Desktop PC: strictly untouched
+  if (w > MOBILE_BREAKPOINT || w <= 0 || h <= 0) {
+    return { pos, target };
+  }
+  const hTan = Math.tan(THREE.MathUtils.degToRad(MOBILE_FOV / 2)) * (w / h);
+  const baseScale = Math.min(2.65, Math.max(1.15, 0.54 / Math.max(hTan, 0.12)));
+  const mult = MOBILE_SCENE_MULTS[sceneKey] ?? 1.0;
+  const s = baseScale * mult;
+
+  const adjTarget: [number, number, number] =
+    sceneKey === 'culture' ? [-208, 2, -192] : target;
+
+  return {
+    pos: [
+      adjTarget[0] + (pos[0] - adjTarget[0]) * s,
+      adjTarget[1] + (pos[1] - adjTarget[1]) * s,
+      adjTarget[2] + (pos[2] - adjTarget[2]) * s,
+    ],
+    target: adjTarget,
+  };
+}
+
 const PRESET_VIEWS: Record<CameraPreset, { pos: [number, number, number]; target: [number, number, number] }> = {
   general: { pos: [-74, 46, 82], target: [10, 0, 8] },
   cantine: { pos: [90, 44, 92], target: [32, 0, 32] },
@@ -252,11 +302,13 @@ export const SchoolScene3D: React.FC<Props> = ({
     const container = mountRef.current;
     if (!container) return;
 
+    const isMobInit = container.clientWidth <= MOBILE_BREAKPOINT;
     const scene = new THREE.Scene();
     const horizonColor = new THREE.Color('#d8eaf7');
     scene.background = horizonColor;
-    // Atmospheric horizon fog dissolving distant edges seamlessly into the sky
-    scene.fog = new THREE.Fog(horizonColor, 520, 1420);
+    // Atmospheric horizon fog dissolving distant edges seamlessly into the sky (pushed slightly back on mobile for zoomed-out framing)
+    const fog = new THREE.Fog(horizonColor, isMobInit ? 760 : 520, isMobInit ? 1800 : 1420);
+    scene.fog = fog;
 
     // Smooth blue sky dome that ALWAYS follows the camera so it can NEVER be clipped by camera.far!
     const skyGeo = new THREE.SphereGeometry(2000, 32, 20);
@@ -295,9 +347,18 @@ export const SchoolScene3D: React.FC<Props> = ({
     skyDome.frustumCulled = false;
     scene.add(skyDome);
 
-    const initialFov = container.clientWidth <= 860 ? 56 : 44;
+    const initialFov = isMobInit ? MOBILE_FOV : 44;
     const camera = new THREE.PerspectiveCamera(initialFov, container.clientWidth / container.clientHeight, 2.5, 2600);
-    camera.position.set(...data.heroCamera.pos);
+    const initHero = adaptPoseForMobile(
+      data.heroCamera.pos,
+      data.heroCamera.target,
+      'hero',
+      container.clientWidth,
+      container.clientHeight
+    );
+    basePosRef.current = { x: initHero.pos[0], y: initHero.pos[1], z: initHero.pos[2] };
+    baseTargetRef.current = { x: initHero.target[0], y: initHero.target[1], z: initHero.target[2] };
+    camera.position.set(...initHero.pos);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -314,8 +375,8 @@ export const SchoolScene3D: React.FC<Props> = ({
     controls.dampingFactor = 0.06;
     controls.maxPolarAngle = Math.PI / 2 - 0.04;
     controls.minDistance = 12;
-    controls.maxDistance = 680;
-    controls.target.set(...data.heroCamera.target);
+    controls.maxDistance = isMobInit ? 960 : 680;
+    controls.target.set(...initHero.target);
     controls.enabled = freeExploreRef.current;
     controls.update();
     controlsRef.current = controls;
@@ -432,19 +493,43 @@ export const SchoolScene3D: React.FC<Props> = ({
       const w = container.clientWidth;
       const h = container.clientHeight;
       if (w <= 0 || h <= 0) return;
-      camera.fov = w <= 860 ? 56 : 44;
+      const isMob = w <= MOBILE_BREAKPOINT;
+      camera.fov = isMob ? MOBILE_FOV : 44;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+      fog.near = isMob ? 760 : 520;
+      fog.far = isMob ? 1800 : 1420;
+      controls.maxDistance = isMob ? 960 : 680;
       renderer.setSize(w, h);
       const isSplitNow = !freeExploreRef.current && !isHeroRef.current;
       if (isSplitNow) {
-        viewOffsetRef.current.x = w > 860 ? -COL_WIDTH_PX / 2 : 0;
-        viewOffsetRef.current.y = w <= 860 ? h * 0.275 : 0;
+        viewOffsetRef.current.x = w > MOBILE_BREAKPOINT ? -COL_WIDTH_PX / 2 : 0;
+        viewOffsetRef.current.y = isMob ? h * 0.275 : 0;
       } else {
         viewOffsetRef.current.x = 0;
         viewOffsetRef.current.y = 0;
       }
       camera.setViewOffset(w, h, viewOffsetRef.current.x, viewOffsetRef.current.y, w, h);
+
+      // Keep mobile framing cleanly adapted on orientation change
+      if (!freeExploreRef.current) {
+        if (isHeroRef.current) {
+          const p = adaptPoseForMobile(data.heroCamera.pos, data.heroCamera.target, 'hero', w, h);
+          basePosRef.current = { x: p.pos[0], y: p.pos[1], z: p.pos[2] };
+          baseTargetRef.current = { x: p.target[0], y: p.target[1], z: p.target[2] };
+        } else {
+          const sc = data.scenes[activeSceneIndexRef.current];
+          if (sc) {
+            const fm = sc.id === 'classes' ? classBuildingFocusRef.current : 'all';
+            const rawPos = fm !== 'all' ? CLASS_FOCUS_VIEWS[fm].pos : sc.camera.pos;
+            const rawTgt = fm !== 'all' ? CLASS_FOCUS_VIEWS[fm].target : sc.camera.target;
+            const key = fm !== 'all' ? fm : sc.id;
+            const p = adaptPoseForMobile(rawPos, rawTgt, key, w, h);
+            basePosRef.current = { x: p.pos[0], y: p.pos[1], z: p.pos[2] };
+            baseTargetRef.current = { x: p.target[0], y: p.target[1], z: p.target[2] };
+          }
+        }
+      }
     };
     window.addEventListener('resize', onWindowResize);
 
@@ -630,15 +715,18 @@ export const SchoolScene3D: React.FC<Props> = ({
     });
 
     if (isHero) {
-      animateGuidedCamera(data.heroCamera.pos, data.heroCamera.target, 1.25);
+      const p = adaptPoseForMobile(data.heroCamera.pos, data.heroCamera.target, 'hero', w, h);
+      animateGuidedCamera(p.pos, p.target, 1.25);
       return;
     }
     if (sc) {
       if (sc.id === 'classes' && classBuildingFocus !== 'all') {
         const sub = CLASS_FOCUS_VIEWS[classBuildingFocus];
-        animateGuidedCamera(sub.pos, sub.target, 1.05);
+        const p = adaptPoseForMobile(sub.pos, sub.target, classBuildingFocus, w, h);
+        animateGuidedCamera(p.pos, p.target, 1.05);
       } else {
-        animateGuidedCamera(sc.camera.pos, sc.camera.target, 1.35);
+        const p = adaptPoseForMobile(sc.camera.pos, sc.camera.target, sc.id, w, h);
+        animateGuidedCamera(p.pos, p.target, 1.35);
       }
     }
   }, [isHero, activeSceneIndex, freeExplore, classBuildingFocus, data]);
@@ -675,8 +763,13 @@ export const SchoolScene3D: React.FC<Props> = ({
 
   useEffect(() => {
     if (!cameraPresetTrigger) return;
-    const p = PRESET_VIEWS[cameraPresetTrigger.preset];
-    if (p) animateFreeCamera(p.pos, p.target, 1.05);
+    const raw = PRESET_VIEWS[cameraPresetTrigger.preset];
+    if (!raw) return;
+    const container = mountRef.current;
+    const w = container?.clientWidth || window.innerWidth;
+    const h = container?.clientHeight || window.innerHeight;
+    const p = adaptPoseForMobile(raw.pos, raw.target, cameraPresetTrigger.preset, w, h);
+    animateFreeCamera(p.pos, p.target, 1.05);
   }, [cameraPresetTrigger]);
 
   return (
