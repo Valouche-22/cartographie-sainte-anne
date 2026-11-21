@@ -268,11 +268,12 @@ export const App: React.FC = () => {
       </button>
 
       {data && !freeExplore && (
-        <main className="guided-flow">
-          {/* Simple fullscreen opening view */}
-          <section className="hero-cover" id="hero-cover">
-            <div className="hero-backdrop" />
-            <div className="hero-inner">
+        <>
+          <div className={`hero-backdrop ${isHero ? 'visible' : ''}`} />
+          <main className="guided-flow">
+            {/* Simple fullscreen opening view */}
+            <section className="hero-cover" id="hero-cover">
+              <div className="hero-inner">
               <h1 className="hero-h1">{data.school.name}</h1>
               <p className="hero-sub">{data.school.city}</p>
               <button
@@ -334,7 +335,8 @@ export const App: React.FC = () => {
               </button>
             </div>
           </div>
-        </main>
+          </main>
+        </>
       )}
 
       {/* Free Explore info box */}

@@ -185,9 +185,9 @@
         -177.6
       ],
       "cameraOffset": [
-        -128,
-        78,
-        -64
+        -138,
+        72,
+        -90
       ],
       "color": "#334155",
       "verified": true,
@@ -207,9 +207,9 @@
         -196.0
       ],
       "cameraOffset": [
-        -128,
-        78,
-        -64
+        -138,
+        72,
+        -90
       ],
       "color": "#334155",
       "verified": true,
@@ -229,9 +229,9 @@
         -202.0
       ],
       "cameraOffset": [
-        -128,
-        78,
-        -64
+        -138,
+        72,
+        -90
       ],
       "color": "#334155",
       "verified": true,
@@ -475,12 +475,31 @@
       "id": "cour",
       "title": "La cour",
       "rows": [
-        { "value": "Terrains de foot et jeux collectifs" },
-        { "value": "Terrain et panier de basket" },
-        { "value": "Préau couvert" },
-        { "value": "Espace en herbe et grand arbre" }
+        {
+          "value": "Terrains de foot et jeux collectifs"
+        },
+        {
+          "value": "Terrain et panier de basket"
+        },
+        {
+          "value": "Préau couvert"
+        },
+        {
+          "value": "Espace en herbe et grand arbre"
+        }
       ],
-      "camera": { "pos": [-68, 72, -24], "target": [6, 0, 10] },
+      "camera": {
+        "pos": [
+          -68,
+          72,
+          -24
+        ],
+        "target": [
+          6,
+          0,
+          10
+        ]
+      },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
@@ -529,7 +548,18 @@
           "value": "Garderie le matin et le soir ; le goûter du périscolaire est pris à la cantine"
         }
       ],
-      "camera": { "pos": [90, 44, 92], "target": [32, 0, 32] },
+      "camera": {
+        "pos": [
+          90,
+          44,
+          92
+        ],
+        "target": [
+          32,
+          0,
+          32
+        ]
+      },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
@@ -542,10 +572,18 @@
       "id": "eglise",
       "title": "Église Saint-Pierre",
       "rows": [
-        { "value": "Lien avec la paroisse de Pordic : 3 intervenants extérieurs (catéchèse) et le curé" },
-        { "value": "1 h d'enseignement religieux le lundi matin" },
-        { "value": "Messes de Noël et de Pâques" },
-        { "value": "Uniquement pour les élèves volontaires" }
+        {
+          "value": "Lien avec la paroisse de Pordic : 3 intervenants extérieurs (catéchèse) et le curé"
+        },
+        {
+          "value": "1 h d'enseignement religieux le lundi matin"
+        },
+        {
+          "value": "Messes de Noël et de Pâques"
+        },
+        {
+          "value": "Uniquement pour les élèves volontaires"
+        }
       ],
       "camera": {
         "pos": [
@@ -570,8 +608,12 @@
       "id": "sport",
       "title": "Complexe sportif Louis Auffray",
       "rows": [
-        { "value": "Salles et terrains municipaux accessibles à pied depuis l'école" },
-        { "value": "Matériel mis à disposition par la commune de Pordic, en complément de la salle de motricité" }
+        {
+          "value": "Salles et terrains municipaux accessibles à pied depuis l'école"
+        },
+        {
+          "value": "Matériel mis à disposition par la commune de Pordic, en complément de la salle de motricité"
+        }
       ],
       "camera": {
         "pos": [
@@ -596,11 +638,17 @@
       "id": "culture",
       "title": "Médiathèque de l'Ic et La Ville Robert",
       "rows": [
-        { "value": "Médiathèque municipale accessible à pied : prêt de livres, ressources et albums de jeunesse utilisés dans les classes" },
-        { "value": "Parc de la Médiathèque" },
-        { "value": "Centre culturel de La Ville Robert en face : spectacles organisés auxquels les élèves assistent" }
+        {
+          "value": "Médiathèque municipale accessible à pied : prêt de livres, ressources et albums de jeunesse utilisés dans les classes"
+        },
+        {
+          "value": "Parc de la Médiathèque"
+        },
+        {
+          "value": "Centre culturel de La Ville Robert en face : spectacles organisés auxquels les élèves assistent"
+        }
       ],
-      "camera": { "pos": [-128, 78, -64], "target": [-204, 2, -192] },
+      "camera": { "pos": [-138, 72, -90], "target": [-194, 2, -194] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
