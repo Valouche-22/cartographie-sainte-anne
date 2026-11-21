@@ -45,6 +45,41 @@ const CLASSROOM_ROOF_PREFIXES = [
 
 const COL_WIDTH_PX = 380;
 
+const FLAT_GROUND_PREFIXES = [
+  'Terrain_',
+  'Route_',
+  'Sol_',
+  'Cour_',
+  'Parvis_Eglise',
+  'Parvis_Allee',
+  'Parvis_Mediatheque',
+  'Parking_',
+  'Pelouse_',
+  'Espace_Herbe_',
+  'Parc_Mediatheque_Pelouse',
+  'Parc_Mediatheque_Allee',
+  'Aire_Jeux_',
+  'Trottoir_',
+  'PassagePieton_',
+  'Jardins_',
+  'Square_Nord_VilleRobert_Parking',
+  'City_Stade_Sol',
+  'City_Stade_Ligne_',
+  'Archers_Terrain_',
+  'Stade_Tennis_Pourtour',
+  'Stade_Tennis_Court',
+  'Stade_Piste',
+  'Stade_Ligne',
+  'Jeu_Sol_',
+  'Extra_Jeu_Sol_',
+  'Gravillons_',
+  'Foot_Ligne_',
+];
+
+function isFlatGroundObject(name: string): boolean {
+  return FLAT_GROUND_PREFIXES.some((p) => name.startsWith(p));
+}
+
 function isClassroomRoofObject(obj: THREE.Object3D): boolean {
   let curr: THREE.Object3D | null = obj;
   while (curr) {
@@ -196,7 +231,7 @@ export const SchoolScene3D: React.FC<Props> = ({
         root.traverse((obj) => {
           if ((obj as THREE.Mesh).isMesh) {
             const mesh = obj as THREE.Mesh;
-            mesh.castShadow = true;
+            mesh.castShadow = !isFlatGroundObject(mesh.name);
             mesh.receiveShadow = true;
             if (isClassroomRoofObject(mesh)) {
               classroomRoofs.push(mesh);

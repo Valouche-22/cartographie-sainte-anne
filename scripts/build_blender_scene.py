@@ -485,7 +485,7 @@ CUSTOM_IDS = set(SCHOOL_SPEC.keys()) | {"batiment.26311892", "batiment.15317836"
 # ==========================================================
 # 2. TERRAIN (EXPANDED SO NO HORIZON EDGE IS VISIBLE IN PANORAMIC VIEW!), CLEAN ROADS, PARKING & GRASS
 # ==========================================================
-bpy.ops.mesh.primitive_plane_add(size=2800, location=(160, 20, -0.08))
+bpy.ops.mesh.primitive_plane_add(size=2800, location=(160, 20, -0.12))
 terrain_base = bpy.context.active_object
 terrain_base.name = "Terrain_Base"
 terrain_base.data.materials.append(MAT_GROUND)
@@ -507,10 +507,14 @@ def build_road_mesh(name, pts, width=3.1, z_rd=-0.025):
         if d.length < 0.25:
             continue
         n = Vector((-d.y, d.x, 0)).normalized() * width
-        bm.faces.new([bm.verts.new(p1 - n), bm.verts.new(p1 + n), bm.verts.new(p2 + n), bm.verts.new(p2 - n)])
+        seg_z = z_rd + (i % 3) * 0.0012
+        p1s = Vector((p1.x, p1.y, seg_z))
+        p2s = Vector((p2.x, p2.y, seg_z))
+        bm.faces.new([bm.verts.new(p1s - n), bm.verts.new(p1s + n), bm.verts.new(p2s + n), bm.verts.new(p2s - n)])
         segs = 8
-        center_v = bm.verts.new(p2)
-        ring = [bm.verts.new(p2 + Vector((math.cos(2 * math.pi * k / segs) * width, math.sin(2 * math.pi * k / segs) * width, 0))) for k in range(segs)]
+        p2c = Vector((p2.x, p2.y, z_rd - 0.003))
+        center_v = bm.verts.new(p2c)
+        ring = [bm.verts.new(p2c + Vector((math.cos(2 * math.pi * k / segs) * width, math.sin(2 * math.pi * k / segs) * width, 0))) for k in range(segs)]
         for k in range(segs):
             bm.faces.new([center_v, ring[k], ring[(k + 1) % segs]])
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
@@ -519,11 +523,11 @@ def build_road_mesh(name, pts, width=3.1, z_rd=-0.025):
     obj.data.materials.append(MAT_ROAD)
 
 for idx, r in enumerate(site.get("roads", [])):
-    build_road_mesh(f"Route_Ecole_{idx}", r["pts"], width=3.1, z_rd=-0.024)
+    build_road_mesh(f"Route_Ecole_{idx}", r["pts"], width=3.1, z_rd=-0.016 + (idx % 5) * 0.002)
 
 for idx, r in enumerate(landmarks.get("wide_roads", [])):
     w = 3.6 if any(k in (r.get("name") or "").lower() for k in ("coubertin", "gaulle", "gueret", "guéret", "sports")) else 2.8
-    build_road_mesh(f"Route_Bourg_{idx}", r["pts"], width=w, z_rd=-0.032)
+    build_road_mesh(f"Route_Bourg_{idx}", r["pts"], width=w, z_rd=-0.042 + (idx % 7) * 0.002)
 
 # Extra IGN roads East / behind Complexe sportif Louis Auffray
 EAST_ROADS_JSON = os.path.join(BASE_DIR, "data", "geo", "ign_east_context_roads.geojson")
@@ -545,7 +549,7 @@ if os.path.exists(EAST_ROADS_JSON):
             # Keep road segments outside the stadium footprint
             if any(p[0] > 455 or p[1] > 28 or p[1] < -258 for p in pts):
                 er_idx += 1
-                build_road_mesh(f"Route_Est_{er_idx}", pts, width=2.8, z_rd=-0.034)
+                build_road_mesh(f"Route_Est_{er_idx}", pts, width=2.8, z_rd=-0.068 + (er_idx % 7) * 0.002)
 
 # Exact black-outline courtyard (with TWO open gate segments on Rue des Ecoles: seg 0->1 Main Gate, seg 3->4 Second Gate!)
 BLACK_OUTLINE_POLY = [
@@ -1137,18 +1141,18 @@ if ch:
         rot_d = ch_ang if normal_axis == 'v' else ch_ang + 90.0
         # Stone frame surround
         create_box(f"{name}_Cadre", (wx, wy, z_bot + height * 0.46), (width + 0.34, 0.22, height * 0.92), MAT_CHURCH_TRIM, col_name, rot_d)
-        # Recessed stained glass pane
+        # Recessed stained glass pane (cleanly staggered depths so zero Z-fighting!)
         off_u = side_sign * 0.04 if normal_axis == 'u' else 0.0
         off_v = side_sign * 0.04 if normal_axis == 'v' else 0.0
         gx, gy = ch_pt(u + off_u, v + off_v)
-        create_box(f"{name}_Verre", (gx, gy, z_bot + height * 0.45), (width, 0.24, height * 0.86), MAT_CHURCH_GLASS, col_name, rot_d)
-        # Pointed gothic arch top (diamond rotated 45 deg in vertical plane)
-        ax, ay = ch_pt(u + off_u * 1.1, v + off_v * 1.1)
+        create_box(f"{name}_Verre", (gx, gy, z_bot + height * 0.45), (width, 0.20, height * 0.86), MAT_CHURCH_GLASS, col_name, rot_d)
+        # Pointed gothic arch top (diamond rotated 45 deg in vertical plane, cleanly 3cm proud of Verre)
+        ax, ay = ch_pt(u + off_u * 1.6, v + off_v * 1.6)
         arch_s = width * 0.72
-        create_box(f"{name}_Ogive", (ax, ay, z_bot + height * 0.88), (arch_s, 0.23, arch_s), MAT_CHURCH_GLASS, col_name, rot_z_deg=rot_d, rot_y_deg=45.0)
-        # Central stone mullion (meneau) on wide windows
+        create_box(f"{name}_Ogive", (ax, ay, z_bot + height * 0.88), (arch_s, 0.22, arch_s), MAT_CHURCH_GLASS, col_name, rot_z_deg=rot_d, rot_y_deg=45.0)
+        # Central stone mullion (meneau) on wide windows (cleanly proud of glass & ogive)
         if width >= 1.25:
-            mx, my = ch_pt(u + off_u * 1.4, v + off_v * 1.4)
+            mx, my = ch_pt(u + off_u * 2.4, v + off_v * 2.4)
             create_box(f"{name}_Meneau", (mx, my, z_bot + height * 0.46), (0.14, 0.26, height * 0.88), MAT_CHURCH_TRIM, col_name, rot_d)
 
     # Helper: lush plaza tree with customizable foliage palette
@@ -1181,16 +1185,16 @@ if ch:
     parvis_terr_uv = [(-30.2, -12.5), (33.5, -12.5), (33.5, 12.5), (-30.2, 12.5)]
     create_poly_mesh("Parvis_Terrasse_Eglise", [ch_pt(u, v) for u, v in parvis_terr_uv], 0.06, 0.42, MAT_CHURCH_TRIM, "EGLISE_PORDIC")
 
-    # Warm ochre pedestrian walkway strip crossing Place de l'Eglise toward the central steps
-    walk_cx, walk_cy = ch_pt(-38.8, 0.0)
-    create_box("Parvis_Allee_Pietonne", (walk_cx, walk_cy, 0.068), (11.2, 5.4, 0.025), MAT_PARVIS_ACCENT, "EGLISE_PORDIC", ch_ang)
+    # Warm ochre pedestrian walkway strip crossing Place de l'Eglise toward the central steps (stopping cleanly before step 1!)
+    walk_cx, walk_cy = ch_pt(-39.2, 0.0)
+    create_box("Parvis_Allee_Pietonne", (walk_cx, walk_cy, 0.085), (10.8, 5.4, 0.03), MAT_PARVIS_ACCENT, "EGLISE_PORDIC", ch_ang)
 
-    # Wide central granite entrance staircase (6 steps leading up to the West portal!)
+    # Wide central granite entrance staircase (6 non-overlapping steps leading up to the West portal!)
     for st_i in range(6):
         u_st = -33.0 + st_i * 0.48
         h_st = 0.08 + st_i * 0.065
         sx_st, sy_st = ch_pt(u_st, 0.0)
-        create_box(f"Parvis_Escalier_Marche_{st_i+1}", (sx_st, sy_st, 0.06 + h_st * 0.5), (0.52, 5.0, h_st), MAT_CHURCH_TRIM, "EGLISE_PORDIC", ch_ang)
+        create_box(f"Parvis_Escalier_Marche_{st_i+1}", (sx_st, sy_st, 0.068 + h_st * 0.5), (0.47, 4.95, h_st), MAT_CHURCH_TRIM, "EGLISE_PORDIC", ch_ang)
     # Granite cheek walls flanking the central steps
     for side_s in (-1, 1):
         cx_w, cy_w = ch_pt(-31.6, side_s * 2.75)
@@ -1256,16 +1260,16 @@ if ch:
     # North side parking bays (v ≈ +13.5, u = -21..-5)
     for k_pk in range(6):
         px_p, py_p = ch_pt(-21.0 + k_pk * 2.9, 13.8)
-        create_box(f"Parking_Eglise_Nord_{k_pk+1}", (px_p, py_p, 0.072), (0.13, 4.4, 0.015), MAT_LINE_WHITE, "EGLISE_PORDIC", ch_ang)
+        create_box(f"Parking_Eglise_Nord_{k_pk+1}", (px_p, py_p, 0.088), (0.13, 4.4, 0.02), MAT_LINE_WHITE, "EGLISE_PORDIC", ch_ang)
     # South side parking bays (v ≈ -13.5, u = -16..-2)
     for k_pk in range(5):
         px_p, py_p = ch_pt(-16.0 + k_pk * 3.0, -13.5)
-        create_box(f"Parking_Eglise_Sud_{k_pk+1}", (px_p, py_p, 0.072), (0.13, 4.4, 0.015), MAT_LINE_WHITE, "EGLISE_PORDIC", ch_ang)
+        create_box(f"Parking_Eglise_Sud_{k_pk+1}", (px_p, py_p, 0.088), (0.13, 4.4, 0.02), MAT_LINE_WHITE, "EGLISE_PORDIC", ch_ang)
     # Front square parking bays (Place de l'Eglise, u ≈ -45, v = -5..+5)
     for row_v in (-2.4, 2.4):
         for k_pk in range(5):
             px_p, py_p = ch_pt(-49.0 + k_pk * 2.6, row_v)
-            create_box(f"Parking_Place_Eglise_{row_v}_{k_pk+1}", (px_p, py_p, 0.072), (0.13, 4.3, 0.015), MAT_LINE_WHITE, "EGLISE_PORDIC", ch_ang)
+            create_box(f"Parking_Place_Eglise_{row_v}_{k_pk+1}", (px_p, py_p, 0.088), (0.13, 4.3, 0.02), MAT_LINE_WHITE, "EGLISE_PORDIC", ch_ang)
 
     # Semi-circular stepped stone amphitheater / theatre de verdure on the NW side (clearly visible left of church in 2nd photo!)
     amp_cx, amp_cy = ch_pt(-14.5, 29.0)
@@ -1453,16 +1457,15 @@ if ch:
             create_box(f"Clocher_Contrefort_Mil_{bx_s}_{by_s}", (cx_b, cy_b, 12.6), (1.30, 1.30, 8.2), MAT_CHURCH_TRIM, "EGLISE_PORDIC", ch_ang)
             create_box(f"Clocher_Contrefort_Haut_{bx_s}_{by_s}", (cx_b, cy_b, 21.0), (1.05, 1.05, 8.6), MAT_GRANITE_DARK, "EGLISE_PORDIC", ch_ang)
 
-    # Neo-gothic West main portal (recessed dark oak double doors + stone archivolts + sharp triangular gablet!)
-    p_x, p_y = ch_pt(-27.7, 0.0)
-    create_box("Portail_Eglise_Encadrement", (p_x, p_y, 2.9), (0.65, 3.6, 5.2), MAT_CHURCH_TRIM, "EGLISE_PORDIC", ch_ang)
-    pd_x, pd_y = ch_pt(-27.95, 0.0)
-    create_box("Portail_Eglise_Portes_Chene", (pd_x, pd_y, 2.35), (0.28, 2.4, 3.9), MAT_CHURCH_WOOD, "EGLISE_PORDIC", ch_ang)
-    # Pointed tympanum & triangular stone gablet (gable) over the portal
-    pt_x, pt_y = ch_pt(-27.92, 0.0)
-    create_box("Portail_Eglise_Tympan", (pt_x, pt_y, 4.35), (0.34, 1.75, 1.75), MAT_GRANITE_DARK, "EGLISE_PORDIC", rot_z_deg=ch_ang, rot_x_deg=45.0)
-    pg_x, pg_y = ch_pt(-27.82, 0.0)
-    create_box("Portail_Eglise_Gable", (pg_x, pg_y, 5.8), (0.52, 2.65, 2.65), MAT_CHURCH_TRIM, "EGLISE_PORDIC", rot_z_deg=ch_ang, rot_x_deg=45.0)
+    # Neo-gothic West main portal (cleanly staggered depths along -u -> ZERO Z-fighting!)
+    p_x, p_y = ch_pt(-27.75, 0.0)
+    create_box("Portail_Eglise_Encadrement", (p_x, p_y, 2.9), (0.60, 3.6, 5.2), MAT_CHURCH_TRIM, "EGLISE_PORDIC", ch_ang)
+    pg_x, pg_y = ch_pt(-27.90, 0.0)
+    create_box("Portail_Eglise_Gable", (pg_x, pg_y, 5.8), (0.48, 2.65, 2.65), MAT_CHURCH_TRIM, "EGLISE_PORDIC", rot_z_deg=ch_ang, rot_x_deg=45.0)
+    pd_x, pd_y = ch_pt(-28.08, 0.0)
+    create_box("Portail_Eglise_Portes_Chene", (pd_x, pd_y, 2.35), (0.24, 2.4, 3.9), MAT_CHURCH_WOOD, "EGLISE_PORDIC", ch_ang)
+    pt_x, pt_y = ch_pt(-28.14, 0.0)
+    create_box("Portail_Eglise_Tympan", (pt_x, pt_y, 4.35), (0.24, 1.75, 1.75), MAT_GRANITE_DARK, "EGLISE_PORDIC", rot_z_deg=ch_ang, rot_x_deg=45.0)
 
     # Tall gothic lancet window on tower middle tier (West facade, z=9.0 -> 14.5m)
     add_gothic_window("Clocher_Verriere_Ouest", -27.65, 0.0, 9.0, 1.85, 5.2, normal_axis='u', side_sign=-1)
@@ -1478,15 +1481,15 @@ if ch:
         ("Horloge_Sud", -23.6, -4.12, ch_ang),
     ]:
         clx, cly = ch_pt(cl_u, cl_v)
-        bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.92, depth=0.20, location=(clx, cly, 16.75), rotation=(math.radians(90), 0, math.radians(cl_rot)))
+        bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.92, depth=0.22, location=(clx, cly, 16.75), rotation=(math.radians(90), 0, math.radians(cl_rot)))
         cl_rim = bpy.context.active_object; cl_rim.name = f"Clocher_{cl_name}_Cadre"; cl_rim.data.materials.append(MAT_METAL_DARK)
         scene.collection.objects.unlink(cl_rim); link_obj(cl_rim, "EGLISE_PORDIC")
-        bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.76, depth=0.24, location=(clx, cly, 16.75), rotation=(math.radians(90), 0, math.radians(cl_rot)))
+        bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.76, depth=0.30, location=(clx, cly, 16.75), rotation=(math.radians(90), 0, math.radians(cl_rot)))
         cl_face = bpy.context.active_object; cl_face.name = f"Clocher_{cl_name}_Cadran"; cl_face.data.materials.append(MAT_CHURCH_CLOCK)
         scene.collection.objects.unlink(cl_face); link_obj(cl_face, "EGLISE_PORDIC")
-        # Crisp dark clock hands
-        create_box(f"Clocher_{cl_name}_Aiguille1", (clx, cly, 16.95), (0.08, 0.30, 0.45), MAT_METAL_DARK, "EGLISE_PORDIC", cl_rot)
-        create_box(f"Clocher_{cl_name}_Aiguille2", (clx, cly, 16.75), (0.42, 0.30, 0.08), MAT_METAL_DARK, "EGLISE_PORDIC", cl_rot)
+        # Crisp dark clock hands (staggered depths so they never Z-fight!)
+        create_box(f"Clocher_{cl_name}_Aiguille1", (clx, cly, 16.95), (0.08, 0.36, 0.45), MAT_METAL_DARK, "EGLISE_PORDIC", cl_rot)
+        create_box(f"Clocher_{cl_name}_Aiguille2", (clx, cly, 16.75), (0.42, 0.40, 0.08), MAT_METAL_DARK, "EGLISE_PORDIC", cl_rot)
 
     # Gothic balustrade parapet gallery at z=26.4m
     create_box("Clocher_Galerie", (tw_cx, tw_cy, 26.45), (8.9, 8.9, 1.25), MAT_CHURCH_TRIM, "EGLISE_PORDIC", ch_ang)
