@@ -225,6 +225,8 @@ export const App: React.FC = () => {
   };
 
   const totalChapters = data?.scenes.length || 0;
+  const activeSceneId = data?.scenes[activeSceneIndex]?.id || 'ecole';
+  const progressPct = totalChapters > 0 ? ((activeSceneIndex + 1) / totalChapters) * 100 : 0;
 
   return (
     <>
@@ -304,8 +306,8 @@ export const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Clean white left column */}
-          <div className="editorial-column">
+          {/* Clean left column with per-chapter accent theme */}
+          <div className="editorial-column" data-active-scene={activeSceneId}>
             <div className="col-sticky-top">
               <span className="col-brand" onClick={() => goToSection(0)}>
                 {data.school.name}
@@ -313,10 +315,13 @@ export const App: React.FC = () => {
               <span className="col-step-badge">
                 {activeSceneIndex + 1} / {totalChapters}
               </span>
+              <div className="col-progress-track" aria-hidden="true">
+                <div className="col-progress-fill" style={{ width: `${progressPct}%` }} />
+              </div>
             </div>
 
             {data.scenes.map((sc, idx) => (
-              <section className="chapter-panel" key={sc.id} id={`chapter-${sc.id}`}>
+              <section className="chapter-panel" key={sc.id} id={`chapter-${sc.id}`} data-scene={sc.id}>
                 <div className={`chapter-body ${!isHero && idx === activeSceneIndex ? 'is-active' : ''}`}>
                   <h2 className="chapter-title">{sc.title}</h2>
 
@@ -391,7 +396,14 @@ export const App: React.FC = () => {
 
       {/* Free Explore info box */}
       {freeExplore && (selectedBuilding || selectedRoom) && (
-        <aside className="info-panel">
+        <aside
+          className="info-panel"
+          style={
+            {
+              '--panel-accent': selectedRoom?.color || '#1d4ed8',
+            } as React.CSSProperties
+          }
+        >
           <div className="info-panel-header">
             <div>
               <h3>{selectedRoom ? selectedRoom.name : selectedBuilding?.name}</h3>
