@@ -2390,8 +2390,8 @@ for v_w in (-3.65, 0.0, 3.65):
 for v_att in (-1.95, 1.95):
     gxw, gyw = med_pt(-7.18, v_att)
     add_breton_window(f"Mediatheque_FaceWSW_Comble_{v_att}", gxw, gyw, 9.75, 1.05, 1.35, med_deg + 90.0, with_lintel=True)
-# Signature deep burgundy/purple Japanese maple tree right at the base of the WSW gable (frames 00:04-00:08!)
-prp_x, prp_y = med_pt(-8.4, 0.2)
+# Signature deep burgundy/purple Japanese maple tree slightly left of the WSW doorway
+prp_x, prp_y = med_pt(-8.4, 2.8)
 add_cult_tree("Arbre_Pourpre_Mediatheque", prp_x, prp_y, scale=0.78, purple=True)
 
 # NNW SIDE FACADE (+v = +6.52, frames 00:09-00:12)
