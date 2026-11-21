@@ -2209,9 +2209,10 @@ for up_m in (-7.0, -2.5, 2.0, 6.4):
     create_box(f"Mediatheque_Muret_Pilier_{up_m}", (px_m, py_m, 0.68), (0.52, 0.52, 1.15), MAT_CHURCH_TRIM, COL_CULT, med_deg)
 
 # 1. Main Manor Body (13.8m x 13.0m, 2 full stories + true DOUBLE-PITCHED SLATE GABLE ROOF along med_deg!)
+MAT_MEDIA_ROSE = get_mat("Crepi_Rose_Mediatheque", (0.76, 0.56, 0.50), roughness=0.84)
 med_pts = rot_rect(med_cx, med_cy, 13.8, 13.0, med_deg)
 create_poly_mesh("Murs_Mediatheque_Ic_Soubassement", med_pts, 0.12, 0.85, MAT_GRANITE_DARK, COL_CULT)
-create_poly_mesh("Murs_Mediatheque_Ic_Manoir", med_pts, 0.80, 8.35, MAT_BRETON_STONE_LIGHT, COL_CULT)
+create_poly_mesh("Murs_Mediatheque_Ic_Manoir", med_pts, 0.80, 8.35, MAT_MEDIA_ROSE, COL_CULT)
 # Floor stringcourse band & crisp cornice band wrapping all 4 facades
 create_box("Mediatheque_Ic_Bandeau", (med_cx, med_cy, 4.42), (14.08, 13.28, 0.26), MAT_CHURCH_TRIM, COL_CULT, med_deg)
 create_box("Mediatheque_Ic_Corniche", (med_cx, med_cy, 8.28), (14.28, 13.48, 0.34), MAT_CHURCH_TRIM, COL_CULT, med_deg)
@@ -2224,7 +2225,7 @@ for su in (-6.86, 6.86):
 # TRUE DOUBLE-PITCHED BRETON SLATE GABLE ROOF (ridge along +u = +23.8 deg -> 2 crisp triangular gables on ENE & WSW!)
 create_breton_gable_roof(
     "Toit_Mediatheque_Ic_Manoir", med_cx, med_cy, 13.8, 13.0, med_deg,
-    z_eave=8.35, ridge_h=4.45, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE_LIGHT,
+    z_eave=8.35, ridge_h=4.45, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_MEDIA_ROSE,
     overhang=0.28, with_coping=True
 )
 
@@ -2286,7 +2287,7 @@ for u_n in (-3.8, 0.0, 3.8):
 # SSE SIDE FACADE (-v = -6.52, frames 00:00-00:03 — CENTRAL PROJECTING MASONRY DORMER + 2-FLIGHT SWITCHBACK STEEL FIRE ESCAPE STAIRCASE!)
 # Central tall masonry projection / avant-corps rising into the SSE roof slope (exact match to frames 00:00-00:03!)
 av_x, av_y = med_pt(0.0, -5.8)
-create_box("Mediatheque_Ic_AvantCorps_Sud", (av_x, av_y, 5.8), (4.6, 3.2, 11.2), MAT_BRETON_STONE_LIGHT, COL_CULT, med_deg)
+create_box("Mediatheque_Ic_AvantCorps_Sud", (av_x, av_y, 5.8), (4.6, 3.2, 11.2), MAT_MEDIA_ROSE, COL_CULT, med_deg)
 create_box("Mediatheque_Ic_AvantCorps_Toit", (av_x, av_y, 11.48), (4.9, 3.5, 0.24), MAT_VR_ZINC, COL_CULT, med_deg)
 # Exit doorways on the avant-corps at 1st floor & 2nd floor + flanking side windows
 for u_s in (-4.4, 4.4):
