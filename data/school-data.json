@@ -215,7 +215,29 @@
       ],
       "color": "#e0d8c4",
       "verified": true,
-      "description": "Installée 4 rue Louis Massignon dans une demeure bretonne en pierre claire à toiture d'ardoise à deux pans et pignons triangulaires, grande cheminée centrale, lucarnes Nord, avant-corps Sud avec escalier de secours métallique en double volée, dépendance à trois baies bordeaux et parc boisé."
+      "description": "Installée 4 rue Louis Massignon dans une demeure bretonne en pierre claire à toiture d'ardoise à deux pans et pignons triangulaires, grande cheminée centrale, lucarnes Nord, avant-corps Sud avec escalier de secours métallique en double volée, dépendance à trois baies bordeaux et grand parc boisé."
+    },
+    {
+      "id": "Parc_Mediatheque",
+      "meshPrefix": "Parc_Mediatheque_",
+      "roofName": "Toit_Jeu_Parc_",
+      "name": "Parc de la Médiathèque (La Ville Robert)",
+      "role": "Parc arboré, sentier piéton & aire de jeux pour enfants (2–8 ans)",
+      "area_m2": 5800.0,
+      "height_m": 8.0,
+      "position": [
+        -268.0,
+        3.5,
+        -196.0
+      ],
+      "cameraOffset": [
+        -315,
+        52,
+        -132
+      ],
+      "color": "#4f8a4b",
+      "verified": true,
+      "description": "Vaste parc boisé enclos de murets en granit entre la rue de l'Ic et la rue Louis Massignon : grande prairie ensoleillée, bosquets d'arbres matures, allée piétonne stabilisée, aire de jeux pour enfants (structure avec toboggan, balançoire, jeux à ressort et bascule), bancs et tables de pique-nique."
     },
     {
       "id": "Centre_Culturel_Ville_Robert",
