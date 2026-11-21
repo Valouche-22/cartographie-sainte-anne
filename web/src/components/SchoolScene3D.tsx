@@ -173,8 +173,57 @@ export const SchoolScene3D: React.FC<Props> = ({
     if (!container) return;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#dce8f3');
-    scene.fog = new THREE.Fog('#dce8f3', 750, 2100);
+    const horizonColor = new THREE.Color('#d8eaf7');
+    scene.background = horizonColor;
+    // Atmospheric horizon fade so the terrain edges dissolve seamlessly into the sky
+    scene.fog = new THREE.Fog(horizonColor, 480, 1380);
+
+    // Smooth blue sky dome (zenith blue -> soft light blue -> horizon mist matching fog)
+    const skyGeo = new THREE.SphereGeometry(2000, 32, 20);
+    const skyMat = new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      depthWrite: false,
+      fog: false,
+      uniforms: {
+        topColor: { value: new THREE.Color('#66a3e0') },
+        midColor: { value: new THREE.Color('#a8d1f2') },
+        horizonColor: { value: horizonColor },
+      },
+      vertexShader: `
+        varying vec3 vWorldPosition;
+        void main() {
+          vec4 worldPos = modelMatrix * vec4(position, 1.0);
+          vWorldPosition = worldPos.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPos;
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 topColor;
+        uniform vec3 midColor;
+        uniform vec3 horizonColor;
+        varying vec3 vWorldPosition;
+        void main() {
+          float h = normalize(vWorldPosition).y;
+          float t1 = smoothstep(0.0, 0.22, max(h, 0.0));
+          float t2 = smoothstep(0.18, 0.72, max(h, 0.0));
+          vec3 col = mix(horizonColor, midColor, t1);
+          col = mix(col, topColor, t2);
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `,
+    });
+    const skyDome = new THREE.Mesh(skyGeo, skyMat);
+    scene.add(skyDome);
+
+    // Subtle extended horizon ground disk underneath so no plane edge ever appears
+    const farGround = new THREE.Mesh(
+      new THREE.CircleGeometry(1950, 48),
+      new THREE.MeshStandardMaterial({ color: '#c4c7c0', roughness: 0.95 })
+    );
+    farGround.rotation.x = -Math.PI / 2;
+    farGround.position.set(140, -0.22, -20);
+    farGround.receiveShadow = false;
+    scene.add(farGround);
 
     const camera = new THREE.PerspectiveCamera(44, container.clientWidth / container.clientHeight, 2.5, 2200);
     camera.position.set(...data.heroCamera.pos);
