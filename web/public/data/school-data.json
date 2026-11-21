@@ -10,22 +10,26 @@
     },
     "area_m2": 8900,
     "cadastre": [],
-    "note": "Cartographie de stage SOPA 1 (Licence 1 Professorat des Écoles)."
+    "note": "Cartographie de stage · L1 PE · SOPA 1"
+  },
+  "heroCamera": {
+    "pos": [-74, 46, 82],
+    "target": [10, 0, 8]
   },
   "buildings": [
     {
       "id": "Batiment_Principal_S1",
       "meshPrefix": "Murs_Batiment_Principal_S1",
       "roofName": "Toit_Batiment_Principal_S1",
-      "name": "École Sainte-Anne",
-      "role": "Bâtiment principal · Classes & motricité",
+      "name": "Bâtiment principal",
+      "role": "Classes & espaces pédagogiques",
       "area_m2": 658,
       "height_m": 4.4,
       "position": [5.5, 2.5, 10.8],
       "cameraOffset": [-64, 36, 56],
       "color": "#1e5f8a",
       "verified": true,
-      "description": "Corps central de l'établissement regroupant plusieurs salles de classe aux surfaces hétérogènes."
+      "description": "Bâtiment central de l'école Sainte-Anne."
     },
     {
       "id": "Preau_Ecole",
@@ -37,15 +41,15 @@
       "height_m": 3.4,
       "position": [26.2, 2.0, -4.7],
       "cameraOffset": [52, 20, -16],
-      "color": "#52657a",
+      "color": "#475569",
       "verified": true,
-      "description": "Préau couvert abritant les élèves lors des récréations par temps de pluie."
+      "description": "Préau couvert attenant à la cour."
     },
     {
       "id": "Batiment_Cantine",
       "meshPrefix": "Murs_Batiment_Cantine",
       "roofName": "Toit_Batiment_Cantine",
-      "name": "Cantine scolaire",
+      "name": "Cantine",
       "role": "Restauration scolaire & goûter",
       "area_m2": 819,
       "height_m": 3.5,
@@ -53,267 +57,251 @@
       "cameraOffset": [96, 48, 102],
       "color": "#2d6a4f",
       "verified": true,
-      "description": "Juste à côté de l'école. Les animateurs viennent chercher les élèves pour le midi ainsi que pour le goûter du périscolaire."
+      "description": "Juste à côté de l'école. Les animateurs viennent chercher les élèves pour le midi et le goûter."
     },
     {
       "id": "Batiment_Periscolaire",
       "meshPrefix": "Murs_Batiment_Periscolaire",
       "roofName": "Toit_Batiment_Periscolaire",
-      "name": "Périscolaire / Garderie",
-      "role": "Accueil matin & soir",
+      "name": "Périscolaire",
+      "role": "Garderie matin & soir",
       "area_m2": 353,
       "height_m": 4.6,
       "position": [44.5, 2.8, 14.8],
       "cameraOffset": [96, 48, 102],
-      "color": "#8c4a82",
+      "color": "#7e3f78",
       "verified": true,
-      "description": "Immédiatement attenant à l'école : les animateurs périscolaires viennent directement récupérer les élèves."
+      "description": "Juste à côté de l'école. Prise en charge directe par les animateurs périscolaires."
     },
     {
       "id": "Batiment_Nord_N1",
       "meshPrefix": "Murs_Batiment_Nord_N1",
       "roofName": "Toit_Batiment_Nord_N1",
       "name": "Bâtiment Nord",
-      "role": "Salles de classe (à préciser)",
+      "role": "Salles de classe",
       "area_m2": 266,
       "height_m": 5.1,
       "position": [-11.3, 2.8, -38.1],
       "cameraOffset": [-38, 26, -10],
       "color": "#1e5f8a",
       "verified": true,
-      "description": "Bâtiment bordant le nord de la cour, face à la zone d'herbe et au grand arbre."
+      "description": "Bâtiment au nord de la cour."
     },
     {
       "id": "Batiment_Est_E2",
       "meshPrefix": "Murs_Batiment_Est_E2",
       "roofName": "Toit_Batiment_Est_E2",
       "name": "Bâtiment Est",
-      "role": "Salles de classe (à préciser)",
+      "role": "Salles de classe",
       "area_m2": 310,
       "height_m": 6.4,
       "position": [47.5, 3.4, -14.0],
       "cameraOffset": [78, 30, -45],
       "color": "#1e5f8a",
       "verified": true,
-      "description": "Bâtiment situé à l'est de la cour, face au préau."
+      "description": "Bâtiment à l'est de la cour."
     },
     {
       "id": "Eglise_Saint_Pierre",
       "meshPrefix": "Murs_Eglise",
       "roofName": "Toit_Eglise",
       "name": "Église Saint-Pierre",
-      "role": "Paroisse & pastorale scolaire",
+      "role": "Paroisse & pastorale",
       "area_m2": 1150,
       "height_m": 28.0,
       "position": [-140.7, 18.0, -63.7],
-      "cameraOffset": [-252, 54, 4],
+      "cameraOffset": [-268, 58, 12],
       "color": "#b85d28",
       "verified": true,
-      "description": "Messes de Noël et de Pâques pour les élèves volontaires. Trois membres de la paroisse / catéchèse et le curé de Pordic interviennent également auprès de l'école (1 h le lundi matin)."
+      "description": "Messes de Noël et Pâques + 1 h d'enseignement religieux le lundi matin (élèves volontaires)."
     },
     {
       "id": "Mediatheque_Ic",
       "meshPrefix": "Mediatheque_",
       "roofName": "Toit_Mediatheque_",
       "name": "Médiathèque de l'Ic",
-      "role": "10 min à pied · Ressources & albums jeunesse",
+      "role": "10 min à pied",
       "area_m2": 290,
       "height_m": 9.5,
       "position": [-226.7, 8.0, -177.6],
-      "cameraOffset": [-264, 92, -60],
+      "cameraOffset": [-274, 108, -48],
       "color": "#b85d28",
       "verified": true,
-      "description": "Médiathèque municipale accessible en 10 minutes à pied : nombreuses ressources et albums de jeunesse utilisés dans les classes."
+      "description": "Médiathèque municipale : ressources et albums de jeunesse utilisés dans les classes."
     },
     {
       "id": "Parc_Mediatheque",
       "meshPrefix": "Parc_Mediatheque_",
       "roofName": "Toit_Jeu_Parc_",
       "name": "Parc de la Médiathèque",
-      "role": "Parc arboré & aire de jeux",
+      "role": "Parc arboré & jeux",
       "area_m2": 5800,
       "height_m": 5.5,
       "position": [-268.0, 3.0, -196.0],
-      "cameraOffset": [-264, 92, -60],
+      "cameraOffset": [-274, 108, -48],
       "color": "#2d6a4f",
       "verified": true,
-      "description": "Parc boisé attenant à la médiathèque avec sentier piéton et aires de jeux pour enfants."
+      "description": "Parc boisé avec sentier et aires de jeux attenant à la médiathèque."
     },
     {
       "id": "Centre_Culturel_Ville_Robert",
       "meshPrefix": "Centre_Culturel_Ville_Robert",
       "roofName": "Toit_VilleRobert_",
-      "name": "Centre culturel La Ville Robert",
-      "role": "Pôle culturel municipal · 10 min à pied",
+      "name": "La Ville Robert",
+      "role": "Centre culturel municipal",
       "area_m2": 1650,
       "height_m": 8.5,
       "position": [-162.0, 7.5, -202.0],
-      "cameraOffset": [-264, 92, -60],
+      "cameraOffset": [-274, 108, -48],
       "color": "#9d3b68",
       "verified": true,
-      "description": "Ancien corps de ferme réhabilité abritant la salle de spectacle Massignon et les activités culturelles de la commune, face à la médiathèque."
+      "description": "Centre culturel municipal (salle de spectacle et activités culturelles)."
     },
     {
       "id": "Stade_Louis_Auffray",
       "meshPrefix": "Stade_",
       "roofName": "Toit_Complexe_",
-      "name": "Complexe sportif Louis Auffray",
-      "role": "5 min à pied · Salles, terrains & matériel municipal",
+      "name": "Complexe Louis Auffray",
+      "role": "5 min à pied",
       "area_m2": 32000,
       "height_m": 9.0,
       "position": [354.0, 5.0, 127.0],
-      "cameraOffset": [152, 108, 242],
+      "cameraOffset": [130, 126, 265],
       "color": "#2d6a4f",
       "verified": true,
-      "description": "Ensemble sportif municipal accessible en 5 minutes à pied (salles omnisports, terrains extérieurs, tennis, piste, city-stade) avec matériel mis à disposition par la ville de Pordic."
+      "description": "Salles et terrains de sport municipaux avec matériel fourni par la ville de Pordic."
     }
   ],
   "rooms": [
     {
       "id": "Classe_01",
       "name": "Salle 01",
-      "level": "Attribution à préciser",
+      "level": "À préciser",
       "building": "Batiment_Principal_S1",
       "category": "classe",
-      "color": "#2e7bb4",
+      "color": "#2563eb",
       "position": [8.8, 1.8, -5.8],
-      "description": "Salle provisoire n°01 — affectation exacte à renseigner.",
+      "description": "Numérotation provisoire.",
       "indicative": true
     },
     {
       "id": "Classe_02",
       "name": "Salle 02",
-      "level": "Attribution à préciser",
+      "level": "À préciser",
       "building": "Batiment_Principal_S1",
       "category": "classe",
-      "color": "#388e68",
+      "color": "#16a34a",
       "position": [-0.5, 1.8, 2.5],
-      "description": "Salle provisoire n°02 — affectation exacte à renseigner.",
+      "description": "Numérotation provisoire.",
       "indicative": true
     },
     {
       "id": "Classe_03",
       "name": "Salle 03",
-      "level": "Attribution à préciser",
+      "level": "À préciser",
       "building": "Batiment_Principal_S1",
       "category": "classe",
-      "color": "#c97a2b",
+      "color": "#d97706",
       "position": [8.5, 1.8, 5.5],
-      "description": "Salle provisoire n°03 — affectation exacte à renseigner.",
+      "description": "Numérotation provisoire.",
       "indicative": true
     },
     {
       "id": "Classe_04",
       "name": "Salle 04",
-      "level": "Attribution à préciser",
+      "level": "À préciser",
       "building": "Batiment_Principal_S1",
       "category": "classe",
-      "color": "#b84d56",
+      "color": "#dc2626",
       "position": [15.0, 1.8, 8.0],
-      "description": "Salle provisoire n°04 — affectation exacte à renseigner.",
+      "description": "Numérotation provisoire.",
       "indicative": true
     },
     {
       "id": "Classe_05",
       "name": "Salle 05",
-      "level": "Attribution à préciser",
+      "level": "À préciser",
       "building": "Batiment_Principal_S1",
       "category": "classe",
-      "color": "#745cb8",
+      "color": "#7c3aed",
       "position": [11.5, 1.8, 16.0],
-      "description": "Salle provisoire n°05 — affectation exacte à renseigner.",
+      "description": "Numérotation provisoire.",
       "indicative": true
     },
     {
       "id": "Classe_06",
       "name": "Salle 06",
-      "level": "Attribution à préciser",
+      "level": "À préciser",
       "building": "Batiment_Nord_N1",
       "category": "classe",
-      "color": "#268a8a",
+      "color": "#0891b2",
       "position": [-17.0, 1.8, -35.8],
-      "description": "Salle provisoire n°06 — affectation exacte à renseigner.",
+      "description": "Numérotation provisoire.",
       "indicative": true
     },
     {
       "id": "Classe_07",
       "name": "Salle 07",
-      "level": "Attribution à préciser",
+      "level": "À préciser",
       "building": "Batiment_Nord_N1",
       "category": "classe",
-      "color": "#b55d8b",
+      "color": "#db2777",
       "position": [-5.5, 1.8, -39.2],
-      "description": "Salle provisoire n°07 — affectation exacte à renseigner.",
+      "description": "Numérotation provisoire.",
       "indicative": true
     },
     {
       "id": "Classe_08",
       "name": "Salle 08",
-      "level": "Attribution à préciser",
+      "level": "À préciser",
       "building": "Batiment_Est_E2",
       "category": "classe",
-      "color": "#82942c",
+      "color": "#65a30d",
       "position": [45.2, 1.8, -24.5],
-      "description": "Salle provisoire n°08 — affectation exacte à renseigner.",
+      "description": "Numérotation provisoire.",
       "indicative": true
     },
     {
       "id": "Classe_09",
       "name": "Salle 09",
-      "level": "Attribution à préciser",
+      "level": "À préciser",
       "building": "Batiment_Est_E2",
       "category": "classe",
-      "color": "#456db5",
+      "color": "#4f46e5",
       "position": [48.5, 1.8, -13.5],
-      "description": "Salle provisoire n°09 — affectation exacte à renseigner.",
+      "description": "Numérotation provisoire.",
       "indicative": true
     },
     {
       "id": "Classe_10",
       "name": "Salle 10",
-      "level": "Attribution à préciser",
+      "level": "À préciser",
       "building": "Batiment_Est_E2",
       "category": "classe",
-      "color": "#c2613a",
+      "color": "#ea580c",
       "position": [52.0, 1.8, -3.0],
-      "description": "Salle provisoire n°10 — affectation exacte à renseigner.",
+      "description": "Numérotation provisoire.",
       "indicative": true
     }
   ],
   "scenes": [
     {
-      "id": "accueil",
-      "step": "00",
-      "shortLabel": "Accueil",
-      "kind": "hero",
-      "eyebrow": "Licence 1 Professorat des Écoles · SOPA 1 · Pordic (22590)",
-      "title": "École Sainte-Anne",
-      "lead": "Cartographie de l'établissement et de son territoire communal",
-      "items": [
-        { "label": "Effectifs", "value": "220 élèves · 9 classes" },
-        { "label": "Équipe", "value": "11 enseignants" },
-        { "label": "Attenant", "value": "Cantine & périscolaire" },
-        { "label": "À pied", "value": "Sport 5 min · Culture 10 min" }
-      ],
-      "camera": { "pos": [-74, 48, 86], "target": [12, -4, 16] },
-      "hideRoofs": false,
-      "showLabels": false
-    },
-    {
       "id": "etablissement",
       "step": "01",
-      "shortLabel": "L'école",
-      "kind": "chapter",
-      "eyebrow": "Structure & fonctionnement",
-      "title": "L'établissement scolaire",
-      "lead": "École indépendante (hors groupe scolaire) composée de 3 bâtiments et 1 préfabriqué amené à être retiré, en lien avec le collège Saint-Pierre de Plérin.",
-      "items": [
-        { "label": "Effectifs & horaires", "value": "220 élèves, 9 classes · 8h30–12h00 / 13h30–16h15 · APC le mardi soir" },
-        { "label": "Équipe & encadrement", "value": "11 enseignants (dont 4 mi-temps), directrice à mi-temps, 2 AESH (3 élèves) et ASEM (OGEC)" },
-        { "label": "Familles & associations", "value": "APEL & OGEC (projet pédagogique, sorties) · Suivi via mails, Educartable et face à face" },
-        { "label": "Spécificités & accès", "value": "Pas de filière bilingue ni Montessori (anciennement) · Transports TUB, BreizhGo et ProxiTUB" }
+      "tag": "Établissement",
+      "tagColor": "#1e5f8a",
+      "title": "École Sainte-Anne",
+      "rows": [
+        { "label": "Effectifs", "value": "220 élèves · 9 classes" },
+        { "label": "Équipe", "value": "11 enseignants (4 mi-temps) · Directrice (mi-temps en classe)" },
+        { "label": "Personnels", "value": "2 AESH (3 élèves) · ASEM & personnels OGEC" },
+        { "label": "Bâtiments", "value": "3 bâtiments + 1 préfabriqué (bientôt retiré)" },
+        { "label": "Horaires & APC", "value": "8h30–12h00 / 13h30–16h15 · APC mardi soir" },
+        { "label": "Associations", "value": "APEL & OGEC · Communication : mails, Educartable, face à face" },
+        { "label": "Lien & accès", "value": "Indépendant (lien collège St-Pierre Plérin) · TUB, BreizhGo, ProxiTUB" }
       ],
-      "camera": { "pos": [-68, 36, 58], "target": [8, -2, 6] },
+      "note": "Aucune filière bilingue ni Montessori actuellement (Montessori auparavant).",
+      "camera": { "pos": [-82, 46, 76], "target": [10, 2, 4] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": ["Batiment_Principal_S1", "Batiment_Nord_N1", "Batiment_Est_E2"]
@@ -321,17 +309,16 @@
     {
       "id": "cour",
       "step": "02",
-      "shortLabel": "La cour",
-      "kind": "chapter",
-      "eyebrow": "Espaces extérieurs",
+      "tag": "Extérieurs",
+      "tagColor": "#2d6a4f",
       "title": "La cour de récréation",
-      "lead": "Un cœur de vie structuré autour des jeux sportifs, d'un grand préau et d'espaces de respiration.",
-      "items": [
-        { "label": "Jeux sportifs", "value": "Terrains de foot, jeux collectifs, terrain et panier de basket" },
-        { "label": "Abri météo", "value": "Préau couvert attenant aux bâtiments pour les récréations pluvieuses" },
-        { "label": "Nature & détente", "value": "Espace simple en herbe et grand arbre ombrageant la cour" }
+      "rows": [
+        { "label": "Jeux collectifs", "value": "Terrains de foot et jeux collectifs" },
+        { "label": "Basket", "value": "Terrain et panier de basket" },
+        { "label": "Abri", "value": "Préau couvert" },
+        { "label": "Nature", "value": "Zone d'herbe simple et grand arbre" }
       ],
-      "camera": { "pos": [-44, 46, 54], "target": [4, -2, 4] },
+      "camera": { "pos": [-52, 54, 62], "target": [4, 0, -2] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": ["Preau_Ecole"]
@@ -339,34 +326,32 @@
     {
       "id": "classes",
       "step": "03",
-      "shortLabel": "Les classes",
-      "kind": "chapter",
-      "eyebrow": "Espaces pédagogiques · Toitures classes ouvertes",
-      "title": "Salles de classe & motricité",
-      "lead": "Seules les toitures des bâtiments accueillant des classes s'ouvrent : le nombre de 9 classes ne correspond pas exactement au nombre de salles.",
-      "items": [
-        { "label": "Salles de classe", "value": "9 salles de classe aux tailles très hétérogènes selon les bâtiments" },
-        { "label": "Motricité", "value": "1 salle de motricité dotée de différents jeux, en complément des terrains municipaux" },
-        { "label": "Affectation", "value": "Numérotation provisoire — attribution précise par niveau à compléter" }
+      "tag": "Toits classes ouverts",
+      "tagColor": "#1e5f8a",
+      "title": "Classes & motricité",
+      "rows": [
+        { "label": "Salles", "value": "9 salles de classe (tailles très hétérogènes)" },
+        { "label": "Particularité", "value": "Le nombre de classes (9) ≠ le nombre de salles" },
+        { "label": "Motricité", "value": "1 salle de motricité avec différents jeux" }
       ],
-      "camera": { "pos": [-16, 82, 62], "target": [14, -4, -4] },
+      "note": "Seuls les toits des bâtiments de classes s'ouvrent. Attribution exacte des salles à préciser.",
+      "camera": { "pos": [-22, 92, 68], "target": [14, 0, -10] },
       "hideRoofs": true,
       "showLabels": true
     },
     {
       "id": "cantine-periscolaire",
       "step": "04",
-      "shortLabel": "Cantine & Périsco",
-      "kind": "chapter",
-      "eyebrow": "Structures municipales attenantes",
-      "title": "Cantine et périscolaire",
-      "lead": "Implantées immédiatement à côté de l'école, elles assurent la continuité éducative sur le temps méridien, le matin et le soir.",
-      "items": [
-        { "label": "Cantine scolaire", "value": "Juste à côté : les animateurs viennent chercher les élèves pour les accompagner le midi" },
-        { "label": "Garderie périscolaire", "value": "Prise en charge directe par les animateurs périscolaires à la sortie des classes" },
-        { "label": "Goûter", "value": "Organisé directement à la cantine sur le temps périscolaire" }
+      "tag": "Attenant à l'école",
+      "tagColor": "#7e3f78",
+      "title": "Cantine & Périscolaire",
+      "rows": [
+        { "label": "Localisation", "value": "Structures municipales juste à côté de l'école" },
+        { "label": "Cantine", "value": "Les animateurs viennent chercher les élèves le midi" },
+        { "label": "Garderie", "value": "Prise en charge directe par les animateurs périscolaires" },
+        { "label": "Goûter", "value": "Pris directement à la cantine" }
       ],
-      "camera": { "pos": [96, 48, 102], "target": [34, -4, 38] },
+      "camera": { "pos": [108, 56, 114], "target": [32, 0, 30] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": ["Batiment_Cantine", "Batiment_Periscolaire"]
@@ -374,17 +359,16 @@
     {
       "id": "eglise",
       "step": "05",
-      "shortLabel": "Paroisse",
-      "kind": "chapter",
-      "eyebrow": "Lien paroissial & pastorale",
-      "title": "Église Saint-Pierre de Pordic",
-      "lead": "À deux pas de l'école, l'église Saint-Pierre accompagne la pastorale et les temps forts de l'année sur la base du volontariat.",
-      "items": [
-        { "label": "Intervenants", "value": "3 membres extérieurs (paroisse / catéchèse) et le curé de l'église de Pordic" },
-        { "label": "Organisation", "value": "1 h d'enseignement religieux le lundi matin · Messes de Noël et de Pâques" },
-        { "label": "Participation", "value": "Démarche facultative, ouverte uniquement aux élèves volontaires" }
+      "tag": "Paroisse · Pastorale",
+      "tagColor": "#b85d28",
+      "title": "Église Saint-Pierre",
+      "rows": [
+        { "label": "Intervenants", "value": "3 membres de la paroisse / catéchèse + le curé de Pordic" },
+        { "label": "Enseignement", "value": "1 h d'enseignement religieux le lundi matin" },
+        { "label": "Célébrations", "value": "Messes de Noël et de Pâques" },
+        { "label": "Participation", "value": "Uniquement pour les élèves volontaires" }
       ],
-      "camera": { "pos": [-252, 54, 4], "target": [-142, 12, -64] },
+      "camera": { "pos": [-268, 58, 12], "target": [-142, 16, -64] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": ["Eglise_Saint_Pierre"]
@@ -392,17 +376,15 @@
     {
       "id": "sport",
       "step": "06",
-      "shortLabel": "Sport (5 min)",
-      "kind": "chapter",
-      "eyebrow": "Structure municipale · 5 min à pied",
-      "title": "Complexe sportif Louis Auffray",
-      "lead": "Un ensemble sportif municipal complet mis à disposition des élèves à cinq minutes à pied de l'école.",
-      "items": [
-        { "label": "Accessibilité", "value": "Trajet court de 5 minutes à pied depuis l'établissement" },
-        { "label": "Équipements", "value": "Salles omnisports, terrains extérieurs, tennis, piste, city-stade et pumptrack" },
-        { "label": "Matériel", "value": "Matériel pédagogique et sportif mis à disposition par la ville de Pordic" }
+      "tag": "5 min à pied",
+      "tagColor": "#2d6a4f",
+      "title": "Complexe Louis Auffray",
+      "rows": [
+        { "label": "Accès", "value": "5 minutes à pied de l'école" },
+        { "label": "Équipements", "value": "Ensemble sportif municipal (salles et terrains)" },
+        { "label": "Matériel", "value": "Mis à disposition par la ville de Pordic" }
       ],
-      "camera": { "pos": [152, 108, 242], "target": [365, -8, 105] },
+      "camera": { "pos": [130, 126, 265], "target": [365, 0, 96] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": ["Stade_Louis_Auffray"]
@@ -410,32 +392,19 @@
     {
       "id": "culture",
       "step": "07",
-      "shortLabel": "Culture (10 min)",
-      "kind": "chapter",
-      "eyebrow": "Structure municipale · 10 min à pied",
-      "title": "Médiathèque de l'Ic, parc & La Ville Robert",
-      "lead": "Un pôle culturel communal vivant accessible à pied, qui enrichit directement la lecture et les projets de classe.",
-      "items": [
-        { "label": "Médiathèque municipale", "value": "À 10 min à pied : nombreuses ressources et albums de jeunesse utilisés en classe" },
-        { "label": "Parc de la Médiathèque", "value": "Grand espace arboré attenant, sentier piéton et aires de jeux pour enfants" },
-        { "label": "La Ville Robert", "value": "Centre culturel municipal juste en face (salle de spectacle et activités culturelles)" }
+      "tag": "10 min à pied",
+      "tagColor": "#9d3b68",
+      "title": "Médiathèque & La Ville Robert",
+      "rows": [
+        { "label": "Accès", "value": "10 minutes à pied de l'école" },
+        { "label": "Médiathèque", "value": "Nombreuses ressources et albums de jeunesse dans les classes" },
+        { "label": "Parc", "value": "Parc boisé attenant avec aires de jeux" },
+        { "label": "Centre culturel", "value": "La Ville Robert juste en face (spectacles & culture)" }
       ],
-      "camera": { "pos": [-264, 92, -60], "target": [-202, -6, -186] },
+      "camera": { "pos": [-274, 108, -48], "target": [-198, 2, -190] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": ["Mediatheque_Ic", "Parc_Mediatheque", "Centre_Culturel_Ville_Robert"]
-    },
-    {
-      "id": "synthese",
-      "step": "08",
-      "shortLabel": "Réseau local",
-      "kind": "synthesis",
-      "eyebrow": "Bilan cartographique · Écosystème à portée de pas",
-      "title": "L'école au cœur de Pordic",
-      "lead": "Toutes les structures qui gravitent autour de l'école Sainte-Anne s'articulent à pied dans un rayon de 10 minutes.",
-      "camera": { "pos": [-74, 48, 86], "target": [12, -4, 16] },
-      "hideRoofs": false,
-      "showLabels": false
     }
   ]
 }

@@ -25,7 +25,7 @@ export interface RoomInfo {
   indicative?: boolean;
 }
 
-export interface SceneItem {
+export interface FactRow {
   label: string;
   value: string;
 }
@@ -33,12 +33,11 @@ export interface SceneItem {
 export interface SceneStep {
   id: string;
   step: string;
-  shortLabel: string;
-  kind: 'hero' | 'chapter' | 'synthesis';
-  eyebrow: string;
+  tag: string;
+  tagColor: string;
   title: string;
-  lead: string;
-  items?: SceneItem[];
+  rows: FactRow[];
+  note?: string;
   camera: {
     pos: [number, number, number];
     target: [number, number, number];
@@ -57,6 +56,10 @@ export interface SchoolData {
     area_m2: number;
     cadastre: string[];
     note: string;
+  };
+  heroCamera: {
+    pos: [number, number, number];
+    target: [number, number, number];
   };
   buildings: BuildingInfo[];
   rooms: RoomInfo[];

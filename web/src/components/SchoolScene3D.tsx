@@ -7,6 +7,7 @@ import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from '../types';
 
 interface Props {
   data: SchoolData;
+  isHero: boolean;
   activeSceneIndex: number;
   freeExplore: boolean;
   hideRoofs: boolean;
@@ -31,8 +32,7 @@ interface ProjectedLabel {
   kind: 'building' | 'room';
 }
 
-// ONLY roofs covering buildings that contain classrooms are ever hidden.
-// Preaux, cantine, periscolaire, church, stadium, mediatheque & Ville Robert keep their roofs.
+// ONLY roofs covering buildings with classrooms are ever hidden.
 const CLASSROOM_ROOF_PREFIXES = [
   'Toit_Batiment_Principal_S1',
   'Toit_Pavillon_Central_S4',
@@ -55,15 +55,16 @@ function isClassroomRoofObject(obj: THREE.Object3D): boolean {
 }
 
 const PRESET_VIEWS: Record<CameraPreset, { pos: [number, number, number]; target: [number, number, number] }> = {
-  general: { pos: [-72, 46, 78], target: [12, 0, 8] },
-  cantine: { pos: [92, 46, 98], target: [32, 0, 32] },
+  general: { pos: [-74, 46, 82], target: [10, 0, 8] },
+  cantine: { pos: [96, 48, 102], target: [32, 0, 30] },
   church: { pos: [-252, 54, 4], target: [-142, 16, -64] },
-  culture: { pos: [-260, 88, -64], target: [-202, 2, -190] },
-  stadium: { pos: [152, 108, 242], target: [365, 0, 102] },
+  culture: { pos: [-260, 92, -60], target: [-202, 2, -190] },
+  stadium: { pos: [148, 112, 245], target: [365, 0, 100] },
 };
 
 export const SchoolScene3D: React.FC<Props> = ({
   data,
+  isHero,
   activeSceneIndex,
   freeExplore,
   hideRoofs,
@@ -83,20 +84,20 @@ export const SchoolScene3D: React.FC<Props> = ({
   const classroomRoofsRef = useRef<THREE.Object3D[]>([]);
   const roomMeshesRef = useRef<Map<string, THREE.Mesh>>(new Map());
   const isTweeningRef = useRef(false);
-  const baseHeroPosRef = useRef<[number, number, number]>(data.scenes[0]?.camera.pos || [-74, 48, 86]);
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
 
-  // Latest props synced for rAF loop
   const showLabelsRef = useRef(showLabels);
   const hideRoofsRef = useRef(hideRoofs);
   const freeExploreRef = useRef(freeExplore);
+  const isHeroRef = useRef(isHero);
   const activeSceneIndexRef = useRef(activeSceneIndex);
   showLabelsRef.current = showLabels;
   hideRoofsRef.current = hideRoofs;
   freeExploreRef.current = freeExplore;
+  isHeroRef.current = isHero;
   activeSceneIndexRef.current = activeSceneIndex;
 
-  const animateCamera = (pos: [number, number, number], target: [number, number, number], duration = 1.45) => {
+  const animateCamera = (pos: [number, number, number], target: [number, number, number], duration = 1.25) => {
     const cam = cameraRef.current;
     const ctrl = controlsRef.current;
     if (!cam || !ctrl) return;
@@ -128,14 +129,11 @@ export const SchoolScene3D: React.FC<Props> = ({
     if (!container) return;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#d7e6f4');
-    scene.fog = new THREE.Fog('#d7e6f4', 680, 1850);
-
-    const firstCam = data.scenes[0]?.camera || PRESET_VIEWS.general;
-    baseHeroPosRef.current = firstCam.pos;
+    scene.background = new THREE.Color('#dce9f5');
+    scene.fog = new THREE.Fog('#dce9f5', 700, 1900);
 
     const camera = new THREE.PerspectiveCamera(44, container.clientWidth / container.clientHeight, 0.5, 2400);
-    camera.position.set(...firstCam.pos);
+    camera.position.set(...data.heroCamera.pos);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -153,16 +151,16 @@ export const SchoolScene3D: React.FC<Props> = ({
     controls.maxPolarAngle = Math.PI / 2 - 0.04;
     controls.minDistance = 12;
     controls.maxDistance = 650;
-    controls.target.set(...firstCam.target);
+    controls.target.set(...data.heroCamera.target);
     controls.enabled = freeExploreRef.current;
     controls.update();
     controlsRef.current = controls;
 
-    // Bright, soft Breton daylight
-    const hemi = new THREE.HemisphereLight(0xeef6ff, 0x7c8774, 0.92);
+    // Daylight
+    const hemi = new THREE.HemisphereLight(0xf0f7ff, 0x7c8774, 0.94);
     scene.add(hemi);
 
-    const sun = new THREE.DirectionalLight(0xfff8ec, 1.85);
+    const sun = new THREE.DirectionalLight(0xfff9ee, 1.85);
     sun.position.set(160, 260, 140);
     sun.castShadow = true;
     sun.shadow.mapSize.width = 2048;
@@ -256,13 +254,17 @@ export const SchoolScene3D: React.FC<Props> = ({
     renderer.domElement.addEventListener('pointerdown', onPointerDown);
     renderer.domElement.addEventListener('pointerup', onPointerUp);
 
-    const onResize = () => {
-      if (!container) return;
-      camera.aspect = container.clientWidth / container.clientHeight;
+    // ResizeObserver cleanly tracks fullscreen <-> split-screen viewport transitions at 60fps!
+    const syncSize = () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w <= 0 || h <= 0) return;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(w, h);
     };
-    window.addEventListener('resize', onResize);
+    const ro = new ResizeObserver(syncSize);
+    ro.observe(container);
 
     let rafId = 0;
     let frameCount = 0;
@@ -272,14 +274,13 @@ export const SchoolScene3D: React.FC<Props> = ({
     const tick = () => {
       rafId = requestAnimationFrame(tick);
 
-      // Gentle alive camera drift ONLY on Hero & Synthesis when not tweening
-      const scKind = data.scenes[activeSceneIndexRef.current]?.kind;
-      if (!freeExploreRef.current && !isTweeningRef.current && (scKind === 'hero' || scKind === 'synthesis')) {
-        const elapsed = (performance.now() - startTime) * 0.00035;
-        const [bx, by, bz] = baseHeroPosRef.current;
-        camera.position.x = bx + Math.sin(elapsed) * 6.5;
-        camera.position.z = bz + Math.cos(elapsed * 0.8) * 4.5;
-        camera.position.y = by + Math.sin(elapsed * 0.6) * 1.4;
+      // Gentle alive camera drift ONLY on the Hero cover
+      if (!freeExploreRef.current && !isTweeningRef.current && isHeroRef.current) {
+        const t = (performance.now() - startTime) * 0.00032;
+        const [bx, by, bz] = data.heroCamera.pos;
+        camera.position.x = bx + Math.sin(t) * 6.0;
+        camera.position.z = bz + Math.cos(t * 0.85) * 4.0;
+        camera.position.y = by + Math.sin(t * 0.6) * 1.2;
       }
 
       controls.update();
@@ -287,7 +288,7 @@ export const SchoolScene3D: React.FC<Props> = ({
 
       frameCount++;
       if (frameCount % 3 === 0) {
-        if (!showLabelsRef.current) {
+        if (!showLabelsRef.current || (isHeroRef.current && !freeExploreRef.current)) {
           setLabels((prev) => (prev.length ? [] : prev));
         } else {
           const w = container.clientWidth;
@@ -314,16 +315,8 @@ export const SchoolScene3D: React.FC<Props> = ({
             tmpVec.set(it.pos[0], it.pos[1], it.pos[2]).project(camera);
             const x = (tmpVec.x * 0.5 + 0.5) * w;
             const y = (-tmpVec.y * 0.5 + 0.5) * h;
-            const visible = tmpVec.z < 1 && tmpVec.x >= -0.96 && tmpVec.x <= 0.96 && tmpVec.y >= -0.82 && tmpVec.y <= 0.94;
-            next.push({
-              id: it.id,
-              label: it.label,
-              color: it.color,
-              x,
-              y,
-              visible,
-              kind: it.kind,
-            });
+            const visible = tmpVec.z < 1 && tmpVec.x >= -0.94 && tmpVec.x <= 0.94 && tmpVec.y >= -0.9 && tmpVec.y <= 0.94;
+            next.push({ id: it.id, label: it.label, color: it.color, x, y, visible, kind: it.kind });
           }
           setLabels(next);
         }
@@ -333,7 +326,7 @@ export const SchoolScene3D: React.FC<Props> = ({
 
     return () => {
       cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', onResize);
+      ro.disconnect();
       renderer.domElement.removeEventListener('pointerdown', onPointerDown);
       renderer.domElement.removeEventListener('pointerup', onPointerUp);
       controls.dispose();
@@ -350,14 +343,20 @@ export const SchoolScene3D: React.FC<Props> = ({
     }
   }, [freeExplore]);
 
+  // Camera sync for Hero vs guided scenes
   useEffect(() => {
     if (freeExplore) return;
+    if (isHero) {
+      animateCamera(data.heroCamera.pos, data.heroCamera.target, 1.25);
+      return;
+    }
     const sc = data.scenes[activeSceneIndex];
     if (sc) {
-      animateCamera(sc.camera.pos, sc.camera.target, 1.45);
+      animateCamera(sc.camera.pos, sc.camera.target, 1.3);
     }
-  }, [activeSceneIndex, freeExplore, data.scenes]);
+  }, [isHero, activeSceneIndex, freeExplore, data]);
 
+  // ONLY classroom building roofs toggle
   useEffect(() => {
     for (const r of classroomRoofsRef.current) {
       r.visible = !hideRoofs;
@@ -378,26 +377,28 @@ export const SchoolScene3D: React.FC<Props> = ({
     });
     if (selectedRoom) {
       const [x, y, z] = selectedRoom.position;
-      animateCamera([x - 16, y + 20, z + 18], [x, y, z], 1.1);
+      animateCamera([x - 16, y + 20, z + 18], [x, y, z], 1.0);
     }
   }, [selectedRoom]);
 
   useEffect(() => {
     if (selectedBuilding) {
-      animateCamera(selectedBuilding.cameraOffset, selectedBuilding.position, 1.15);
+      animateCamera(selectedBuilding.cameraOffset, selectedBuilding.position, 1.1);
     }
   }, [selectedBuilding]);
 
   useEffect(() => {
     if (!cameraPresetTrigger) return;
     const p = PRESET_VIEWS[cameraPresetTrigger.preset];
-    if (p) animateCamera(p.pos, p.target, 1.15);
+    if (p) animateCamera(p.pos, p.target, 1.1);
   }, [cameraPresetTrigger]);
 
+  const isSplit = !freeExplore && !isHero;
+
   return (
-    <>
+    <div className={`viewport-frame ${isSplit ? 'split-right' : 'full-screen'}`}>
       <div className={`canvas-container ${freeExplore ? 'interactive' : 'scroll-locked'}`} ref={mountRef} />
-      {showLabels && (
+      {showLabels && !(isHero && !freeExplore) && (
         <div className="labels-layer">
           {labels
             .filter((l) => l.visible)
@@ -429,6 +430,6 @@ export const SchoolScene3D: React.FC<Props> = ({
             })}
         </div>
       )}
-    </>
+    </div>
   );
 };
