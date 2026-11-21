@@ -185,9 +185,9 @@
         -177.6
       ],
       "cameraOffset": [
-        -141,
+        -151,
         65,
-        -106
+        -101
       ],
       "color": "#334155",
       "verified": true,
@@ -207,9 +207,9 @@
         -196.0
       ],
       "cameraOffset": [
-        -141,
+        -151,
         65,
-        -106
+        -101
       ],
       "color": "#334155",
       "verified": true,
@@ -229,9 +229,9 @@
         -202.0
       ],
       "cameraOffset": [
-        -141,
+        -151,
         65,
-        -106
+        -101
       ],
       "color": "#334155",
       "verified": true,
@@ -648,7 +648,18 @@
           "value": "Centre culturel de La Ville Robert en face : spectacles organisés auxquels les élèves assistent"
         }
       ],
-      "camera": { "pos": [-141, 65, -106], "target": [-189, 2, -196] },
+      "camera": {
+        "pos": [
+          -151,
+          65,
+          -101
+        ],
+        "target": [
+          -199,
+          2,
+          -191
+        ]
+      },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
