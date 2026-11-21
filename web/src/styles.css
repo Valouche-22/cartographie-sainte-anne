@@ -15,7 +15,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-snap-type: y proximity;
+  scroll-snap-type: y mandatory;
 }
 
 body {
@@ -91,6 +91,7 @@ body {
   position: relative;
   height: 100vh;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
@@ -185,6 +186,7 @@ body {
 .chapter-panel {
   min-height: 100vh;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
   display: flex;
   align-items: center;
   padding: 72px 26px 76px;

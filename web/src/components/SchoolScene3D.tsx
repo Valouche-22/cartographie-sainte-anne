@@ -58,9 +58,9 @@ function isClassroomRoofObject(obj: THREE.Object3D): boolean {
 
 const PRESET_VIEWS: Record<CameraPreset, { pos: [number, number, number]; target: [number, number, number] }> = {
   general: { pos: [-74, 46, 82], target: [10, 0, 8] },
-  cantine: { pos: [96, 48, 102], target: [32, 0, 30] },
+  cantine: { pos: [90, 44, 92], target: [32, 0, 32] },
   church: { pos: [-252, 54, 4], target: [-142, 16, -64] },
-  culture: { pos: [-260, 92, -60], target: [-202, 2, -190] },
+  culture: { pos: [-76, 76, -118], target: [-204, 2, -192] },
   stadium: { pos: [168, 118, 286], target: [372, 0, 108] },
 };
 
@@ -92,7 +92,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   const baseTargetRef = useRef({ x: data.heroCamera.target[0], y: data.heroCamera.target[1], z: data.heroCamera.target[2] });
   // Smooth optical frustum offset (centers the 3D scene in the right viewport WITHOUT resizing the WebGL canvas!)
   const viewOffsetRef = useRef({ x: 0, y: 0 });
-  const swayStateRef = useRef({ amp: 0.085, vert: 1.2 });
+  const swayStateRef = useRef({ amp: 0.145, vert: 1.5, zoom: 0.03 });
 
   const showLabelsRef = useRef(showLabels);
   const hideRoofsRef = useRef(hideRoofs);
@@ -295,17 +295,18 @@ export const SchoolScene3D: React.FC<Props> = ({
       const h = container.clientHeight;
 
       if (!freeExploreRef.current) {
-        swayPhase += dt * 0.26;
+        swayPhase += dt * 0.28;
         const angle = Math.sin(swayPhase) * swayStateRef.current.amp;
+        const zoomScale = 1 - Math.sin(swayPhase * 0.5) * swayStateRef.current.zoom;
         const cosA = Math.cos(angle);
         const sinA = Math.sin(angle);
 
         const tx = baseTargetRef.current.x;
         const ty = baseTargetRef.current.y;
         const tz = baseTargetRef.current.z;
-        const dx = basePosRef.current.x - tx;
-        const dy = basePosRef.current.y - ty;
-        const dz = basePosRef.current.z - tz;
+        const dx = (basePosRef.current.x - tx) * zoomScale;
+        const dy = (basePosRef.current.y - ty) * zoomScale;
+        const dz = (basePosRef.current.z - tz) * zoomScale;
 
         const rx = dx * cosA - dz * sinA;
         const rz = dx * sinA + dz * cosA;
@@ -427,10 +428,16 @@ export const SchoolScene3D: React.FC<Props> = ({
       ease: 'power2.inOut',
     });
 
+    const sc = !isHero ? data.scenes[activeSceneIndex] : undefined;
+    const targetAmp = isHero ? 0.145 : (sc?.swayAmp ?? 0.105);
+    const targetVert = isHero ? 1.5 : sc?.id === 'sport' ? 2.2 : 0.85;
+    const targetZoom = sc?.id === 'sport' ? 0.065 : isHero ? 0.03 : 0.025;
+
     gsap.killTweensOf(swayStateRef.current);
     gsap.to(swayStateRef.current, {
-      amp: isHero ? 0.088 : 0.042,
-      vert: isHero ? 1.25 : 0.55,
+      amp: targetAmp,
+      vert: targetVert,
+      zoom: targetZoom,
       duration: 1.0,
       ease: 'power2.inOut',
     });
@@ -439,7 +446,6 @@ export const SchoolScene3D: React.FC<Props> = ({
       animateGuidedCamera(data.heroCamera.pos, data.heroCamera.target, 1.15);
       return;
     }
-    const sc = data.scenes[activeSceneIndex];
     if (sc) {
       animateGuidedCamera(sc.camera.pos, sc.camera.target, 1.25);
     }

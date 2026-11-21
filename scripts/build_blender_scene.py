@@ -539,13 +539,19 @@ create_poly_mesh("Cour_Complete_Enrobe", BLACK_OUTLINE_POLY, -0.01, 0.05, MAT_CO
 EAST_COUR_POLY = [(25.0, -8.0), (49.0, -3.0), (42.0, 34.0), (19.0, 16.0)]
 create_poly_mesh("Cour_Est_Esplanade", EAST_COUR_POLY, 0.05, 0.062, MAT_COUR_EST, "COURS")
 
-# Clean Cantine parking lot
-PARKING_POLY = [(13.5, -67.8), (41.2, -57.5), (41.2, -64.2), (61.5, -64.0), (57.5, -70.5), (16.5, -70.5)]
-create_poly_mesh("Parking_Cantine", PARKING_POLY, -0.01, 0.042, MAT_PARKING, "TERRAIN")
+# Clean Cantine parking lot (aligned strictly along the Cantine SE facade, stopping cleanly before the tree)
 rad_p = math.radians(21.2)
+c_p, s_p = math.cos(rad_p), math.sin(rad_p)
+PARKING_POLY = [
+    (12.8, -66.5),
+    (40.2, -55.9),
+    (40.2 + 5.6 * s_p, -55.9 - 5.6 * c_p),
+    (12.8 + 5.6 * s_p, -66.5 - 5.6 * c_p),
+]
+create_poly_mesh("Parking_Cantine", PARKING_POLY, -0.01, 0.042, MAT_PARKING, "TERRAIN")
 for i in range(10):
-    px = 16.5 + i * 2.5 * math.cos(rad_p)
-    py = -67.2 + i * 2.5 * math.sin(rad_p)
+    px = 16.5 + i * 2.5 * c_p
+    py = -67.2 + i * 2.5 * s_p
     create_box(f"Parking_Ligne_{i+1}", (px, py, 0.050), (0.12, 3.8, 0.015), MAT_LINE_WHITE, "TERRAIN", rot_z_deg=21.2)
 
 # Real grass spaces

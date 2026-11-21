@@ -42,6 +42,7 @@ export interface SceneStep {
   hideRoofs: boolean;
   showLabels: boolean;
   focusLabels?: string[];
+  swayAmp?: number;
 }
 
 export interface SchoolData {
