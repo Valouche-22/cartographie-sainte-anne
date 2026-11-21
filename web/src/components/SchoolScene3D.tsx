@@ -61,7 +61,7 @@ const PRESET_VIEWS: Record<CameraPreset, { pos: [number, number, number]; target
   cantine: { pos: [90, 44, 92], target: [32, 0, 32] },
   church: { pos: [-252, 54, 4], target: [-142, 16, -64] },
   culture: { pos: [-141, 65, -106], target: [-189, 2, -196] },
-  stadium: { pos: [148, 118, 260], target: [372, 0, 108] },
+  stadium: { pos: [126, 100, 192], target: [372, 0, 113] },
 };
 
 export const SchoolScene3D: React.FC<Props> = ({
