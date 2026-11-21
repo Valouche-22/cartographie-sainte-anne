@@ -987,7 +987,7 @@ body {
   .mobile-reel-rail {
     position: fixed;
     right: 8px;
-    top: 23dvh;
+    top: 28dvh;
     transform: translateY(-50%);
     z-index: 42;
     display: flex;
@@ -1064,26 +1064,35 @@ body {
     margin-bottom: 18px;
   }
 
-  /* Slides 1..7: Top 45% open 3D window + Bottom 55% snapped card */
+  /* Slides 1..7: Top open 3D window grows dynamically + Bottom card shrinks cleanly to its content */
+  .mobile-reel-chapter {
+    justify-content: flex-end;
+  }
+
   .mobile-reel-window {
-    height: 45dvh;
-    flex-shrink: 0;
+    flex: 1 1 auto;
+    min-height: 46dvh;
     pointer-events: none;
   }
 
   .mobile-reel-card {
     position: relative;
-    height: 55dvh;
+    height: auto;
+    max-height: 54dvh;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding: 20px 16px calc(30px + env(safe-area-inset-bottom));
+    justify-content: flex-start;
+    padding: 18px 16px calc(28px + env(safe-area-inset-bottom));
     border-radius: 24px 24px 0 0;
     background: radial-gradient(circle at 0% 0%, var(--accent-soft) 0%, #ffffff 58%);
     border-top: 1px solid rgba(255, 255, 255, 0.9);
     box-shadow: 0 -10px 34px rgba(15, 23, 42, 0.16);
     overflow: hidden;
+  }
+
+  .mobile-reel-chapter:last-child .mobile-reel-card {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
 
   .mobile-reel-grabber {

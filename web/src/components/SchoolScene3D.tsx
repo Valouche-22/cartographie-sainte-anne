@@ -239,21 +239,31 @@ const MOBILE_FOV = 52;
 
 const MOBILE_SCENE_MULTS: Record<string, number> = {
   hero: 1.0,
-  ecole: 1.0,
-  cour: 1.08,
-  classes: 1.0,
-  'cantine-periscolaire': 1.04,
-  eglise: 0.8,
-  sport: 1.0,
-  culture: 1.48,
-  S1: 1.0,
-  N1: 0.92,
-  E2: 1.0,
+  ecole: 0.95,
+  cour: 1.0,
+  classes: 0.96,
+  'cantine-periscolaire': 0.98,
+  eglise: 0.76,
+  sport: 0.94,
+  culture: 1.42,
+  S1: 0.96,
+  N1: 0.88,
+  E2: 0.96,
   general: 1.0,
-  cantine: 1.04,
-  church: 0.8,
-  stadium: 1.0,
+  cantine: 1.0,
+  church: 0.78,
+  stadium: 0.96,
 };
+
+function getMobileCardHeight(sceneIdx: number, viewportH: number): number {
+  const card = document.querySelector<HTMLElement>(
+    `.mobile-reel-slide[data-reel-index="${sceneIdx + 1}"] .mobile-reel-card`
+  );
+  if (card && card.offsetHeight > 80) {
+    return card.offsetHeight;
+  }
+  return viewportH * 0.42;
+}
 
 function adaptPoseForMobile(
   pos: [number, number, number],
@@ -267,7 +277,7 @@ function adaptPoseForMobile(
     return { pos, target };
   }
   const hTan = Math.tan(THREE.MathUtils.degToRad(MOBILE_FOV / 2)) * (w / h);
-  const baseScale = Math.min(2.65, Math.max(1.15, 0.54 / Math.max(hTan, 0.12)));
+  const baseScale = Math.min(2.55, Math.max(1.12, 0.52 / Math.max(hTan, 0.12)));
   const mult = MOBILE_SCENE_MULTS[sceneKey] ?? 1.0;
   const s = baseScale * mult;
 
@@ -588,7 +598,12 @@ export const SchoolScene3D: React.FC<Props> = ({
       const isSplitNow = !freeExploreRef.current && !isHeroRef.current;
       if (isSplitNow) {
         viewOffsetRef.current.x = w > MOBILE_BREAKPOINT ? -COL_WIDTH_PX / 2 : 0;
-        viewOffsetRef.current.y = isMob ? h * 0.275 : 0;
+        if (isMob) {
+          const cardH = getMobileCardHeight(activeSceneIndexRef.current, h);
+          viewOffsetRef.current.y = Math.max(0, (cardH - 44) * 0.5);
+        } else {
+          viewOffsetRef.current.y = 0;
+        }
       } else {
         viewOffsetRef.current.x = 0;
         viewOffsetRef.current.y = 0;
@@ -680,7 +695,14 @@ export const SchoolScene3D: React.FC<Props> = ({
           const activeScene = data.scenes[activeSceneIndexRef.current];
           const focusIds = !freeExploreRef.current ? activeScene?.focusLabels : undefined;
           const leftBound = !freeExploreRef.current && !isHeroRef.current && w > 860 ? COL_WIDTH_PX + 12 : 12;
-          const bottomBound = !freeExploreRef.current && !isHeroRef.current && w <= 860 ? h * 0.45 - 12 : h - 12;
+          const mobileCardH =
+            !freeExploreRef.current && !isHeroRef.current && w <= MOBILE_BREAKPOINT
+              ? getMobileCardHeight(activeSceneIndexRef.current, h)
+              : 0;
+          const bottomBound =
+            !freeExploreRef.current && !isHeroRef.current && w <= MOBILE_BREAKPOINT
+              ? h - mobileCardH - 12
+              : h - 12;
 
           const isMobileNow = w <= MOBILE_BREAKPOINT;
           const focusMode = !freeExploreRef.current && activeScene?.id === 'classes' ? classBuildingFocusRef.current : 'all';
@@ -789,8 +811,9 @@ export const SchoolScene3D: React.FC<Props> = ({
     const w = container?.clientWidth || window.innerWidth;
     const h = container?.clientHeight || window.innerHeight;
 
-    const targetOffX = !isHero && w > 860 ? -COL_WIDTH_PX / 2 : 0;
-    const targetOffY = !isHero && w <= 860 ? h * 0.275 : 0;
+    const targetOffX = !isHero && w > MOBILE_BREAKPOINT ? -COL_WIDTH_PX / 2 : 0;
+    const mobileCardH = !isHero && w <= MOBILE_BREAKPOINT ? getMobileCardHeight(activeSceneIndex, h) : 0;
+    const targetOffY = !isHero && w <= MOBILE_BREAKPOINT ? Math.max(0, (mobileCardH - 44) * 0.5) : 0;
 
     gsap.killTweensOf(viewOffsetRef.current);
     gsap.to(viewOffsetRef.current, {
