@@ -5,8 +5,16 @@
     "address": "7 rue des Écoles, 22590 Pordic"
   },
   "heroCamera": {
-    "pos": [-74, 46, 82],
-    "target": [10, 0, 8]
+    "pos": [
+      -74,
+      46,
+      82
+    ],
+    "target": [
+      10,
+      0,
+      8
+    ]
   },
   "buildings": [
     {
@@ -17,8 +25,16 @@
       "role": "École Sainte-Anne",
       "area_m2": 658,
       "height_m": 4.4,
-      "position": [5.5, 2.5, 10.8],
-      "cameraOffset": [-64, 36, 56],
+      "position": [
+        5.5,
+        2.5,
+        10.8
+      ],
+      "cameraOffset": [
+        -64,
+        36,
+        56
+      ],
       "color": "#334155",
       "verified": true,
       "description": "Bâtiment central de l'école."
@@ -31,8 +47,16 @@
       "role": "Cour de récréation",
       "area_m2": 225,
       "height_m": 3.4,
-      "position": [26.2, 2.0, -4.7],
-      "cameraOffset": [52, 20, -16],
+      "position": [
+        26.2,
+        2.0,
+        -4.7
+      ],
+      "cameraOffset": [
+        52,
+        20,
+        -16
+      ],
       "color": "#475569",
       "verified": true,
       "description": "Préau couvert donnant sur la cour."
@@ -45,8 +69,16 @@
       "role": "Restauration scolaire",
       "area_m2": 819,
       "height_m": 3.5,
-      "position": [22.7, 2.5, 50.5],
-      "cameraOffset": [96, 48, 102],
+      "position": [
+        22.7,
+        2.5,
+        50.5
+      ],
+      "cameraOffset": [
+        96,
+        48,
+        102
+      ],
       "color": "#334155",
       "verified": true,
       "description": "Située juste à côté de l'école. Les animateurs y accompagnent les élèves le midi et pour le goûter du périscolaire."
@@ -59,8 +91,16 @@
       "role": "Garderie",
       "area_m2": 353,
       "height_m": 4.6,
-      "position": [44.5, 2.8, 14.8],
-      "cameraOffset": [96, 48, 102],
+      "position": [
+        44.5,
+        2.8,
+        14.8
+      ],
+      "cameraOffset": [
+        96,
+        48,
+        102
+      ],
       "color": "#334155",
       "verified": true,
       "description": "Situé juste à côté de l'école. Les animateurs périscolaires viennent directement chercher les élèves."
@@ -73,22 +113,38 @@
       "role": "École Sainte-Anne",
       "area_m2": 266,
       "height_m": 5.1,
-      "position": [-11.3, 2.8, -38.1],
-      "cameraOffset": [-38, 26, -10],
+      "position": [
+        -11.3,
+        2.8,
+        -38.1
+      ],
+      "cameraOffset": [
+        -38,
+        26,
+        -10
+      ],
       "color": "#334155",
       "verified": true,
       "description": "Bâtiment situé au nord de la cour."
     },
     {
       "id": "Batiment_Est_E2",
-      "meshPrefix": "Murs_Batiment_Est_E2",
-      "roofName": "Toit_Batiment_Est_E2",
+      "meshPrefix": "Murs_Batiment_Est_Principal_E2",
+      "roofName": "Toit_Batiment_Est_Principal_E2",
       "name": "Bâtiment Est",
       "role": "École Sainte-Anne",
       "area_m2": 310,
       "height_m": 6.4,
-      "position": [47.5, 3.4, -14.0],
-      "cameraOffset": [78, 30, -45],
+      "position": [
+        47.5,
+        3.4,
+        -14.0
+      ],
+      "cameraOffset": [
+        78,
+        30,
+        -45
+      ],
       "color": "#334155",
       "verified": true,
       "description": "Bâtiment situé à l'est de la cour."
@@ -101,8 +157,16 @@
       "role": "Paroisse de Pordic",
       "area_m2": 1150,
       "height_m": 28.0,
-      "position": [-140.7, 18.0, -63.7],
-      "cameraOffset": [-268, 58, 12],
+      "position": [
+        -140.7,
+        18.0,
+        -63.7
+      ],
+      "cameraOffset": [
+        -268,
+        58,
+        12
+      ],
       "color": "#334155",
       "verified": true,
       "description": "Lieu des messes de Noël et de Pâques pour les élèves volontaires. Trois membres de la paroisse et le curé interviennent également auprès de l'école."
@@ -115,8 +179,16 @@
       "role": "Équipement municipal",
       "area_m2": 290,
       "height_m": 9.5,
-      "position": [-226.7, 8.0, -177.6],
-      "cameraOffset": [-274, 108, -48],
+      "position": [
+        -226.7,
+        8.0,
+        -177.6
+      ],
+      "cameraOffset": [
+        -274,
+        108,
+        -48
+      ],
       "color": "#334155",
       "verified": true,
       "description": "Médiathèque municipale utilisée par l'école pour ses ressources et albums de jeunesse."
@@ -129,11 +201,19 @@
       "role": "Espace public",
       "area_m2": 5800,
       "height_m": 5.5,
-      "position": [-268.0, 3.0, -196.0],
-      "cameraOffset": [-274, 108, -48],
+      "position": [
+        -268.0,
+        3.0,
+        -196.0
+      ],
+      "cameraOffset": [
+        -274,
+        108,
+        -48
+      ],
       "color": "#334155",
       "verified": true,
-      "description": "Parc boisé et aire de jeux attenants à la médiathèque."
+      "description": "Parc attenant à la médiathèque."
     },
     {
       "id": "Centre_Culturel_Ville_Robert",
@@ -143,11 +223,19 @@
       "role": "Équipement municipal",
       "area_m2": 1650,
       "height_m": 8.5,
-      "position": [-162.0, 7.5, -202.0],
-      "cameraOffset": [-274, 108, -48],
+      "position": [
+        -162.0,
+        7.5,
+        -202.0
+      ],
+      "cameraOffset": [
+        -274,
+        108,
+        -48
+      ],
       "color": "#334155",
       "verified": true,
-      "description": "Centre culturel communal situé en face de la médiathèque."
+      "description": "Centre culturel communal situé en face de la médiathèque, où des spectacles sont organisés pour les élèves."
     },
     {
       "id": "Stade_Louis_Auffray",
@@ -157,8 +245,16 @@
       "role": "Équipement municipal",
       "area_m2": 32000,
       "height_m": 9.0,
-      "position": [354.0, 5.0, 127.0],
-      "cameraOffset": [130, 126, 265],
+      "position": [
+        354.0,
+        5.0,
+        127.0
+      ],
+      "cameraOffset": [
+        130,
+        126,
+        265
+      ],
       "color": "#334155",
       "verified": true,
       "description": "Salles et terrains de sport mis à disposition des élèves avec du matériel fourni par la commune de Pordic."
@@ -172,7 +268,11 @@
       "building": "Batiment_Principal_S1",
       "category": "classe",
       "color": "#3b82f6",
-      "position": [8.8, 1.8, -5.8],
+      "position": [
+        8.8,
+        1.8,
+        -5.8
+      ],
       "description": "Affectation à préciser.",
       "indicative": true
     },
@@ -183,7 +283,11 @@
       "building": "Batiment_Principal_S1",
       "category": "classe",
       "color": "#10b981",
-      "position": [-0.5, 1.8, 2.5],
+      "position": [
+        -0.5,
+        1.8,
+        2.5
+      ],
       "description": "Affectation à préciser.",
       "indicative": true
     },
@@ -194,7 +298,11 @@
       "building": "Batiment_Principal_S1",
       "category": "classe",
       "color": "#f59e0b",
-      "position": [8.5, 1.8, 5.5],
+      "position": [
+        8.5,
+        1.8,
+        5.5
+      ],
       "description": "Affectation à préciser.",
       "indicative": true
     },
@@ -205,7 +313,11 @@
       "building": "Batiment_Principal_S1",
       "category": "classe",
       "color": "#ef4444",
-      "position": [15.0, 1.8, 8.0],
+      "position": [
+        15.0,
+        1.8,
+        8.0
+      ],
       "description": "Affectation à préciser.",
       "indicative": true
     },
@@ -216,7 +328,11 @@
       "building": "Batiment_Principal_S1",
       "category": "classe",
       "color": "#8b5cf6",
-      "position": [11.5, 1.8, 16.0],
+      "position": [
+        11.5,
+        1.8,
+        16.0
+      ],
       "description": "Affectation à préciser.",
       "indicative": true
     },
@@ -227,7 +343,11 @@
       "building": "Batiment_Nord_N1",
       "category": "classe",
       "color": "#06b6d4",
-      "position": [-17.0, 1.8, -35.8],
+      "position": [
+        -17.0,
+        1.8,
+        -35.8
+      ],
       "description": "Affectation à préciser.",
       "indicative": true
     },
@@ -238,7 +358,11 @@
       "building": "Batiment_Nord_N1",
       "category": "classe",
       "color": "#ec4899",
-      "position": [-5.5, 1.8, -39.2],
+      "position": [
+        -5.5,
+        1.8,
+        -39.2
+      ],
       "description": "Affectation à préciser.",
       "indicative": true
     },
@@ -249,7 +373,11 @@
       "building": "Batiment_Est_E2",
       "category": "classe",
       "color": "#84cc16",
-      "position": [45.2, 1.8, -24.5],
+      "position": [
+        45.2,
+        1.8,
+        -24.5
+      ],
       "description": "Affectation à préciser.",
       "indicative": true
     },
@@ -260,7 +388,11 @@
       "building": "Batiment_Est_E2",
       "category": "classe",
       "color": "#6366f1",
-      "position": [48.5, 1.8, -13.5],
+      "position": [
+        48.5,
+        1.8,
+        -13.5
+      ],
       "description": "Affectation à préciser.",
       "indicative": true
     },
@@ -271,7 +403,11 @@
       "building": "Batiment_Est_E2",
       "category": "classe",
       "color": "#f97316",
-      "position": [52.0, 1.8, -3.0],
+      "position": [
+        52.0,
+        1.8,
+        -3.0
+      ],
       "description": "Affectation à préciser.",
       "indicative": true
     }
@@ -285,38 +421,52 @@
         { "label": "Équipe", "value": "11 enseignants (dont 4 à mi-temps), une directrice également à mi-temps en classe, 2 AESH pour 3 élèves, et les ASEM / personnels OGEC" },
         { "label": "Bâtiments", "value": "3 bâtiments et 1 préfabriqué (destiné à être retiré)" },
         { "label": "Horaires", "value": "8h30 – 12h00 / 13h30 – 16h15 · Accompagnement personnalisé le mardi soir" },
-        { "label": "Organisation", "value": "Établissement indépendant en lien avec le collège Saint-Pierre de Plérin, soutenu par l'APEL et l'OGEC" },
+        { "label": "Organisation", "value": "Établissement indépendant (hors groupe scolaire), en lien avec le collège Saint-Pierre de Plérin" },
+        { "label": "Associations", "value": "APEL (parents d'élèves : soutien aux projets et sorties) et OGEC (gestion matérielle, financière et des personnels)" },
         { "label": "Familles", "value": "Échanges par mail, Educartable et en face à face" },
-        { "label": "Transports", "value": "Réseaux TUB, BreizhGo et ProxiTUB" }
+        { "label": "Transports", "value": "Réseau de transport TUB, BreizhGo et cars scolaires" }
       ],
       "camera": { "pos": [-82, 46, 76], "target": [10, 2, 4] },
       "hideRoofs": false,
       "showLabels": true,
-      "focusLabels": ["Batiment_Principal_S1", "Batiment_Nord_N1", "Batiment_Est_E2"]
+      "focusLabels": [
+        "Batiment_Principal_S1",
+        "Batiment_Nord_N1",
+        "Batiment_Est_E2"
+      ]
     },
     {
       "id": "cour",
       "title": "La cour",
       "rows": [
-        { "value": "Terrains de foot et jeux collectifs" },
-        { "value": "Terrain et panier de basket" },
-        { "value": "Préau couvert" },
-        { "value": "Espace en herbe et grand arbre" }
+        {
+          "value": "Terrains de foot et jeux collectifs"
+        },
+        {
+          "value": "Terrain et panier de basket"
+        },
+        {
+          "value": "Préau couvert"
+        },
+        {
+          "value": "Espace en herbe et grand arbre"
+        }
       ],
       "camera": { "pos": [-52, 54, 62], "target": [4, 0, -2] },
       "hideRoofs": false,
       "showLabels": true,
-      "focusLabels": ["Preau_Ecole"]
+      "focusLabels": [
+        "Preau_Ecole"
+      ]
     },
     {
       "id": "classes",
       "title": "Les salles de classe",
       "rows": [
-        { "value": "9 salles de classe aux surfaces très hétérogènes (le nombre de classes ne correspond pas au nombre de salles)" },
+        { "value": "9 salles de classe aux surfaces très hétérogènes" },
         { "value": "1 salle de motricité équipée de jeux" }
       ],
-      "note": "Répartition précise des classes à compléter.",
-      "camera": { "pos": [-22, 92, 68], "target": [14, 0, -10] },
+      "camera": { "pos": [-30, 118, 66], "target": [15, 0, -2] },
       "hideRoofs": true,
       "showLabels": true
     },
@@ -325,52 +475,75 @@
       "title": "Cantine et périscolaire",
       "rows": [
         { "value": "Situés juste à côté de l'école" },
-        { "value": "Les animateurs viennent chercher les élèves pour le repas du midi et pour la garderie périscolaire" },
-        { "value": "Le goûter du périscolaire est pris à la cantine" }
+        { "value": "Les animateurs viennent chercher les élèves dans les classes pour le repas du midi et pour le périscolaire" },
+        { "value": "Garderie le matin et le soir ; le goûter du périscolaire est pris à la cantine" }
       ],
       "camera": { "pos": [108, 56, 114], "target": [32, 0, 30] },
       "hideRoofs": false,
       "showLabels": true,
-      "focusLabels": ["Batiment_Cantine", "Batiment_Periscolaire"]
+      "focusLabels": [
+        "Batiment_Cantine",
+        "Batiment_Periscolaire"
+      ]
     },
     {
       "id": "eglise",
       "title": "Église Saint-Pierre",
       "rows": [
-        { "value": "Lien avec la paroisse de Pordic : 3 intervenants extérieurs (catéchèse) et le curé" },
-        { "value": "1 h d'enseignement religieux le lundi matin" },
-        { "value": "Messes de Noël et de Pâques" },
-        { "value": "Uniquement pour les élèves volontaires" }
+        {
+          "value": "Lien avec la paroisse de Pordic : 3 intervenants extérieurs (catéchèse) et le curé"
+        },
+        {
+          "value": "1 h d'enseignement religieux le lundi matin"
+        },
+        {
+          "value": "Messes de Noël et de Pâques"
+        },
+        {
+          "value": "Uniquement pour les élèves volontaires"
+        }
       ],
       "camera": { "pos": [-268, 58, 12], "target": [-142, 16, -64] },
       "hideRoofs": false,
       "showLabels": true,
-      "focusLabels": ["Eglise_Saint_Pierre"]
+      "focusLabels": [
+        "Eglise_Saint_Pierre"
+      ]
     },
     {
       "id": "sport",
       "title": "Complexe sportif Louis Auffray",
       "rows": [
-        { "value": "Salles et terrains municipaux accessibles à pied depuis l'école" },
-        { "value": "Matériel mis à disposition par la commune de Pordic, en complément de la salle de motricité" }
+        {
+          "value": "Salles et terrains municipaux accessibles à pied depuis l'école"
+        },
+        {
+          "value": "Matériel mis à disposition par la commune de Pordic, en complément de la salle de motricité"
+        }
       ],
-      "camera": { "pos": [130, 126, 265], "target": [365, 0, 96] },
+      "camera": { "pos": [168, 118, 286], "target": [372, 0, 108] },
       "hideRoofs": false,
       "showLabels": true,
-      "focusLabels": ["Stade_Louis_Auffray"]
+      "focusLabels": [
+        "Stade_Louis_Auffray"
+      ]
     },
     {
       "id": "culture",
       "title": "Médiathèque de l'Ic et La Ville Robert",
       "rows": [
-        { "value": "Médiathèque municipale accessible à pied : ressources et albums de jeunesse utilisés dans les classes" },
-        { "value": "Parc arboré et aire de jeux attenants" },
-        { "value": "Centre culturel de La Ville Robert situé en face" }
+        { "value": "Médiathèque municipale accessible à pied : prêt de livres, ressources et albums de jeunesse utilisés dans les classes" },
+        { "value": "Parc de la Médiathèque attenant" },
+        { "value": "Centre culturel de La Ville Robert en face : spectacles organisés auxquels les élèves assistent" }
       ],
       "camera": { "pos": [-274, 108, -48], "target": [-198, 2, -190] },
       "hideRoofs": false,
       "showLabels": true,
-      "focusLabels": ["Mediatheque_Ic", "Parc_Mediatheque", "Centre_Culturel_Ville_Robert"]
+      "focusLabels": [
+        "Mediatheque_Ic",
+        "Parc_Mediatheque",
+        "Centre_Culturel_Ville_Robert"
+      ]
     }
   ]
 }
