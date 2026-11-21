@@ -40,6 +40,28 @@
       "description": "Bâtiment central de l'école."
     },
     {
+      "id": "Batiment_Sud_Maternelle_S2",
+      "meshPrefix": "Murs_Batiment_Sud_Maternelle_S2",
+      "roofName": "Toit_Batiment_Sud_Maternelle_S2",
+      "name": "Préfabriqué (destiné à être retiré)",
+      "role": "École Sainte-Anne",
+      "area_m2": 194,
+      "height_m": 4.1,
+      "position": [
+        -2.91,
+        2.5,
+        31.62
+      ],
+      "cameraOffset": [
+        -64,
+        36,
+        56
+      ],
+      "color": "#ec4899",
+      "verified": true,
+      "description": "Préfabriqué destiné à être retiré : il n'est plus utilisé depuis la fermeture d'une classe."
+    },
+    {
       "id": "Preau_Ecole",
       "meshPrefix": "Murs_Preau_Ecole",
       "roofName": "Toit_Preau_Ecole",
@@ -537,7 +559,8 @@
       "focusLabels": [
         "Batiment_Principal_S1",
         "Batiment_Nord_N1",
-        "Batiment_Est_E2"
+        "Batiment_Est_E2",
+        "Batiment_Sud_Maternelle_S2"
       ],
       "swayAmp": 0.105
     },
