@@ -97,28 +97,26 @@ body {
 }
 
 .hero-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 4;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 40vh;
+  bottom: -28vh;
+  z-index: 1;
   background: linear-gradient(
     180deg,
-    rgba(17, 24, 39, 0) 34%,
-    rgba(17, 24, 39, 0.06) 56%,
-    rgba(17, 24, 39, 0.18) 78%,
-    rgba(17, 24, 39, 0.34) 100%
+    rgba(17, 24, 39, 0) 0%,
+    rgba(17, 24, 39, 0.14) 34%,
+    rgba(17, 24, 39, 0.44) 68%,
+    rgba(17, 24, 39, 0.22) 84%,
+    rgba(17, 24, 39, 0) 100%
   );
-  opacity: 0;
-  transition: opacity 0.85s ease;
   pointer-events: none;
-}
-
-.hero-backdrop.visible {
-  opacity: 1;
 }
 
 .hero-inner {
   position: relative;
-  z-index: 2;
+  z-index: 6;
   pointer-events: auto;
 }
 
@@ -160,6 +158,7 @@ body {
 /* Left reading column */
 .editorial-column {
   position: relative;
+  z-index: 5;
   width: var(--col-w);
   background: var(--white);
   border-right: 1px solid var(--line);
