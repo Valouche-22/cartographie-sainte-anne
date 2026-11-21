@@ -25,14 +25,13 @@ interface Props {
 interface ProjectedLabel {
   id: string;
   label: string;
-  color: string;
   x: number;
   y: number;
   visible: boolean;
   kind: 'building' | 'room';
+  color?: string;
 }
 
-// ONLY roofs covering buildings with classrooms are ever hidden.
 const CLASSROOM_ROOF_PREFIXES = [
   'Toit_Batiment_Principal_S1',
   'Toit_Pavillon_Central_S4',
@@ -83,7 +82,6 @@ export const SchoolScene3D: React.FC<Props> = ({
   const controlsRef = useRef<OrbitControls | null>(null);
   const classroomRoofsRef = useRef<THREE.Object3D[]>([]);
   const roomMeshesRef = useRef<Map<string, THREE.Mesh>>(new Map());
-  const isTweeningRef = useRef(false);
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
 
   const showLabelsRef = useRef(showLabels);
@@ -97,29 +95,19 @@ export const SchoolScene3D: React.FC<Props> = ({
   isHeroRef.current = isHero;
   activeSceneIndexRef.current = activeSceneIndex;
 
-  const animateCamera = (pos: [number, number, number], target: [number, number, number], duration = 1.25) => {
+  const animateCamera = (pos: [number, number, number], target: [number, number, number], duration = 1.2) => {
     const cam = cameraRef.current;
     const ctrl = controlsRef.current;
     if (!cam || !ctrl) return;
-    isTweeningRef.current = true;
     gsap.killTweensOf(cam.position);
     gsap.killTweensOf(ctrl.target);
-    gsap.to(cam.position, {
-      x: pos[0],
-      y: pos[1],
-      z: pos[2],
-      duration,
-      ease: 'power3.inOut',
-      onComplete: () => {
-        isTweeningRef.current = false;
-      },
-    });
+    gsap.to(cam.position, { x: pos[0], y: pos[1], z: pos[2], duration, ease: 'power2.inOut' });
     gsap.to(ctrl.target, {
       x: target[0],
       y: target[1],
       z: target[2],
       duration,
-      ease: 'power3.inOut',
+      ease: 'power2.inOut',
       onUpdate: () => ctrl.update(),
     });
   };
@@ -129,8 +117,8 @@ export const SchoolScene3D: React.FC<Props> = ({
     if (!container) return;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#dce9f5');
-    scene.fog = new THREE.Fog('#dce9f5', 700, 1900);
+    scene.background = new THREE.Color('#dce8f3');
+    scene.fog = new THREE.Fog('#dce8f3', 700, 1900);
 
     const camera = new THREE.PerspectiveCamera(44, container.clientWidth / container.clientHeight, 0.5, 2400);
     camera.position.set(...data.heroCamera.pos);
@@ -142,7 +130,7 @@ export const SchoolScene3D: React.FC<Props> = ({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = 1.08;
     container.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -156,11 +144,10 @@ export const SchoolScene3D: React.FC<Props> = ({
     controls.update();
     controlsRef.current = controls;
 
-    // Daylight
-    const hemi = new THREE.HemisphereLight(0xf0f7ff, 0x7c8774, 0.94);
+    const hemi = new THREE.HemisphereLight(0xf0f7ff, 0x7c8774, 0.92);
     scene.add(hemi);
 
-    const sun = new THREE.DirectionalLight(0xfff9ee, 1.85);
+    const sun = new THREE.DirectionalLight(0xfff9ee, 1.82);
     sun.position.set(160, 260, 140);
     sun.castShadow = true;
     sun.shadow.mapSize.width = 2048;
@@ -212,7 +199,7 @@ export const SchoolScene3D: React.FC<Props> = ({
       },
       (err) => {
         console.error('GLB load error:', err);
-        onLoadError("Impossible de charger le modèle 3D (./models/ecole_sainte_anne.glb).");
+        onLoadError('Impossible de charger le modèle 3D.');
       }
     );
 
@@ -254,7 +241,6 @@ export const SchoolScene3D: React.FC<Props> = ({
     renderer.domElement.addEventListener('pointerdown', onPointerDown);
     renderer.domElement.addEventListener('pointerup', onPointerUp);
 
-    // ResizeObserver cleanly tracks fullscreen <-> split-screen viewport transitions at 60fps!
     const syncSize = () => {
       const w = container.clientWidth;
       const h = container.clientHeight;
@@ -268,21 +254,10 @@ export const SchoolScene3D: React.FC<Props> = ({
 
     let rafId = 0;
     let frameCount = 0;
-    const startTime = performance.now();
     const tmpVec = new THREE.Vector3();
 
     const tick = () => {
       rafId = requestAnimationFrame(tick);
-
-      // Gentle alive camera drift ONLY on the Hero cover
-      if (!freeExploreRef.current && !isTweeningRef.current && isHeroRef.current) {
-        const t = (performance.now() - startTime) * 0.00032;
-        const [bx, by, bz] = data.heroCamera.pos;
-        camera.position.x = bx + Math.sin(t) * 6.0;
-        camera.position.z = bz + Math.cos(t * 0.85) * 4.0;
-        camera.position.y = by + Math.sin(t * 0.6) * 1.2;
-      }
-
       controls.update();
       renderer.render(scene, camera);
 
@@ -305,7 +280,7 @@ export const SchoolScene3D: React.FC<Props> = ({
                 .map((b) => ({
                   id: b.id,
                   label: b.name,
-                  color: b.color || '#1e5f8a',
+                  color: undefined,
                   pos: [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]] as [number, number, number],
                   kind: 'building' as const,
                 }));
@@ -343,20 +318,18 @@ export const SchoolScene3D: React.FC<Props> = ({
     }
   }, [freeExplore]);
 
-  // Camera sync for Hero vs guided scenes
   useEffect(() => {
     if (freeExplore) return;
     if (isHero) {
-      animateCamera(data.heroCamera.pos, data.heroCamera.target, 1.25);
+      animateCamera(data.heroCamera.pos, data.heroCamera.target, 1.15);
       return;
     }
     const sc = data.scenes[activeSceneIndex];
     if (sc) {
-      animateCamera(sc.camera.pos, sc.camera.target, 1.3);
+      animateCamera(sc.camera.pos, sc.camera.target, 1.2);
     }
   }, [isHero, activeSceneIndex, freeExplore, data]);
 
-  // ONLY classroom building roofs toggle
   useEffect(() => {
     for (const r of classroomRoofsRef.current) {
       r.visible = !hideRoofs;
@@ -383,14 +356,14 @@ export const SchoolScene3D: React.FC<Props> = ({
 
   useEffect(() => {
     if (selectedBuilding) {
-      animateCamera(selectedBuilding.cameraOffset, selectedBuilding.position, 1.1);
+      animateCamera(selectedBuilding.cameraOffset, selectedBuilding.position, 1.05);
     }
   }, [selectedBuilding]);
 
   useEffect(() => {
     if (!cameraPresetTrigger) return;
     const p = PRESET_VIEWS[cameraPresetTrigger.preset];
-    if (p) animateCamera(p.pos, p.target, 1.1);
+    if (p) animateCamera(p.pos, p.target, 1.05);
   }, [cameraPresetTrigger]);
 
   const isSplit = !freeExplore && !isHero;
@@ -421,7 +394,7 @@ export const SchoolScene3D: React.FC<Props> = ({
                   }}
                 >
                   <span className="label-pill">
-                    <span className="label-dot" style={{ background: l.color }} />
+                    {l.color && <span className="label-dot" style={{ background: l.color }} />}
                     {l.label}
                   </span>
                   <span className="label-stem" />

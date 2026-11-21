@@ -26,15 +26,12 @@ export interface RoomInfo {
 }
 
 export interface FactRow {
-  label: string;
+  label?: string;
   value: string;
 }
 
 export interface SceneStep {
   id: string;
-  step: string;
-  tag: string;
-  tagColor: string;
   title: string;
   rows: FactRow[];
   note?: string;
@@ -50,12 +47,8 @@ export interface SceneStep {
 export interface SchoolData {
   school: {
     name: string;
-    bretonName: string;
+    city: string;
     address: string;
-    coordinates: { lat: number; lon: number; elevation_m: number };
-    area_m2: number;
-    cadastre: string[];
-    note: string;
   };
   heroCamera: {
     pos: [number, number, number];

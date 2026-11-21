@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import {
-  ArrowDown,
-  ChevronDown,
-  ChevronUp,
-  Compass,
-  Eye,
-  EyeOff,
-  Home,
-  Navigation,
-  Tag,
-  Utensils,
-  X,
-} from 'lucide-react';
+import { ArrowDown, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { SchoolScene3D } from './components/SchoolScene3D';
 import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from './types';
 
@@ -38,10 +26,9 @@ export const App: React.FC = () => {
     fetch(`./data/school-data.json?v=${__BUILD_ID__}`)
       .then((r) => r.json())
       .then((json: SchoolData) => setData(json))
-      .catch(() => setLoadError('Impossible de charger school-data.json'));
+      .catch(() => setLoadError('Impossible de charger les données.'));
   }, []);
 
-  // Natural document scroll: Hero scrolls up naturally, then each clean chapter card enters in the left column!
   useEffect(() => {
     if (!data || freeExplore) return;
     const triggers: ScrollTrigger[] = [];
@@ -148,11 +135,9 @@ export const App: React.FC = () => {
 
   return (
     <>
-      {/* Clean Loading Screen */}
       {!modelLoaded && !loadError && (
         <div className="loader-screen">
-          <span className="loader-kicker">L1 PE · SOPA 1 · PORDIC</span>
-          <h1 className="loader-title">École Sainte-Anne</h1>
+          <p className="loader-title">École Sainte-Anne</p>
           <div className="loader-bar-wrap">
             <div className="loader-bar" style={{ width: `${Math.max(10, loadPct)}%` }} />
           </div>
@@ -161,12 +146,10 @@ export const App: React.FC = () => {
 
       {loadError && (
         <div className="loader-screen">
-          <h2 className="loader-title" style={{ fontSize: '1.5rem' }}>Erreur de chargement</h2>
           <p style={{ color: '#b91c1c' }}>{loadError}</p>
         </div>
       )}
 
-      {/* Fixed 3D Viewport (Fullscreen on Hero & Free Explore · Clean 68% Right Frame during Guided Chapters!) */}
       {data && (
         <SchoolScene3D
           data={data}
@@ -186,86 +169,64 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* SINGLE DISCREET CORNER BUTTON (Top-Right) */}
+      {/* Discreet corner button to toggle free exploration */}
       <button
         type="button"
         className={`corner-free-btn ${freeExplore ? 'active' : ''}`}
         onClick={() => (freeExplore ? returnToGuidedTour() : enterFreeExplore())}
       >
-        {freeExplore ? <Navigation size={14} /> : <Compass size={14} />}
-        <span>{freeExplore ? 'Retour visite guidée' : 'Vue libre'}</span>
+        {freeExplore ? 'Visite guidée' : 'Vue libre'}
       </button>
 
-      {/* ================================================================
-          GUIDED SCROLL EXPERIENCE (Hero Fullscreen -> Clean White Left Column)
-      ================================================================ */}
       {data && !freeExplore && (
         <main className="guided-flow">
-          {/* FULLSCREEN HERO COVER */}
+          {/* Simple fullscreen opening view */}
           <section className="hero-cover" id="hero-cover">
             <div className="hero-backdrop" />
             <div className="hero-inner">
-              <span className="hero-tag">L1 PE · SOPA 1 · PORDIC (22590)</span>
-              <h1 className="hero-h1">École Sainte-Anne</h1>
-              <p className="hero-sub">Cartographie de l'établissement et des structures associées</p>
+              <h1 className="hero-h1">{data.school.name}</h1>
+              <p className="hero-sub">{data.school.city}</p>
               <button
                 type="button"
                 className="hero-start-btn"
                 onClick={() => scrollToElement(`chapter-${data.scenes[0].id}`)}
               >
-                <span>Scrollez pour visiter</span>
-                <ArrowDown size={15} />
+                <span>Parcourir</span>
+                <ArrowDown size={14} />
               </button>
             </div>
           </section>
 
-          {/* LEFT EDITORIAL COLUMN (380px Pure White — Zero Overlap with 3D on the Right!) */}
+          {/* Clean white left column */}
           <div className="editorial-column">
-            {/* Sticky Progress Header inside Left Column */}
             <div className="col-sticky-top">
               <span className="col-brand" onClick={() => scrollToElement('hero-cover')}>
-                École Sainte-Anne · Pordic
+                {data.school.name}
               </span>
               <span className="col-step-badge">
-                {String(activeSceneIndex + 1).padStart(2, '0')} / {String(totalChapters).padStart(2, '0')}
+                {activeSceneIndex + 1} / {totalChapters}
               </span>
             </div>
 
-            {/* Clean Stacked Full-Height Chapters */}
             {data.scenes.map((sc, idx) => (
               <section className="chapter-panel" key={sc.id} id={`chapter-${sc.id}`}>
                 <div className={`chapter-body ${!isHero && idx === activeSceneIndex ? 'is-active' : ''}`}>
-                  <div className="chapter-meta">
-                    <span className="chapter-index">{sc.step}</span>
-                    <span className="chapter-pill" style={{ color: sc.tagColor, borderColor: `${sc.tagColor}33`, background: `${sc.tagColor}0f` }}>
-                      {sc.tag}
-                    </span>
-                  </div>
-
                   <h2 className="chapter-title">{sc.title}</h2>
 
-                  <dl className="fact-table">
-                    {sc.rows.map((row) => (
-                      <div className="fact-row" key={row.label}>
-                        <dt>{row.label}</dt>
-                        <dd>{row.value}</dd>
+                  <div className="fact-list">
+                    {sc.rows.map((row, rIdx) => (
+                      <div className="fact-row" key={rIdx}>
+                        {row.label && <span className="fact-label">{row.label}</span>}
+                        <p className="fact-value">{row.value}</p>
                       </div>
                     ))}
-                  </dl>
+                  </div>
 
                   {sc.note && <p className="chapter-note">{sc.note}</p>}
-
-                  {idx === totalChapters - 1 && (
-                    <button type="button" className="end-free-btn" onClick={enterFreeExplore}>
-                      <Compass size={15} />
-                      Explorer librement la maquette 3D
-                    </button>
-                  )}
                 </div>
               </section>
             ))}
 
-            {/* Sticky Bottom Step Controls inside Left Column */}
             <div className="col-sticky-bottom">
               <button
                 type="button"
@@ -278,17 +239,6 @@ export const App: React.FC = () => {
               >
                 <ChevronUp size={15} /> Précédent
               </button>
-              <div className="mini-dots">
-                {data.scenes.map((sc, idx) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    className={`mini-dot ${!isHero && idx === activeSceneIndex ? 'active' : ''}`}
-                    onClick={() => scrollToElement(`chapter-${sc.id}`)}
-                    aria-label={sc.title}
-                  />
-                ))}
-              </div>
               <button
                 type="button"
                 className="step-nav-btn"
@@ -305,7 +255,7 @@ export const App: React.FC = () => {
         </main>
       )}
 
-      {/* Free Explore Info Drawer */}
+      {/* Free Explore info box */}
       {freeExplore && (selectedBuilding || selectedRoom) && (
         <aside className="info-panel">
           <div className="info-panel-header">
@@ -323,52 +273,45 @@ export const App: React.FC = () => {
               }}
               aria-label="Fermer"
             >
-              <X size={15} />
+              <X size={14} />
             </button>
           </div>
-          {selectedBuilding?.area_m2 && (
-            <div className="info-meta-single">
-              <span>Surface</span>
-              <strong>{selectedBuilding.area_m2.toLocaleString('fr-FR')} m²</strong>
-            </div>
-          )}
           <p className="info-desc">
             {selectedRoom ? selectedRoom.description : selectedBuilding?.description}
           </p>
         </aside>
       )}
 
-      {/* Free Explore Compact Toolbar (ONLY shown in Vue libre) */}
+      {/* Free Explore toolbar */}
       {freeExplore && (
-        <nav className="toolbar" aria-label="Navigation vue libre">
+        <nav className="toolbar" aria-label="Navigation libre">
           <button className="tool-btn" onClick={() => triggerPreset('general')}>
-            <Home size={14} /> École
+            École
           </button>
           <button className="tool-btn" onClick={() => triggerPreset('cantine')}>
-            <Utensils size={14} /> Cantine / Périsco
+            Cantine / Périscolaire
           </button>
           <button className="tool-btn" onClick={() => triggerPreset('church')}>
-            ⛪ Église
+            Église
           </button>
           <button className="tool-btn" onClick={() => triggerPreset('culture')}>
-            🎭 Médiathèque / Ville Robert
+            Médiathèque / Ville Robert
           </button>
           <button className="tool-btn" onClick={() => triggerPreset('stadium')}>
-            ⚽ Complexe sportif
+            Complexe sportif
           </button>
-          <div className="tool-sep" />
+          <span className="tool-sep" />
           <button
             className={`tool-btn ${hideRoofs ? 'active' : ''}`}
             onClick={() => setHideRoofs((v) => !v)}
           >
-            {hideRoofs ? <Eye size={14} /> : <EyeOff size={14} />}
-            {hideRoofs ? 'Fermer toits classes' : 'Toits classes'}
+            {hideRoofs ? 'Afficher toits' : 'Masquer toits classes'}
           </button>
           <button
             className={`tool-btn ${showLabels ? 'active' : ''}`}
             onClick={() => setShowLabels((v) => !v)}
           >
-            <Tag size={14} /> Étiquettes
+            Étiquettes
           </button>
         </nav>
       )}
