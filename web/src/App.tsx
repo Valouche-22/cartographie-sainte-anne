@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowDown, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { SchoolScene3D } from './components/SchoolScene3D';
 import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from './types';
 
@@ -357,6 +357,17 @@ export const App: React.FC = () => {
                   )}
 
                   {sc.note && <p className="chapter-note">{sc.note}</p>}
+
+                  {idx === totalChapters - 1 && (
+                    <button
+                      type="button"
+                      className="back-home-btn"
+                      onClick={() => goToSection(0)}
+                    >
+                      <ArrowUp size={15} />
+                      <span>Retour à l'accueil</span>
+                    </button>
+                  )}
                 </div>
               </section>
             ))}

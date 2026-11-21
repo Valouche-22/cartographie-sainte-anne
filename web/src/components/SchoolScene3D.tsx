@@ -530,7 +530,7 @@ export const SchoolScene3D: React.FC<Props> = ({
                 .map((b) => ({
                   id: b.id,
                   label: b.name,
-                  color: undefined,
+                  color: b.color,
                   pos: [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]] as [number, number, number],
                   kind: 'building' as const,
                   offsetOutside: false,
@@ -711,7 +711,10 @@ export const SchoolScene3D: React.FC<Props> = ({
                     }
                   }}
                 >
-                  <span className="label-pill">
+                  <span
+                    className="label-pill"
+                    style={l.color && !isSelected ? { borderColor: `${l.color}66` } : undefined}
+                  >
                     {l.color && <span className="label-dot" style={{ background: l.color }} />}
                     {l.label}
                   </span>
