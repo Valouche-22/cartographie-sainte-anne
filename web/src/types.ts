@@ -4,7 +4,7 @@ export interface BuildingInfo {
   roofName: string;
   name: string;
   role: string;
-  area_m2: number;
+  area_m2?: number;
   height_m: number;
   position: [number, number, number];
   cameraOffset: [number, number, number];
@@ -31,12 +31,15 @@ export interface SceneStep {
   title: string;
   subtitle: string;
   body: string;
+  facts?: string[];
+  points?: string[];
   camera: {
     pos: [number, number, number];
     target: [number, number, number];
   };
   hideRoofs: boolean;
   showLabels: boolean;
+  focusLabels?: string[];
 }
 
 export interface SchoolData {
@@ -54,7 +57,7 @@ export interface SchoolData {
   scenes: SceneStep[];
 }
 
-export type CameraPreset = 'general' | 'aerial' | 'front' | 'top' | 'church' | 'culture' | 'stadium';
+export type CameraPreset = 'general' | 'aerial' | 'church' | 'culture' | 'stadium';
 
 declare global {
   const __BUILD_ID__: string;
