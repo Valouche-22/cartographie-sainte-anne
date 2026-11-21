@@ -35,7 +35,7 @@
         36,
         56
       ],
-      "color": "#334155",
+      "color": "#ea580c",
       "verified": true,
       "description": "Bâtiment central de l'école."
     },
@@ -57,7 +57,7 @@
         20,
         -16
       ],
-      "color": "#475569",
+      "color": "#f97316",
       "verified": true,
       "description": "Préau couvert donnant sur la cour."
     },
@@ -79,7 +79,7 @@
         48,
         102
       ],
-      "color": "#334155",
+      "color": "#16a34a",
       "verified": true,
       "description": "Située juste à côté de l'école. Les animateurs y accompagnent les élèves le midi et pour le goûter du périscolaire."
     },
@@ -101,7 +101,7 @@
         48,
         102
       ],
-      "color": "#334155",
+      "color": "#0d9488",
       "verified": true,
       "description": "Situé juste à côté de l'école. Les animateurs périscolaires viennent directement chercher les élèves."
     },
@@ -123,7 +123,7 @@
         26,
         -10
       ],
-      "color": "#334155",
+      "color": "#0ea5e9",
       "verified": true,
       "description": "Bâtiment situé au nord de la cour."
     },
@@ -145,7 +145,7 @@
         30,
         -45
       ],
-      "color": "#334155",
+      "color": "#9333ea",
       "verified": true,
       "description": "Bâtiment situé à l'est de la cour."
     },
@@ -167,7 +167,7 @@
         58,
         12
       ],
-      "color": "#334155",
+      "color": "#0284c7",
       "verified": true,
       "description": "Lieu des messes de Noël et de Pâques pour les élèves volontaires. Trois membres de la paroisse et le curé interviennent également auprès de l'école."
     },
@@ -189,7 +189,7 @@
         65,
         -104
       ],
-      "color": "#334155",
+      "color": "#9333ea",
       "verified": true,
       "description": "Médiathèque municipale utilisée par l'école pour ses ressources et albums de jeunesse."
     },
@@ -211,7 +211,7 @@
         65,
         -104
       ],
-      "color": "#334155",
+      "color": "#16a34a",
       "verified": true,
       "description": "Parc attenant à la médiathèque."
     },
@@ -233,7 +233,7 @@
         65,
         -104
       ],
-      "color": "#334155",
+      "color": "#e11d48",
       "verified": true,
       "description": "Centre culturel communal situé en face de la médiathèque, où des spectacles sont organisés pour les élèves."
     },
@@ -255,7 +255,7 @@
         100,
         192
       ],
-      "color": "#334155",
+      "color": "#4f46e5",
       "verified": true,
       "description": "Salles et terrains de sport mis à disposition des élèves avec du matériel fourni par la commune de Pordic."
     }
