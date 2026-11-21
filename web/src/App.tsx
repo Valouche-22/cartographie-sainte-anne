@@ -9,8 +9,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 export const App: React.FC = () => {
   const [data, setData] = useState<SchoolData | null>(null);
-  const [loadPct, setLoadPct] = useState(0);
-  const [timePct, setTimePct] = useState(0);
   const [minLoadDone, setMinLoadDone] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -33,23 +31,10 @@ export const App: React.FC = () => {
   const wheelLockUntilRef = useRef(0);
   const labelDelayTimerRef = useRef<number | null>(null);
 
-  // Enforce a smooth 3-second minimum loading bar duration
+  // Enforce a 2-second minimum loading screen duration (bar animates smoothly via GPU CSS keyframes)
   useEffect(() => {
-    const duration = 3000;
-    const start = performance.now();
-    let rafId = 0;
-    const step = (now: number) => {
-      const elapsed = now - start;
-      const pct = Math.min(100, Math.round((elapsed / duration) * 100));
-      setTimePct(pct);
-      if (elapsed < duration) {
-        rafId = requestAnimationFrame(step);
-      } else {
-        setMinLoadDone(true);
-      }
-    };
-    rafId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(rafId);
+    const timer = window.setTimeout(() => setMinLoadDone(true), 2000);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -264,7 +249,6 @@ export const App: React.FC = () => {
   const progressPct = totalChapters > 0 ? ((activeSceneIndex + 1) / totalChapters) * 100 : 0;
 
   const showLoader = (!modelLoaded || !minLoadDone) && !loadError;
-  const displayedLoadPct = modelLoaded ? timePct : Math.min(timePct, Math.max(10, loadPct));
 
   return (
     <>
@@ -272,7 +256,7 @@ export const App: React.FC = () => {
         <div className="loader-screen">
           <p className="loader-title">École Sainte-Anne</p>
           <div className="loader-bar-wrap">
-            <div className="loader-bar" style={{ width: `${Math.max(4, displayedLoadPct)}%` }} />
+            <div className="loader-bar" />
           </div>
         </div>
       )}
@@ -297,7 +281,7 @@ export const App: React.FC = () => {
           classBuildingFocus={classBuildingFocus}
           onSelectBuilding={handleSelectBuilding}
           onSelectRoom={handleSelectRoom}
-          onLoadProgress={setLoadPct}
+          onLoadProgress={() => {}}
           onLoaded={() => setModelLoaded(true)}
           onLoadError={setLoadError}
         />
