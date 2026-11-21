@@ -128,10 +128,12 @@ MAT_GARDEN_SOIL = get_mat("Terre_Jardiniere", (0.23, 0.18, 0.13), roughness=0.95
 MAT_FLOWER_ROSE = get_mat("Massif_Fleurs_Rose", (0.68, 0.25, 0.30), roughness=0.82)
 MAT_FLOWER_GOLD = get_mat("Massif_Fleurs_Or", (0.78, 0.63, 0.22), roughness=0.82)
 MAT_FOLIAGE_OLIVE = get_mat("Feuillage_Olive", (0.31, 0.38, 0.16), roughness=0.86)
-MAT_BRETON_STONE = get_mat("Pierre_Bretonne_Doree", (0.77, 0.70, 0.56), roughness=0.88)
-MAT_BRETON_STONE_LIGHT = get_mat("Pierre_Enduit_Manoir", (0.88, 0.85, 0.77), roughness=0.82)
+MAT_BRETON_STONE = get_mat("Pierre_Bretonne_Doree", (0.80, 0.72, 0.55), roughness=0.88)
+MAT_BRETON_STONE_LIGHT = get_mat("Pierre_Enduit_Manoir", (0.89, 0.86, 0.78), roughness=0.82)
 MAT_DOOR_RED = get_mat("Porte_Annexe_Bordeaux", (0.48, 0.16, 0.16), roughness=0.65)
-MAT_STAIR_STEEL = get_mat("Escalier_Acier_Galva", (0.64, 0.67, 0.70), roughness=0.38, metallic=0.60)
+MAT_STAIR_STEEL = get_mat("Escalier_Acier_Galva", (0.68, 0.71, 0.74), roughness=0.38, metallic=0.58)
+MAT_FOLIAGE_PURPLE = get_mat("Feuillage_Pourpre", (0.40, 0.13, 0.17), roughness=0.86)
+MAT_VR_ZINC = get_mat("Zinc_VilleRobert", (0.56, 0.60, 0.64), roughness=0.40, metallic=0.42)
 MAT_PITCH_DARK = get_mat("Gazon_Stade_Fonce", (0.24, 0.42, 0.20), roughness=0.90)
 MAT_PITCH_LIGHT = get_mat("Gazon_Stade_Clair", (0.34, 0.46, 0.25), roughness=0.90)
 MAT_PRAIRIE_SEC = get_mat("Prairie_Herbe_Seche", (0.48, 0.49, 0.34), roughness=0.94)
@@ -1812,7 +1814,7 @@ for src_path in (WIDE_IGN_JSON, STAD_IGN_JSON):
             continue
         # Exclude anything inside our detailed active polygons (School/Perisco, Complex red outline, Church parvis, Cultural Pole)
         if fid in {
-            "batiment.34015346", "batiment.34016797",
+            "batiment.34015346", "batiment.34016797", "batiment.34016802",
             "batiment.34015342", "batiment.34015343", "batiment.34015344",
             "batiment.34015348", "batiment.34015349",
         }:
@@ -1842,20 +1844,21 @@ print(f"Merged {ctx_added} neutral surrounding town buildings into 2 optimized m
 
 # ==========================================================
 # 10B. POLE CULTUREL DE PORDIC : MEDIATHEQUE DE L'IC & CENTRE CULTUREL DE LA VILLE ROBERT
+# (360-DEGREE VIDEO-EXACT ARCHITECTURE: GABLED MANOR + SWITCHBACK STAIR + DOUBLE PORCHE + ZINC FRONTAL THEATER!)
 # ==========================================================
 COL_CULT = "POLE_CULTUREL_PORDIC"
 
-def add_breton_window(name, wx, wy, z_mid, w, h, rot_deg, mat_frame=MAT_FRAME, mat_glass=MAT_WINDOW, with_shutter_trim=True):
-    # Carved granite surround / sill
-    if with_shutter_trim:
-        create_box(f"{name}_Encad", (wx, wy, z_mid), (w + 0.30, 0.22, h + 0.30), MAT_CHURCH_TRIM, COL_CULT, rot_deg)
+def add_breton_window(name, wx, wy, z_mid, w, h, rot_deg, mat_frame=MAT_FRAME, mat_glass=MAT_WINDOW, with_surround=True, with_lintel=False):
+    if with_surround:
+        create_box(f"{name}_Encad", (wx, wy, z_mid), (w + 0.34, 0.22, h + 0.34), MAT_CHURCH_TRIM, COL_CULT, rot_deg)
+    if with_lintel:
+        create_box(f"{name}_Linteau", (wx, wy, z_mid + h * 0.5 + 0.14), (w + 0.42, 0.28, 0.22), MAT_GRANITE_DARK, COL_CULT, rot_deg)
     create_box(f"{name}_Cadre", (wx, wy, z_mid), (w + 0.08, 0.26, h + 0.08), mat_frame, COL_CULT, rot_deg)
     create_box(f"{name}_Vitrage", (wx, wy, z_mid), (w - 0.06, 0.29, h - 0.06), mat_glass, COL_CULT, rot_deg)
-    # Central mullion bar
     create_box(f"{name}_CroisillonV", (wx, wy, z_mid), (0.06, 0.31, h - 0.04), mat_frame, COL_CULT, rot_deg)
     create_box(f"{name}_CroisillonH", (wx, wy, z_mid + 0.05), (w - 0.04, 0.31, 0.06), mat_frame, COL_CULT, rot_deg)
 
-def create_breton_gable_roof(name, cx_r, cy_r, length_u, width_v, deg, z_eave, ridge_h, mat_roof, mat_gable, overhang=0.32):
+def create_breton_gable_roof(name, cx_r, cy_r, length_u, width_v, deg, z_eave, ridge_h, mat_roof, mat_gable, overhang=0.32, with_coping=False):
     hl = length_u / 2.0 + overhang
     hw = width_v / 2.0 + overhang
     mesh = bpy.data.meshes.new(name)
@@ -1875,28 +1878,29 @@ def create_breton_gable_roof(name, cx_r, cy_r, length_u, width_v, deg, z_eave, r
     obj.rotation_euler = (0.0, 0.0, math.radians(deg))
     obj.data.materials.append(mat_roof)
     obj.data.materials.append(mat_gable)
-    # Zinc ridge cap
     create_box(f"{name}_Faitage", (cx_r, cy_r, z_eave + ridge_h + 0.10), (length_u + overhang * 1.9, 0.34, 0.24), MAT_CHURCH_RIDGE, COL_CULT, deg)
+    if with_coping:
+        slope_len = math.hypot(hw, ridge_h)
+        slope_ang = math.degrees(math.atan2(ridge_h, hw))
+        for u_s in (-1, 1):
+            for v_s in (-1, 1):
+                gx_l, gy_l = local_to_world(cx_r, cy_r, u_s * (hl - 0.12), v_s * (hw * 0.5), deg)
+                create_box(f"{name}_Rampant_{u_s}_{v_s}", (gx_l, gy_l, z_eave + ridge_h * 0.5 + 0.12), (0.36, slope_len + 0.15, 0.26), MAT_CHURCH_TRIM, COL_CULT, rot_z_deg=deg, rot_x_deg=-v_s * slope_ang)
     return obj
 
 def create_breton_hip_roof(name, cx_r, cy_r, length_u, width_v, deg, z_eave, ridge_h, ridge_len, mat_roof):
-    hl = length_u / 2.0 + 0.38
-    hw = width_v / 2.0 + 0.38
+    hl = length_u / 2.0 + 0.36
+    hw = width_v / 2.0 + 0.36
     hr = max(0.3, ridge_len / 2.0)
     mesh = bpy.data.meshes.new(name)
     obj = bpy.data.objects.new(name, mesh)
     link_obj(obj, COL_CULT)
     bm = bmesh.new()
-    v_fl = bm.verts.new((-hl, -hw, z_eave))
-    v_fr = bm.verts.new((-hl,  hw, z_eave))
-    v_br = bm.verts.new(( hl,  hw, z_eave))
-    v_bl = bm.verts.new(( hl, -hw, z_eave))
-    v_r1 = bm.verts.new((-hr, 0.0, z_eave + ridge_h))
-    v_r2 = bm.verts.new(( hr, 0.0, z_eave + ridge_h))
-    bm.faces.new([v_fl, v_bl, v_r2, v_r1])
-    bm.faces.new([v_fr, v_r1, v_r2, v_br])
-    bm.faces.new([v_fl, v_r1, v_fr])
-    bm.faces.new([v_bl, v_br, v_r2])
+    v_fl = bm.verts.new((-hl, -hw, z_eave)); v_fr = bm.verts.new((-hl,  hw, z_eave))
+    v_br = bm.verts.new(( hl,  hw, z_eave)); v_bl = bm.verts.new(( hl, -hw, z_eave))
+    v_r1 = bm.verts.new((-hr, 0.0, z_eave + ridge_h)); v_r2 = bm.verts.new(( hr, 0.0, z_eave + ridge_h))
+    bm.faces.new([v_fl, v_bl, v_r2, v_r1]); bm.faces.new([v_fr, v_r1, v_r2, v_br])
+    bm.faces.new([v_fl, v_r1, v_fr]); bm.faces.new([v_bl, v_br, v_r2])
     bm.faces.new([v_fl, v_fr, v_br, v_bl])
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     bm.to_mesh(mesh); bm.free()
@@ -1906,17 +1910,37 @@ def create_breton_hip_roof(name, cx_r, cy_r, length_u, width_v, deg, z_eave, rid
     create_box(f"{name}_Faitage", (cx_r, cy_r, z_eave + ridge_h + 0.10), (ridge_len + 0.3, 0.34, 0.24), MAT_CHURCH_RIDGE, COL_CULT, deg)
     return obj
 
-def add_stone_dormer(name, dx, dy, z_base, deg, width=1.45, height=1.75, depth=1.8, mat_wall=MAT_BRETON_STONE_LIGHT):
-    # Cute Breton pediment lucarne breaking the roof slope
-    create_box(f"{name}_Corps", (dx, dy, z_base + height * 0.45), (depth, width, height * 0.9), mat_wall, COL_CULT, deg)
-    create_box(f"{name}_Vitre", (dx, dy, z_base + height * 0.44), (depth + 0.08, width * 0.62, height * 0.62), MAT_WINDOW, COL_CULT, deg)
-    # Pitched triangular slate cap
-    create_breton_gable_roof(f"Toit_{name}", dx, dy, depth + 0.2, width + 0.25, deg, z_eave=z_base + height * 0.88, ridge_h=0.72, mat_roof=MAT_CHURCH_SLATE, mat_gable=mat_wall, overhang=0.12)
+def create_cult_leanto(name, p_hi1, p_hi2, p_lo1, p_lo2, z_hi, z_lo, mat_roof):
+    mesh = bpy.data.meshes.new(name)
+    obj = bpy.data.objects.new(name, mesh)
+    link_obj(obj, COL_CULT)
+    bm = bmesh.new()
+    t = 0.24
+    vt = [bm.verts.new((p_hi1[0], p_hi1[1], z_hi)), bm.verts.new((p_hi2[0], p_hi2[1], z_hi)),
+          bm.verts.new((p_lo2[0], p_lo2[1], z_lo)), bm.verts.new((p_lo1[0], p_lo1[1], z_lo))]
+    vb = [bm.verts.new((p_hi1[0], p_hi1[1], z_hi - t)), bm.verts.new((p_hi2[0], p_hi2[1], z_hi - t)),
+          bm.verts.new((p_lo2[0], p_lo2[1], z_lo - t)), bm.verts.new((p_lo1[0], p_lo1[1], z_lo - t))]
+    bm.faces.new(vt); bm.faces.new(list(reversed(vb)))
+    for i in range(4):
+        ni = (i + 1) % 4
+        bm.faces.new([vt[i], vb[i], vb[ni], vt[ni]])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(mesh); bm.free()
+    obj.data.materials.append(mat_roof)
+    return obj
 
-def add_cult_tree(name, x, y, scale=1.0, dark=False):
-    ma = MAT_FOLIAGE_DARK if dark else MAT_FOLIAGE_MID
-    mb = MAT_FOLIAGE_DARK if dark else MAT_FOLIAGE_DARK
-    mc = MAT_FOLIAGE_MID if dark else MAT_FOLIAGE_LIGHT
+def add_stone_dormer(name, dx, dy, z_base, deg, width=1.55, height=1.80, depth=1.9, mat_wall=MAT_BRETON_STONE_LIGHT, mat_roof=MAT_CHURCH_SLATE):
+    create_box(f"{name}_Corps", (dx, dy, z_base + height * 0.45), (depth, width, height * 0.9), mat_wall, COL_CULT, deg)
+    create_box(f"{name}_Vitre", (dx, dy, z_base + height * 0.44), (depth + 0.08, width * 0.62, height * 0.64), MAT_WINDOW, COL_CULT, deg)
+    create_breton_gable_roof(f"Toit_{name}", dx, dy, depth + 0.25, width + 0.25, deg, z_eave=z_base + height * 0.88, ridge_h=0.75, mat_roof=mat_roof, mat_gable=mat_wall, overhang=0.12)
+
+def add_cult_tree(name, x, y, scale=1.0, dark=False, purple=False):
+    if purple:
+        ma, mb, mc = MAT_FOLIAGE_PURPLE, MAT_FOLIAGE_PURPLE, MAT_DOOR_RED
+    else:
+        ma = MAT_FOLIAGE_DARK if dark else MAT_FOLIAGE_MID
+        mb = MAT_FOLIAGE_DARK
+        mc = MAT_FOLIAGE_MID if dark else MAT_FOLIAGE_LIGHT
     bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.25 * scale, depth=2.3 * scale, location=(x, y, 1.15 * scale))
     tr = bpy.context.active_object; tr.name = f"{name}_Tronc"; tr.data.materials.append(MAT_TRUNK)
     scene.collection.objects.unlink(tr); link_obj(tr, "VEGETATION")
@@ -1929,130 +1953,200 @@ def add_cult_tree(name, x, y, scale=1.0, dark=False):
         co.data.materials.append(mat); scene.collection.objects.unlink(co); link_obj(co, "VEGETATION")
 
 # ----------------------------------------------------------
-# 10B-1. MEDIATHEQUE DE L'IC (CERCLE ROUGE — MANOIR BRETON + ANNEXE + PARC BOISE)
+# 10B-1. MEDIATHEQUE DE L'IC (CONFORME A LA VIDEO 360°!)
+#   +u (+23.8 deg) = ENE front gable facing beige forecourt & Ville Robert (frames 00:13-00:15!)
+#   -u             = WSW back gable facing wooded park + burgundy ornamental tree (frames 00:04-00:08!)
+#   -v (-66.2 deg) = SSE roof slope + central projecting masonry dormer + 2-flight switchback steel staircase (frames 00:00-00:03!)
+#   +v (+113.8 deg)= NNW roof slope + massive central cream stone chimney + 2 dormers (frames 00:09-00:12!)
 # ----------------------------------------------------------
 med_cx, med_cy = -226.7, 177.6
-med_deg = 23.8  # Exact IGN alignment of batiment.34015346
+med_deg = 23.8
 
 def med_pt(u, v):
     return local_to_world(med_cx, med_cy, u, v, med_deg)
 
-# Sunlit beige forecourt / parvis connecting the Manor, Annexe, and street
+# Sunlit beige forecourt / parvis connecting Manor, Annexe & Rue Massignon
 med_parvis_poly = [
-    (-240.0, 165.0), (-212.0, 160.0), (-196.0, 175.0), (-202.0, 198.0),
-    (-214.0, 215.0), (-234.0, 212.0), (-239.0, 186.0)
+    (-240.0, 165.0), (-212.0, 160.0), (-195.0, 174.0), (-201.0, 200.0),
+    (-213.0, 218.0), (-234.0, 214.0), (-239.0, 186.0)
 ]
 create_poly_mesh("Parvis_Mediatheque_Ic", med_parvis_poly, 0.04, 0.13, MAT_PARVIS, COL_CULT)
+# Lush green garden lawn on WSW & SSE garden sides of the Mediatheque (visible frames 00:04-00:08!)
+med_lawn_poly = [med_pt(-17.0, -14.0), med_pt(-6.5, -14.0), med_pt(-6.5, 14.0), med_pt(-17.0, 14.0)]
+create_poly_mesh("Pelouse_Mediatheque_Parc", med_lawn_poly, 0.04, 0.14, MAT_GRASS, COL_CULT)
+# Low stone garden retaining wall with pillars along the South edge of the Mediatheque terrace (frames 00:00-00:03!)
+sw_w1, sw_w2 = med_pt(-7.5, -11.2), med_pt(6.5, -11.2)
+create_box("Mediatheque_Muret_Sud", ((sw_w1[0]+sw_w2[0])*0.5, (sw_w1[1]+sw_w2[1])*0.5, 0.58), (14.2, 0.36, 0.92), MAT_BRETON_STONE_LIGHT, COL_CULT, med_deg)
+for up_m in (-7.0, -2.5, 2.0, 6.4):
+    px_m, py_m = med_pt(up_m, -11.2)
+    create_box(f"Mediatheque_Muret_Pilier_{up_m}", (px_m, py_m, 0.68), (0.52, 0.52, 1.15), MAT_CHURCH_TRIM, COL_CULT, med_deg)
 
-# 1. Main Breton Manor House (13.8m x 13.1m, 2 full stories + steep 4-slope slate hipped roof!)
-med_pts = rot_rect(med_cx, med_cy, 13.6, 13.0, med_deg)
+# 1. Main Manor Body (13.8m x 13.0m, 2 full stories + true DOUBLE-PITCHED SLATE GABLE ROOF along med_deg!)
+med_pts = rot_rect(med_cx, med_cy, 13.8, 13.0, med_deg)
 create_poly_mesh("Murs_Mediatheque_Ic_Soubassement", med_pts, 0.12, 0.85, MAT_GRANITE_DARK, COL_CULT)
-create_poly_mesh("Murs_Mediatheque_Ic_Manoir", med_pts, 0.80, 8.4, MAT_BRETON_STONE_LIGHT, COL_CULT)
-# Horizontal stone floor stringcourse (bandeau d'etage) + roof eaves cornice
-create_box("Mediatheque_Ic_Bandeau", (med_cx, med_cy, 4.45), (13.92, 13.32, 0.28), MAT_CHURCH_TRIM, COL_CULT, med_deg)
-create_box("Mediatheque_Ic_Corniche", (med_cx, med_cy, 8.32), (14.15, 13.55, 0.36), MAT_CHURCH_TRIM, COL_CULT, med_deg)
-# 4 carved granite corner quoins (chaines d'angle)
-for su in (-6.78, 6.78):
-    for sv in (-6.48, 6.48):
+create_poly_mesh("Murs_Mediatheque_Ic_Manoir", med_pts, 0.80, 8.35, MAT_BRETON_STONE_LIGHT, COL_CULT)
+# Floor stringcourse band & crisp cornice band wrapping all 4 facades
+create_box("Mediatheque_Ic_Bandeau", (med_cx, med_cy, 4.42), (14.08, 13.28, 0.26), MAT_CHURCH_TRIM, COL_CULT, med_deg)
+create_box("Mediatheque_Ic_Corniche", (med_cx, med_cy, 8.28), (14.28, 13.48, 0.34), MAT_CHURCH_TRIM, COL_CULT, med_deg)
+# Carved corner quoins (chaines d'angle) on all 4 vertical corners
+for su in (-6.86, 6.86):
+    for sv in (-6.46, 6.46):
         qx, qy = med_pt(su, sv)
-        create_box(f"Mediatheque_Ic_Chaine_{su}_{sv}", (qx, qy, 4.6), (0.68, 0.68, 7.6), MAT_CHURCH_TRIM, COL_CULT, med_deg)
+        create_box(f"Mediatheque_Ic_Chaine_{su}_{sv}", (qx, qy, 4.55), (0.68, 0.68, 7.6), MAT_CHURCH_TRIM, COL_CULT, med_deg)
 
-# Steep 4-slope Breton slate hipped roof (z=8.45 -> 12.65m) + broad stone chimneys + dormers!
-create_breton_hip_roof("Toit_Mediatheque_Ic_Manoir", med_cx, med_cy, 13.6, 13.0, med_deg, z_eave=8.45, ridge_h=4.2, ridge_len=4.2, mat_roof=MAT_CHURCH_SLATE)
-# Prominent broad cream-stone chimneys (very visible on the back/North & side slopes of the photo!)
-for ci, (cu, cv, cw, cl, ch_t) in enumerate([
-    (0.0, 4.8, 2.8, 1.05, 13.4),
-    (-5.2, -1.2, 1.05, 1.85, 12.2),
-], 1):
-    chx, chy = med_pt(cu, cv)
-    create_box(f"Mediatheque_Ic_Cheminee_{ci}", (chx, chy, ch_t - 1.8), (cw, cl, 3.6), MAT_BRETON_STONE_LIGHT, COL_CULT, med_deg)
-    create_box(f"Mediatheque_Ic_ChemineeCap_{ci}", (chx, chy, ch_t + 0.08), (cw + 0.24, cl + 0.24, 0.24), MAT_CHURCH_TRIM, COL_CULT, med_deg)
+# TRUE DOUBLE-PITCHED BRETON SLATE GABLE ROOF (ridge along +u = +23.8 deg -> 2 crisp triangular gables on ENE & WSW!)
+create_breton_gable_roof(
+    "Toit_Mediatheque_Ic_Manoir", med_cx, med_cy, 13.8, 13.0, med_deg,
+    z_eave=8.35, ridge_h=4.45, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE_LIGHT,
+    overhang=0.28, with_coping=True
+)
 
-# Cute pediment stone dormers (lucarnes) on South-East front & South-West side roof slopes!
-dx_f, dy_f = med_pt(0.0, -5.6)
-add_stone_dormer("Mediatheque_Ic_Lucarne_Face", dx_f, dy_f, 8.6, med_deg - 90.0, width=1.65, height=1.85, depth=1.9)
-dx_s, dy_s = med_pt(-5.6, 0.0)
-add_stone_dormer("Mediatheque_Ic_Lucarne_Ouest", dx_s, dy_s, 8.6, med_deg + 180.0, width=1.55, height=1.75, depth=1.8)
-dx_e, dy_e = med_pt(5.6, 0.0)
-add_stone_dormer("Mediatheque_Ic_Lucarne_Est", dx_e, dy_e, 8.6, med_deg, width=1.65, height=1.85, depth=1.9)
+# MASSIVE CENTRAL DOUBLE-FLUE CREAM STONE CHIMNEY rising at the NNW roof ridge (super visible frames 00:09-00:13!)
+ch1x, ch1y = med_pt(0.0, 2.2)
+create_box("Mediatheque_Ic_Cheminee_Centrale", (ch1x, ch1y, 12.1), (3.4, 1.35, 4.2), MAT_BRETON_STONE_LIGHT, COL_CULT, med_deg)
+create_box("Mediatheque_Ic_Cheminee_Chapiteau", (ch1x, ch1y, 14.32), (3.7, 1.62, 0.28), MAT_CHURCH_TRIM, COL_CULT, med_deg)
+# Small chimney pots on top
+for u_pot in (-1.1, -0.35, 0.35, 1.1):
+    ptx, pty = med_pt(u_pot, 2.2)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.14, depth=0.45, location=(ptx, pty, 14.65))
+    po = bpy.context.active_object; po.name = f"Mediatheque_Cheminee_Pot_{u_pot}"; po.data.materials.append(MAT_GRANITE_DARK)
+    scene.collection.objects.unlink(po); link_obj(po, COL_CULT)
 
-# 3-bay symmetrical tall French windows on all 4 facades (ground floor + 1st floor) + glazed main entrance!
-for u_w in (-4.1, 0.0, 4.1):
-    # South-East face (facing camera/road)
-    wx, wy = med_pt(u_w, -6.54)
-    if u_w == 0.0:
-        # Glazed entrance door + stone steps
-        create_box("Mediatheque_Ic_Entree_Cadre", (wx, wy, 1.85), (1.85, 0.30, 3.0), MAT_CHURCH_TRIM, COL_CULT, med_deg)
-        create_box("Mediatheque_Ic_Entree_Porte", (wx, wy, 1.75), (1.35, 0.34, 2.7), MAT_WINDOW, COL_CULT, med_deg)
-        sx_e, sy_e = med_pt(0.0, -7.2)
-        create_box("Mediatheque_Ic_Entree_Marche", (sx_e, sy_e, 0.26), (2.4, 1.1, 0.28), MAT_CHURCH_TRIM, COL_CULT, med_deg)
+# TWO SYMMETRICAL STONE DORMERS on the NNW slope (+v, visible frames 00:10-00:12!)
+for u_dn in (-3.2, 3.2):
+    dnx, dny = med_pt(u_dn, 5.15)
+    add_stone_dormer(f"Mediatheque_Ic_Lucarne_Nord_{u_dn}", dnx, dny, 8.45, med_deg + 90.0, width=1.60, height=1.80, depth=1.75)
+
+# FRONT ENE GABLE FACADE (+u = +6.9, frames 00:13-00:15 — symmetrical 3-bay noble facade + central gable attic window!)
+for v_w in (-3.65, 0.0, 3.65):
+    wx_e, wy_e = med_pt(6.92, v_w)
+    if v_w == 0.0:
+        # Central entrance door with stone surround & step
+        create_box("Mediatheque_Ic_PorteFace_Cadre", (wx_e, wy_e, 1.90), (0.30, 1.85, 3.1), MAT_CHURCH_TRIM, COL_CULT, med_deg)
+        create_box("Mediatheque_Ic_PorteFace_Vitre", (wx_e, wy_e, 1.80), (0.35, 1.35, 2.8), MAT_WINDOW, COL_CULT, med_deg)
+        sxe, sye = med_pt(7.55, 0.0)
+        create_box("Mediatheque_Ic_PorteFace_Marche", (sxe, sye, 0.26), (1.1, 2.5, 0.28), MAT_CHURCH_TRIM, COL_CULT, med_deg)
     else:
-        add_breton_window(f"Mediatheque_Win_SE_RDC_{u_w}", wx, wy, 2.25, 1.25, 2.15, med_deg)
-    add_breton_window(f"Mediatheque_Win_SE_E1_{u_w}", wx, wy, 6.25, 1.25, 2.15, med_deg)
-    # North-West back face
-    wx_b, wy_b = med_pt(u_w, 6.54)
-    add_breton_window(f"Mediatheque_Win_NO_RDC_{u_w}", wx_b, wy_b, 2.25, 1.20, 2.0, med_deg)
-    add_breton_window(f"Mediatheque_Win_NO_E1_{u_w}", wx_b, wy_b, 6.25, 1.20, 2.0, med_deg)
+        add_breton_window(f"Mediatheque_FaceENE_RDC_{v_w}", wx_e, wy_e, 2.30, 1.30, 2.25, med_deg + 90.0, with_lintel=True)
+    add_breton_window(f"Mediatheque_FaceENE_E1_{v_w}", wx_e, wy_e, 6.25, 1.30, 2.25, med_deg + 90.0, with_lintel=True)
+# Central attic window proudly mounted on the ENE triangular gable face (u=+7.18, frame 00:14-00:15!)
+gxe, gye = med_pt(7.18, 0.0)
+add_breton_window("Mediatheque_FaceENE_Comble", gxe, gye, 9.95, 1.25, 1.65, med_deg + 90.0, with_lintel=True)
 
-for v_w in (-3.6, 0.0, 3.6):
-    # East face (facing forecourt & Centre Culturel!)
-    wx_e, wy_e = med_pt(6.84, v_w)
-    add_breton_window(f"Mediatheque_Win_E_RDC_{v_w}", wx_e, wy_e, 2.25, 1.25, 2.15, med_deg + 90.0)
-    add_breton_window(f"Mediatheque_Win_E_E1_{v_w}", wx_e, wy_e, 6.25, 1.25, 2.15, med_deg + 90.0)
-    # West face (side with exterior steel staircase!)
-    wx_w, wy_w = med_pt(-6.84, v_w)
-    if v_w != 0.0:
-        add_breton_window(f"Mediatheque_Win_O_RDC_{v_w}", wx_w, wy_w, 2.25, 1.15, 2.0, med_deg + 90.0)
-    add_breton_window(f"Mediatheque_Win_O_E1_{v_w}", wx_w, wy_w, 6.25, 1.15, 2.0, med_deg + 90.0)
+# BACK WSW GABLE FACADE (-u = -6.9, frames 00:04-00:08 — 3 bays + 2 symmetric attic windows in gable + burgundy ornamental tree!)
+for v_w in (-3.65, 0.0, 3.65):
+    wx_w, wy_w = med_pt(-6.92, v_w)
+    if v_w == 0.0:
+        create_box("Mediatheque_Ic_PorteParc_Cadre", (wx_w, wy_w, 1.85), (0.30, 1.65, 2.9), MAT_CHURCH_TRIM, COL_CULT, med_deg)
+        create_box("Mediatheque_Ic_PorteParc_Bois", (wx_w, wy_w, 1.75), (0.34, 1.25, 2.6), MAT_DOOR_RED, COL_CULT, med_deg)
+    else:
+        add_breton_window(f"Mediatheque_FaceWSW_RDC_{v_w}", wx_w, wy_w, 2.30, 1.25, 2.15, med_deg + 90.0, with_lintel=True)
+    add_breton_window(f"Mediatheque_FaceWSW_E1_{v_w}", wx_w, wy_w, 6.25, 1.25, 2.15, med_deg + 90.0, with_lintel=True)
+# Two symmetrical attic windows proudly mounted on the WSW triangular gable face (u=-7.18, frames 00:05-00:08!)
+for v_att in (-1.95, 1.95):
+    gxw, gyw = med_pt(-7.18, v_att)
+    add_breton_window(f"Mediatheque_FaceWSW_Comble_{v_att}", gxw, gyw, 9.75, 1.05, 1.35, med_deg + 90.0, with_lintel=True)
+# Signature deep burgundy/purple Japanese maple tree right at the base of the WSW gable (frames 00:04-00:08!)
+prp_x, prp_y = med_pt(-8.4, 0.2)
+add_cult_tree("Arbre_Pourpre_Mediatheque", prp_x, prp_y, scale=0.78, purple=True)
 
-# Signature exterior galvanized steel access staircase on SW/West side (very visible in photo!)
-st_lx, st_ly = med_pt(-7.75, 0.6)
-create_box("Mediatheque_Ic_Escalier_Palier", (st_lx, st_ly, 4.45), (1.75, 2.2, 0.18), MAT_STAIR_STEEL, COL_CULT, med_deg)
-create_box("Mediatheque_Ic_Escalier_GardeCorps", (st_lx, st_ly, 5.05), (1.75, 2.2, 0.95), MAT_STAIR_STEEL, COL_CULT, med_deg)
-# Angled flight descending Southward along the West facade
-st_fx, st_fy = med_pt(-7.85, -2.55)
-create_box("Mediatheque_Ic_Escalier_Volee", (st_fx, st_fy, 2.30), (1.35, 6.2, 0.24), MAT_STAIR_STEEL, COL_CULT, rot_z_deg=med_deg, rot_x_deg=42.0)
-# Steel support columns under landing
-for sv_c in (-0.4, 1.6):
-    cx_sc, cy_sc = med_pt(-8.45, sv_c)
-    create_box(f"Mediatheque_Ic_Escalier_Poteau_{sv_c}", (cx_sc, cy_sc, 2.25), (0.16, 0.16, 4.4), MAT_METAL_DARK, COL_CULT, med_deg)
+# NNW SIDE FACADE (+v = +6.52, frames 00:09-00:12)
+for u_n in (-3.8, 0.0, 3.8):
+    wx_n, wy_n = med_pt(u_n, 6.52)
+    add_breton_window(f"Mediatheque_FaceNNW_RDC_{u_n}", wx_n, wy_n, 2.30, 1.20, 2.05, med_deg, with_lintel=True)
+    add_breton_window(f"Mediatheque_FaceNNW_E1_{u_n}", wx_n, wy_n, 6.25, 1.20, 2.05, med_deg, with_lintel=True)
 
-# 2. Charming Stone Outbuilding / Annexe of the Mediatheque (batiment.34016797: c=(-224.2, 211.0), 16.6m x 6.5m, ang=+29 deg!)
+# SSE SIDE FACADE (-v = -6.52, frames 00:00-00:03 — CENTRAL PROJECTING MASONRY DORMER + 2-FLIGHT SWITCHBACK STEEL FIRE ESCAPE STAIRCASE!)
+# Central tall masonry projection / avant-corps rising into the SSE roof slope (exact match to frames 00:00-00:03!)
+av_x, av_y = med_pt(0.0, -5.8)
+create_box("Mediatheque_Ic_AvantCorps_Sud", (av_x, av_y, 5.8), (4.6, 3.2, 11.2), MAT_BRETON_STONE_LIGHT, COL_CULT, med_deg)
+create_box("Mediatheque_Ic_AvantCorps_Toit", (av_x, av_y, 11.48), (4.9, 3.5, 0.24), MAT_VR_ZINC, COL_CULT, med_deg)
+# Exit doorways on the avant-corps at 1st floor & 2nd floor + flanking side windows
+for u_s in (-4.4, 4.4):
+    wx_s, wy_s = med_pt(u_s, -6.52)
+    add_breton_window(f"Mediatheque_FaceSSE_RDC_{u_s}", wx_s, wy_s, 2.30, 1.15, 2.0, med_deg, with_lintel=True)
+    add_breton_window(f"Mediatheque_FaceSSE_E1_{u_s}", wx_s, wy_s, 6.25, 1.15, 2.0, med_deg, with_lintel=True)
+# Signature 2-flight galvanized steel switchback fire escape staircase with SLIM OPEN RAILINGS (frames 00:00-00:03!)
+def add_open_railing(prefix, u_c, v_c, w_u, d_v, z_floor):
+    for rz in (z_floor + 0.50, z_floor + 0.96):
+        # Front edge (-v)
+        rx, ry = med_pt(u_c, v_c - d_v * 0.5)
+        create_box(f"{prefix}_BarF_{rz:.1f}", (rx, ry, rz), (w_u, 0.06, 0.06), MAT_STAIR_STEEL, COL_CULT, med_deg)
+        # Left & right edges
+        for su in (-1, 1):
+            rx2, ry2 = med_pt(u_c + su * w_u * 0.5, v_c)
+            create_box(f"{prefix}_BarS_{su}_{rz:.1f}", (rx2, ry2, rz), (0.06, d_v, 0.06), MAT_STAIR_STEEL, COL_CULT, med_deg)
+    for su in (-1, 1):
+        for sv in (-1, 1):
+            px_r, py_r = med_pt(u_c + su * w_u * 0.5, v_c + sv * d_v * 0.5)
+            create_box(f"{prefix}_Mont_{su}_{sv}", (px_r, py_r, z_floor + 0.50), (0.07, 0.07, 1.0), MAT_METAL_DARK, COL_CULT, med_deg)
+
+# Upper exit door + upper landing at z=7.5m + mid landing at z=4.1m
+d2x, d2y = med_pt(0.0, -7.42)
+create_box("Mediatheque_Esc_PorteHaute", (d2x, d2y, 8.65), (1.15, 0.24, 2.2), MAT_WINDOW, COL_CULT, med_deg)
+create_box("Mediatheque_Esc_PorteMil", (d2x, d2y, 5.25), (1.15, 0.24, 2.2), MAT_WINDOW, COL_CULT, med_deg)
+p2_x, p2_y = med_pt(0.0, -8.25)
+create_box("Mediatheque_Esc_PalierHaut", (p2_x, p2_y, 7.50), (3.4, 1.65, 0.14), MAT_STAIR_STEEL, COL_CULT, med_deg)
+add_open_railing("Mediatheque_Esc_RambHaut", 0.0, -8.25, 3.4, 1.65, 7.55)
+p1_x, p1_y = med_pt(1.4, -9.20)
+create_box("Mediatheque_Esc_PalierMil", (p1_x, p1_y, 4.10), (2.2, 2.2, 0.14), MAT_STAIR_STEEL, COL_CULT, med_deg)
+add_open_railing("Mediatheque_Esc_RambMil", 1.4, -9.20, 2.2, 2.2, 4.15)
+# Upper angled flight with slim top handrail
+v2_x, v2_y = med_pt(0.7, -8.65)
+create_box("Mediatheque_Esc_VoleeHaute", (v2_x, v2_y, 5.80), (4.2, 1.15, 0.20), MAT_STAIR_STEEL, COL_CULT, rot_z_deg=med_deg, rot_y_deg=39.0)
+create_box("Mediatheque_Esc_RampeHaute", (v2_x, v2_y, 6.72), (4.2, 0.06, 0.06), MAT_METAL_DARK, COL_CULT, rot_z_deg=med_deg, rot_y_deg=39.0)
+# Lower angled flight descending cleanly inside the terrace without clipping the South wall!
+v1_x, v1_y = med_pt(-0.95, -9.05)
+create_box("Mediatheque_Esc_VoleeBasse", (v1_x, v1_y, 2.15), (4.6, 1.15, 0.20), MAT_STAIR_STEEL, COL_CULT, rot_z_deg=med_deg, rot_y_deg=-41.0)
+create_box("Mediatheque_Esc_RampeBasse", (v1_x, v1_y, 3.08), (4.6, 0.06, 0.06), MAT_METAL_DARK, COL_CULT, rot_z_deg=med_deg, rot_y_deg=-41.0)
+# 4 slender steel support columns anchoring the switchback staircase to the ground
+for sc_u, sc_v, sc_h in [(-1.65, -9.02, 7.5), (1.65, -9.02, 7.5), (2.45, -10.25, 4.1), (0.35, -10.25, 4.1)]:
+    scx, scy = med_pt(sc_u, sc_v)
+    create_box(f"Mediatheque_Esc_Poteau_{sc_u}_{sc_v}", (scx, scy, sc_h * 0.5 + 0.10), (0.14, 0.14, sc_h), MAT_METAL_DARK, COL_CULT, med_deg)
+
+# 2. Stone Annexe of the Mediatheque (batiment.34016797: cream stone, 3 crimson-framed arches, hipped slate roof + 2 end chimneys!)
 anx_m_cx, anx_m_cy = -224.2, 211.0
 anx_m_deg = 29.0
 anx_m_pts = rot_rect(anx_m_cx, anx_m_cy, 16.6, 6.5, anx_m_deg)
-create_poly_mesh("Murs_Mediatheque_Ic_Annexe", anx_m_pts, 0.12, 4.3, MAT_BRETON_STONE, COL_CULT)
-create_breton_hip_roof("Toit_Mediatheque_Ic_Annexe", anx_m_cx, anx_m_cy, 16.6, 6.5, anx_m_deg, z_eave=4.32, ridge_h=2.45, ridge_len=9.6, mat_roof=MAT_CHURCH_SLATE)
-# Arched crimson-red carriage door + flanking windows on South-East front of the Annexe!
-for u_a, is_door in [(-4.8, False), (-0.8, True), (3.8, False)]:
-    ax_w, ay_w = local_to_world(anx_m_cx, anx_m_cy, u_a, -3.30, anx_m_deg)
-    if is_door:
-        create_box("Mediatheque_Ic_Annexe_PorteCadre", (ax_w, ay_w, 1.65), (2.7, 0.28, 3.0), MAT_CHURCH_TRIM, COL_CULT, anx_m_deg)
-        create_box("Mediatheque_Ic_Annexe_PorteRouge", (ax_w, ay_w, 1.52), (2.25, 0.32, 2.75), MAT_DOOR_RED, COL_CULT, anx_m_deg)
-    else:
-        add_breton_window(f"Mediatheque_Annexe_Win_{u_a}", ax_w, ay_w, 2.05, 1.15, 1.65, anx_m_deg)
+create_poly_mesh("Murs_Mediatheque_Ic_Annexe", anx_m_pts, 0.12, 4.35, MAT_BRETON_STONE_LIGHT, COL_CULT)
+create_breton_hip_roof("Toit_Mediatheque_Ic_Annexe", anx_m_cx, anx_m_cy, 16.6, 6.5, anx_m_deg, z_eave=4.35, ridge_h=2.45, ridge_len=9.6, mat_roof=MAT_CHURCH_SLATE)
+# Two stone chimneys at ridge ends + 2 small roof skylights (frames 00:00-00:02!)
+for u_ac in (-4.8, 4.8):
+    acx, acy = local_to_world(anx_m_cx, anx_m_cy, u_ac, 0.0, anx_m_deg)
+    create_box(f"Mediatheque_Annexe_Cheminee_{u_ac}", (acx, acy, 6.8), (0.95, 0.95, 1.8), MAT_CHURCH_TRIM, COL_CULT, anx_m_deg)
+# Three distinctive arched/framed crimson doors & windows along the SE facade of the Annexe (frames 00:00-00:02!)
+for u_a, w_a in [(-4.8, 2.0), (0.0, 2.4), (4.8, 2.0)]:
+    ax_w, ay_w = local_to_world(anx_m_cx, anx_m_cy, u_a, -3.28, anx_m_deg)
+    create_box(f"Mediatheque_Annexe_Cadre_{u_a}", (ax_w, ay_w, 1.68), (w_a + 0.40, 0.28, 3.0), MAT_CHURCH_TRIM, COL_CULT, anx_m_deg)
+    create_box(f"Mediatheque_Annexe_Porte_{u_a}", (ax_w, ay_w, 1.55), (w_a, 0.32, 2.7), MAT_DOOR_RED, COL_CULT, anx_m_deg)
 
-# 3. Signature Mature Wooded Park surrounding the Mediatheque (exact photo backdrop + iconic front-SW tree!)
+# 3. Matching small stone cottage right North-East of the Annexe (batiment.34016802: c=(-228.85, 231.28), 11.0m x 5.0m, ang=118.4 deg!)
+cot_cx, cot_cy, cot_deg = -228.85, 231.28, 118.4
+create_poly_mesh("Murs_Mediatheque_PavillonNord", rot_rect(cot_cx, cot_cy, 11.0, 5.0, cot_deg), 0.12, 3.2, MAT_BRETON_STONE, COL_CULT)
+create_breton_gable_roof("Toit_Mediatheque_PavillonNord", cot_cx, cot_cy, 11.0, 5.0, cot_deg, z_eave=3.2, ridge_h=1.95, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE)
+
+# 4. Lush Wooded Park enveloping the Mediatheque (exact dense canopy visible throughout 360-degree video!)
 MED_TREES = [
-    (-225.5, 162.5, 1.55, True),   # Big mature tree right in front of the SW corner of the Manor (visible in red circle!)
-    (-238.5, 167.0, 1.50, True),
-    (-244.5, 179.0, 1.65, True),
-    (-246.0, 193.0, 1.72, False),
-    (-239.0, 198.5, 1.48, True),
-    (-230.0, 194.0, 1.38, True),
-    (-246.0, 208.0, 1.65, True),
-    (-240.0, 222.0, 1.55, False),
-    (-224.0, 226.0, 1.60, True),
-    (-211.0, 226.0, 1.52, True),
-    (-202.0, 234.0, 1.58, False),
-    (-218.0, 238.0, 1.65, True),
+    (-224.0, 160.0, 1.62, True),   # Iconic mature tree in front of South corner (frames 00:00-00:03!)
+    (-216.0, 155.0, 1.48, False),
+    (-239.0, 165.0, 1.65, True),
+    (-246.0, 178.0, 1.75, True),
+    (-247.0, 193.0, 1.72, False),
+    (-239.5, 198.5, 1.52, True),
+    (-231.0, 193.0, 1.42, True),
+    (-247.0, 209.0, 1.68, True),
+    (-241.0, 223.0, 1.58, False),
+    (-222.0, 227.0, 1.62, True),
+    (-210.0, 227.0, 1.55, True),
+    (-201.0, 235.0, 1.60, False),
+    (-218.0, 239.0, 1.65, True),
 ]
 for idx_t, (tx_m, ty_m, ts_m, tdk) in enumerate(MED_TREES, 1):
     add_cult_tree(f"Arbre_Parc_Mediatheque_{idx_t:02d}", tx_m, ty_m, ts_m, dark=tdk)
 
 
 # ----------------------------------------------------------
-# 10B-2. CENTRE CULTUREL DE LA VILLE ROBERT (CERCLE ROSE — LONGERES EN PIERRE + SALLE CONTEMPORAINE!)
+# 10B-2. CENTRE CULTUREL DE LA VILLE ROBERT (CONFORME AUX FRAMES 00:19-00:26!)
 # ----------------------------------------------------------
 vr_ox, vr_oy = -168.0, 204.0
 VR_DEG = 37.6
@@ -2063,133 +2157,196 @@ def vr_pt(u, v):
 def vr_rect(u1, u2, v1, v2):
     return [vr_pt(u1, v1), vr_pt(u2, v1), vr_pt(u2, v2), vr_pt(u1, v2)]
 
-# A. Ground surfaces: warm paved central courtyard + pedestrian walkway + lush green lawns + curved parking apron!
+# A. Ground surfaces: warm paved central courtyard + pedestrian walkway + lush green lawns + curved parking!
 create_poly_mesh("Cour_Centre_Culturel_Ville_Robert", vr_rect(-22.5, 16.0, -14.2, 5.0), 0.04, 0.14, MAT_PARVIS, COL_CULT)
 create_poly_mesh("Allee_Centre_Culturel_Ville_Robert", vr_rect(5.4, 15.8, -34.5, -14.0), 0.04, 0.14, MAT_PARVIS, COL_CULT)
-# Subtle warm stone benches/planters lining East courtyard edge
+# Subtle decorative paving stone bands & terrace benches in the courtyard
+for u_band in (-14.0, -4.0, 6.0):
+    bx_b, by_b = vr_pt(u_band, -4.5)
+    create_box(f"VilleRobert_Cour_Bande_{u_band}", (bx_b, by_b, 0.148), (0.35, 17.5, 0.015), MAT_PARVIS_ACCENT, COL_CULT, VR_DEG)
 for k_p, vp in enumerate([-11.0, -5.5, 0.0], 1):
-    px_v, py_v = vr_pt(10.6, vp)
-    create_box(f"VilleRobert_Cour_Banc_{k_p}", (px_v, py_v, 0.40), (0.95, 2.4, 0.48), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
+    px_v, py_v = vr_pt(10.5, vp)
+    create_box(f"VilleRobert_Cour_Banc_{k_p}", (px_v, py_v, 0.40), (0.92, 2.4, 0.46), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
 
-# Lush green lawns framing the South longere & the front of the modern theater!
+# Lush green lawns framing the South longere & modern theater front
 create_poly_mesh("Pelouse_VilleRobert_SudOuest", vr_rect(-23.5, 5.4, -26.5, -14.2), 0.04, 0.15, MAT_GRASS, COL_CULT)
 create_poly_mesh("Pelouse_VilleRobert_SudEst", vr_rect(12.6, 33.5, -34.5, -27.5), 0.04, 0.15, MAT_GRASS, COL_CULT)
 
-# Grand horizontal granite staircase descending South between the South longere & modern theater (prominent at bottom of pink circle!)
-for st_v in range(9):
-    v_s = -27.2 - st_v * 0.72
+# Grand horizontal granite staircase descending South between the South longere & modern theater (with dark risers & central handrail!)
+for st_v in range(10):
+    v_s = -27.0 - st_v * 0.68
     sx_v, sy_v = vr_pt(8.8, v_s)
-    create_box(f"Escalier_VilleRobert_Marche_{st_v+1}", (sx_v, sy_v, 0.18 + (8 - st_v) * 0.02), (6.0, 0.56, 0.14), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
+    create_box(f"Escalier_VilleRobert_Marche_{st_v+1}", (sx_v, sy_v, 0.18 + (9 - st_v) * 0.025), (6.0, 0.46, 0.14), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
+    srx, sry = vr_pt(8.8, v_s - 0.28)
+    create_box(f"Escalier_VilleRobert_Contremarche_{st_v+1}", (srx, sry, 0.16 + (9 - st_v) * 0.025), (6.0, 0.10, 0.12), MAT_GRANITE_DARK, COL_CULT, VR_DEG)
+# Central dark metal handrail on the grand stairs
+hr_x, hr_y = vr_pt(8.8, -30.1)
+create_box("Escalier_VilleRobert_MainCourante", (hr_x, hr_y, 1.15), (0.08, 6.8, 0.08), MAT_METAL_DARK, COL_CULT, VR_DEG)
 
-# Curved parking lot in front of the South lawn + crisp white bay markings matching the crescent of cars!
+# Curved parking lot + crisp white bay markings matching the crescent of cars (frames 00:20-00:26!)
 pk_vr_poly = [vr_pt(-28.5, -24.5), vr_pt(-22.0, -24.5), vr_pt(5.5, -26.5), vr_pt(5.5, -37.0), vr_pt(-25.0, -37.5), vr_pt(-31.0, -29.0)]
 create_poly_mesh("Parking_Centre_Culturel_Ville_Robert", pk_vr_poly, 0.04, 0.12, MAT_PARKING, COL_CULT)
-for k_bay in range(11):
-    ang_b = -18.0 + k_bay * 5.2
-    bu_b = -21.5 + k_bay * 2.55
-    bv_b = -27.6 - 0.12 * (k_bay - 4.5) ** 2
+for k_bay in range(12):
+    ang_b = -18.0 + k_bay * 4.8
+    bu_b = -22.0 + k_bay * 2.45
+    bv_b = -27.4 - 0.11 * (k_bay - 5.0) ** 2
     bx_p, by_p = vr_pt(bu_b, bv_b)
     create_box(f"Parking_VilleRobert_Ligne_{k_bay+1}", (bx_p, by_p, 0.132), (0.14, 4.4, 0.016), MAT_LINE_WHITE, COL_CULT, VR_DEG + ang_b * 0.45)
 
-# Historic Breton stone courtyard enclosure wall with charming arched stone gateway on SW corner!
-create_poly_mesh("Muret_VilleRobert_Ouest", vr_rect(-23.2, -22.2, -14.8, -4.0), 0.12, 2.35, MAT_BRETON_STONE, COL_CULT)
-create_poly_mesh("Muret_VilleRobert_Sud", vr_rect(-22.8, -13.9, -15.2, -14.3), 0.12, 1.85, MAT_BRETON_STONE, COL_CULT)
-# Stone archway opening framing the SW entrance
-arch_x, arch_y = vr_pt(-22.7, -9.2)
-create_box("Arche_VilleRobert_Linteau", (arch_x, arch_y, 2.85), (1.25, 3.2, 0.72), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
+# HISTORIC BRETON DOUBLE STONE ARCHWAY ("DOUBLE PORCHE D'ENTREE" OF LA VILLE ROBERT — frames 00:03, 00:13, 00:22-00:26!)
+# Stone enclosure wall along SW courtyard border with real double-arched granite gateway (large carriage arch + small pedestrian arch!)
+create_poly_mesh("Muret_VilleRobert_Sud", vr_rect(-22.8, -13.9, -15.2, -14.3), 0.12, 1.90, MAT_BRETON_STONE, COL_CULT)
+# Left pier, middle pier, right pier of the double porche along u = -22.7, v = -14.8..-4.1
+create_poly_mesh("DoublePorche_Pilier_Sud", vr_rect(-23.3, -22.1, -14.8, -12.6), 0.12, 3.9, MAT_BRETON_STONE, COL_CULT)
+create_poly_mesh("DoublePorche_Pilier_Milieu", vr_rect(-23.3, -22.1, -10.8, -9.8), 0.12, 4.5, MAT_CHURCH_TRIM, COL_CULT)
+create_poly_mesh("DoublePorche_Pilier_Nord", vr_rect(-23.3, -22.1, -6.2, -4.1), 0.12, 4.2, MAT_BRETON_STONE, COL_CULT)
+# Tall granite upper wall crowning both arches (carriage arch v=[-9.8,-6.2] + pedestrian arch v=[-12.6,-10.8])
+create_poly_mesh("DoublePorche_Couronnement_Grand", vr_rect(-23.3, -22.1, -10.2, -5.8), 3.35, 4.75, MAT_BRETON_STONE, COL_CULT)
+create_poly_mesh("DoublePorche_Couronnement_Petit", vr_rect(-23.3, -22.1, -13.0, -9.8), 2.55, 3.95, MAT_BRETON_STONE, COL_CULT)
+# Carved granite coping stones & arch voussoir lintels
+cp1x, cp1y = vr_pt(-22.7, -8.0)
+create_box("DoublePorche_Voussoir_Grand", (cp1x, cp1y, 3.45), (1.35, 3.8, 0.35), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
+create_box("DoublePorche_Chaperon_Grand", (cp1x, cp1y, 4.82), (1.45, 4.6, 0.24), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
+cp2x, cp2y = vr_pt(-22.7, -11.7)
+create_box("DoublePorche_Voussoir_Petit", (cp2x, cp2y, 2.62), (1.35, 2.0, 0.30), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
+create_box("DoublePorche_Chaperon_Petit", (cp2x, cp2y, 4.02), (1.45, 3.2, 0.22), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
 
-# B. Historic Stone Farmstead Wing 1: West Small Stone Outbuilding (u=[-27.0,-20.6], v=[-4.1, 5.6], h=3.8m)
+# B. Historic Stone Farmstead Wing 1: West Small Stone Outbuilding (u=[-27.0,-20.6], v=[-4.1, 5.6], h=3.85m)
 w1_cx, w1_cy = vr_pt(-23.8, 0.75)
 create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_PavillonOuest", vr_rect(-27.0, -20.6, -4.1, 5.6), 0.12, 3.85, MAT_BRETON_STONE, COL_CULT)
-create_breton_hip_roof("Toit_VilleRobert_PavillonOuest", w1_cx, w1_cy, 9.7, 6.4, VR_DEG - 90.0, z_eave=3.88, ridge_h=2.1, ridge_len=5.2, mat_roof=MAT_CHURCH_SLATE)
+create_breton_hip_roof("Toit_VilleRobert_PavillonOuest", w1_cx, w1_cy, 9.7, 6.4, VR_DEG - 90.0, z_eave=3.88, ridge_h=2.15, ridge_len=5.2, mat_roof=MAT_CHURCH_SLATE)
 
 # C. Historic Stone Farmstead Wing 2: Tall Golden-Stone Breton Manor Wing (u=[-26.5,-9.2], v=[4.6,12.4], h=6.2m)
 w2_cx, w2_cy = vr_pt(-17.85, 8.5)
 create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_ManoirNord", vr_rect(-26.5, -9.2, 4.6, 12.4), 0.12, 6.2, MAT_BRETON_STONE, COL_CULT)
-create_breton_gable_roof("Toit_VilleRobert_ManoirNord", w2_cx, w2_cy, 17.3, 7.8, VR_DEG, z_eave=6.2, ridge_h=3.45, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE)
-# Stone chimney on West gable + 2 small dormers + deep-set windows facing courtyard!
-ch_w2x, ch_w2y = vr_pt(-26.0, 8.5)
-create_box("VilleRobert_Manoir_Cheminee", (ch_w2x, ch_w2y, 9.1), (0.95, 1.35, 3.2), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
-for u_mw in (-22.8, -18.2, -13.6):
+create_breton_gable_roof("Toit_VilleRobert_ManoirNord", w2_cx, w2_cy, 17.3, 7.8, VR_DEG, z_eave=6.2, ridge_h=3.55, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE, with_coping=True)
+# Stone chimneys on BOTH West & East gables + 2 dark roof skylights on courtyard slope!
+for u_ch2 in (-26.0, -9.7):
+    ch_w2x, ch_w2y = vr_pt(u_ch2, 8.5)
+    create_box(f"VilleRobert_Manoir_Cheminee_{u_ch2}", (ch_w2x, ch_w2y, 9.4), (0.95, 1.35, 3.4), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
+for u_vl2 in (-21.0, -14.2):
+    v2x, v2y = vr_pt(u_vl2, 6.2)
+    create_box(f"VilleRobert_Manoir_Velux_{u_vl2}", (v2x, v2y, 7.85), (1.05, 0.90, 0.16), MAT_WINDOW, COL_CULT, rot_z_deg=VR_DEG, rot_x_deg=41.0)
+for u_mw in (-22.6, -18.0, -13.4):
     wx_m, wy_m = vr_pt(u_mw, 4.56)
-    add_breton_window(f"VilleRobert_Manoir_WinRDC_{u_mw}", wx_m, wy_m, 2.0, 1.15, 1.85, VR_DEG)
-    add_breton_window(f"VilleRobert_Manoir_WinE1_{u_mw}", wx_m, wy_m, 4.75, 1.05, 1.45, VR_DEG)
+    add_breton_window(f"VilleRobert_Manoir_WinRDC_{u_mw}", wx_m, wy_m, 2.0, 1.15, 1.85, VR_DEG, mat_frame=MAT_CHURCH_WOOD)
+    add_breton_window(f"VilleRobert_Manoir_WinE1_{u_mw}", wx_m, wy_m, 4.75, 1.10, 1.50, VR_DEG, mat_frame=MAT_DOOR_RED)
 
-# D. Historic Stone Farmstead Wing 3: Long Stone Barn Wing with SIGNATURE CENTRAL TRIANGULAR LUCARNE (u=[-9.2, 16.2], v=[4.5, 11.4], h=4.6m)
-w3_cx, w3_cy = vr_pt(3.5, 7.95)
-create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_GrangeNord", vr_rect(-9.2, 16.2, 4.5, 11.4), 0.12, 4.65, MAT_BRETON_STONE, COL_CULT)
-create_breton_gable_roof("Toit_VilleRobert_GrangeNord", w3_cx, w3_cy, 25.4, 6.9, VR_DEG, z_eave=4.65, ridge_h=2.95, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE)
-# Signature central pointed lucarne dormer right on the courtyard roof slope (super distinct in photo!)
-luc_x, luc_y = vr_pt(3.6, 5.15)
-add_stone_dormer("VilleRobert_Grange_LucarneCentrale", luc_x, luc_y, 4.7, VR_DEG - 90.0, width=1.95, height=2.05, depth=2.1, mat_wall=MAT_BRETON_STONE)
-# Wide arched stone carriage doorway + rhythmic courtyard windows along the golden stone wall
-door_x, door_y = vr_pt(-5.2, 4.46)
-create_box("VilleRobert_Grange_PorcheCadre", (door_x, door_y, 1.85), (3.1, 0.30, 3.3), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
-create_box("VilleRobert_Grange_PorcheOmbre", (door_x, door_y, 1.65), (2.4, 0.34, 2.9), MAT_CHURCH_WOOD, COL_CULT, VR_DEG)
-for u_gw in (-1.2, 3.6, 8.2, 12.2):
+# D. Historic Stone Farmstead Wing 3: Long Stone Barn Wing with SIGNATURE CENTRAL GERBIERE LUCARNE (u=[-9.2, 15.8], v=[4.5, 11.4], h=4.65m)
+w3_cx, w3_cy = vr_pt(3.3, 7.95)
+create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_GrangeNord", vr_rect(-9.2, 15.8, 4.5, 11.4), 0.12, 4.65, MAT_BRETON_STONE, COL_CULT)
+create_breton_gable_roof("Toit_VilleRobert_GrangeNord", w3_cx, w3_cy, 25.0, 6.9, VR_DEG, z_eave=4.65, ridge_h=3.0, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE)
+# Signature central tall stone gerbiere dormer breaking the eave line (very prominent frames 00:20-00:26!)
+luc_x, luc_y = vr_pt(3.4, 5.10)
+add_stone_dormer("VilleRobert_Grange_LucarneCentrale", luc_x, luc_y, 4.65, VR_DEG - 90.0, width=2.05, height=2.15, depth=2.2, mat_wall=MAT_BRETON_STONE)
+# Wide pale-stone arched carriage doorway + rhythmic windows along the golden stone facade
+door_x, door_y = vr_pt(-5.6, 4.46)
+create_box("VilleRobert_Grange_PorcheCadre", (door_x, door_y, 1.90), (3.2, 0.30, 3.4), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
+create_box("VilleRobert_Grange_PorcheOmbre", (door_x, door_y, 1.70), (2.45, 0.35, 3.0), MAT_CHURCH_WOOD, COL_CULT, VR_DEG)
+for u_gw in (-1.4, 3.4, 8.0, 11.8):
     gx_w, gy_w = vr_pt(u_gw, 4.46)
-    add_breton_window(f"VilleRobert_Grange_Win_{u_gw}", gx_w, gy_w, 2.1, 1.15, 1.65, VR_DEG)
+    add_breton_window(f"VilleRobert_Grange_Win_{u_gw}", gx_w, gy_w, 2.05, 1.15, 1.65, VR_DEG, mat_frame=MAT_CHURCH_WOOD)
 
-# E. South Low Breton Stone Longere (batiment.34015348 + 34015349: 2-tier stepped slate gable roofs + 2 skylights!)
+# E. South Low Breton Stone Longere (2 stepped volumes, central stone chimney + 3 skylights on South slope — frames 00:22-00:26!)
 s1_cx, s1_cy = vr_pt(-8.55, -17.25)
 create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_LongereSud_O", vr_rect(-13.9, -3.2, -20.7, -13.8), 0.12, 3.55, MAT_BRETON_STONE_LIGHT, COL_CULT)
-create_breton_gable_roof("Toit_VilleRobert_LongereSud_O", s1_cx, s1_cy, 10.7, 6.9, VR_DEG, z_eave=3.55, ridge_h=2.45, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE_LIGHT)
-# 2 roof skylights (velux) on South slope facing the parking lot + chimney!
+create_breton_gable_roof("Toit_VilleRobert_LongereSud_O", s1_cx, s1_cy, 10.7, 6.9, VR_DEG, z_eave=3.55, ridge_h=2.50, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE_LIGHT)
+# Stone chimney between West & East sections + 2 roof skylights on West section
+chsx, chsy = vr_pt(-3.3, -17.25)
+create_box("VilleRobert_LongereSud_Cheminee", (chsx, chsy, 5.75), (0.85, 1.05, 2.2), MAT_CHURCH_TRIM, COL_CULT, VR_DEG)
 for k_vl, u_vl in enumerate([-11.0, -6.2], 1):
     vx_s, vy_s = vr_pt(u_vl, -19.0)
-    create_box(f"VilleRobert_LongereSud_Velux_{k_vl}", (vx_s, vy_s, 4.92), (1.15, 0.95, 0.16), MAT_SKYLIGHT, COL_CULT, rot_z_deg=VR_DEG, rot_x_deg=35.0)
+    create_box(f"VilleRobert_LongereSud_Velux_{k_vl}", (vx_s, vy_s, 4.95), (1.15, 0.95, 0.16), MAT_SKYLIGHT, COL_CULT, rot_z_deg=VR_DEG, rot_x_deg=35.0)
 for u_sw in (-11.6, -8.5, -5.4):
     swx, swy = vr_pt(u_sw, -20.74)
     add_breton_window(f"VilleRobert_LongereSud_Win_{u_sw}", swx, swy, 1.75, 1.05, 1.45, VR_DEG)
-# Stepped lower East annex of South longere
+# Stepped lower East annex + 1 skylight
 s2_cx, s2_cy = vr_pt(1.15, -16.75)
 create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_LongereSud_E", vr_rect(-3.2, 5.5, -19.6, -13.9), 0.12, 2.95, MAT_BRETON_STONE_LIGHT, COL_CULT)
-create_breton_gable_roof("Toit_VilleRobert_LongereSud_E", s2_cx, s2_cy, 8.7, 5.7, VR_DEG, z_eave=2.95, ridge_h=1.95, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE_LIGHT)
+create_breton_gable_roof("Toit_VilleRobert_LongereSud_E", s2_cx, s2_cy, 8.7, 5.7, VR_DEG, z_eave=2.95, ridge_h=2.0, mat_roof=MAT_CHURCH_SLATE, mat_gable=MAT_BRETON_STONE_LIGHT)
+v3x, v3y = vr_pt(1.2, -18.2)
+create_box("VilleRobert_LongereSud_Velux_3", (v3x, v3y, 4.10), (1.05, 0.85, 0.16), MAT_SKYLIGHT, COL_CULT, rot_z_deg=VR_DEG, rot_x_deg=34.0)
 
-# F. CONTEMPORARY CULTURAL THEATER / SALLE DE SPECTACLE DE LA VILLE ROBERT (East wing: bold white parapet + dark flat roof + 2 skylights!)
-# 1. Main tall auditorium hall (u=[15.5, 30.5], v=[-20.5, 1.5], h=8.4m)
+# F. CONTEMPORARY CULTURAL THEATER / SALLE DE SPECTACLE DE LA VILLE ROBERT (FRAMES 00:21-00:26 EXACT MATCH!)
+# 1. Main tall auditorium hall (Salle Massignon: white clad walls + crisp white perimeter parapet + dark flat roof + 2 white skylights!)
 aud_pts = vr_rect(15.5, 30.5, -20.5, 1.5)
 create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_Salle", aud_pts, 0.12, 8.4, MAT_WALL_WHITE, COL_CULT)
 aud_roof = create_flat_roof("Toit_VilleRobert_Salle", aud_pts, 8.4, MAT_ROOF_FLAT_DARK, MAT_WALL_WHITE, COL_CULT)
-# Crisp bold white raised parapet trim + 2 signature square white roof skylights on center line!
 for k_sk, v_sk in enumerate([-13.5, -5.5], 1):
     skx, sky = vr_pt(23.0, v_sk)
     create_box(f"VilleRobert_Salle_Lanterneau_{k_sk}", (skx, sky, 8.95), (1.65, 1.65, 0.42), MAT_SKYLIGHT, COL_CULT, VR_DEG, parent=aud_roof)
 
-# 2. Chamfered North-East rear stage volume (exact IGN chamfered corner!)
+# 2. Chamfered North-East rear stage volume (exact IGN chamfer + elevated crisp white spine wall along u=15.5!)
 stage_pts = [vr_pt(15.5, 1.5), vr_pt(30.1, 1.2), vr_pt(21.4, 11.3), vr_pt(15.5, 11.3)]
 create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_Scene", stage_pts, 0.12, 8.85, MAT_WALL_WHITE, COL_CULT)
 create_flat_roof("Toit_VilleRobert_Scene", stage_pts, 8.85, MAT_ROOF_FLAT_LIGHT, MAT_WALL_WHITE, COL_CULT)
+# Crisp raised white diagonal parapet edge along NW face of auditorium (clearly visible frames 00:21-00:24!)
+par_x, par_y = vr_pt(15.65, -4.5)
+create_box("VilleRobert_Salle_AcrotereOuest", (par_x, par_y, 9.05), (0.42, 31.6, 0.95), MAT_WALL_WHITE, COL_CULT, VR_DEG)
 
-# 3. Lower South-East foyer / entrance wing (u=[15.8, 30.5], v=[-29.2, -20.5], h=5.4m, grey zinc roof + glazed lobby!)
+# 3. Courtyard-facing Contemporary Zinc Lean-To Wing WITH TWO SIGNATURE TRIANGULAR ARCHITECTURAL GABLES (frames 00:24-00:26!)
+gal_pts = vr_rect(11.6, 15.6, -15.8, 4.4)
+create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_Galerie", gal_pts, 0.12, 3.8, MAT_WALL_WHITE, COL_CULT)
+# Sloping grey zinc roof descending smoothly from auditorium wall (z=7.4m) down to courtyard eave (z=3.8m)
+create_cult_leanto(
+    "Toit_VilleRobert_Galerie_Zinc",
+    vr_pt(15.6, -16.0), vr_pt(15.6, 4.5),
+    vr_pt(11.4, -16.0), vr_pt(11.4, 4.5),
+    z_hi=7.35, z_lo=3.80, mat_roof=MAT_VR_ZINC
+)
+# TWO BOLD ARCHITECTURAL TRIANGULAR GABLETS (FRONTONS) breaking out of the sloping zinc roof onto the courtyard (frames 00:24-00:26!)
+for fg_idx, v_fg in enumerate([-10.2, -1.8], 1):
+    fgx, fgy = vr_pt(13.2, v_fg)
+    create_box(f"VilleRobert_Galerie_FrontonCorps_{fg_idx}", (fgx, fgy, 2.05), (3.6, 4.6, 3.85), MAT_WALL_WHITE, COL_CULT, VR_DEG)
+    create_breton_gable_roof(
+        f"Toit_VilleRobert_Galerie_Fronton_{fg_idx}", fgx, fgy, 4.2, 4.8, VR_DEG,
+        z_eave=3.95, ridge_h=2.55, mat_roof=MAT_VR_ZINC, mat_gable=MAT_WALL_WHITE, overhang=0.18
+    )
+    # Tall contemporary glazed bay directly under each triangular fronton!
+    gwx, gwy = vr_pt(11.36, v_fg)
+    create_box(f"VilleRobert_Galerie_VitreFronton_{fg_idx}", (gwx, gwy, 2.05), (0.24, 3.4, 3.2), MAT_WINDOW, COL_CULT, VR_DEG)
+
+# 4. Lower South-East Foyer / Entrance Wing with SLOPED GREY ZINC ROOF (frames 00:21-00:26!)
 foy_pts = vr_rect(15.8, 30.5, -29.2, -20.5)
-create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_Foyer", foy_pts, 0.12, 5.4, MAT_WALL_WHITE, COL_CULT)
-create_flat_roof("Toit_VilleRobert_Foyer", foy_pts, 5.4, MAT_ROOF_PERI, MAT_WALL_WHITE, COL_CULT)
-# Wide contemporary dark glass entrance bays along South & West faces of Foyer
+create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_Foyer", foy_pts, 0.12, 4.6, MAT_WALL_WHITE, COL_CULT)
+create_cult_leanto(
+    "Toit_VilleRobert_Foyer_Zinc",
+    vr_pt(15.6, -20.4), vr_pt(30.7, -20.4),
+    vr_pt(15.6, -29.5), vr_pt(30.7, -29.5),
+    z_hi=6.65, z_lo=4.55, mat_roof=MAT_VR_ZINC
+)
+# Watertight sloped trapezoidal gable fill walls on both West & East ends of the sloped Foyer roof!
+for f_side, u_fend in [("O", 15.8), ("E", 30.5)]:
+    fm = bpy.data.meshes.new(f"Murs_VilleRobert_Foyer_Side{f_side}")
+    fo = bpy.data.objects.new(f"Murs_VilleRobert_Foyer_Side{f_side}", fm)
+    link_obj(fo, COL_CULT)
+    bm_foy = bmesh.new()
+    p_a = vr_pt(u_fend, -20.5); p_b = vr_pt(u_fend, -29.2)
+    f_q = bm_foy.faces.new([
+        bm_foy.verts.new((p_a[0], p_a[1], 4.5)), bm_foy.verts.new((p_b[0], p_b[1], 4.5)),
+        bm_foy.verts.new((p_b[0], p_b[1], 4.58)), bm_foy.verts.new((p_a[0], p_a[1], 6.55)),
+    ])
+    bmesh.ops.solidify(bm_foy, geom=[f_q], thickness=0.35)
+    bmesh.ops.recalc_face_normals(bm_foy, faces=bm_foy.faces)
+    bm_foy.to_mesh(fm); bm_foy.free()
+    fo.data.materials.append(MAT_WALL_WHITE)
+# Wide contemporary dark glass entrance bays + thin metal entrance canopy
 fx_s, fy_s = vr_pt(23.1, -29.26)
-create_box("VilleRobert_Foyer_BaieSud", (fx_s, fy_s, 2.2), (10.5, 0.24, 3.6), MAT_WINDOW, COL_CULT, VR_DEG)
+create_box("VilleRobert_Foyer_BaieSud", (fx_s, fy_s, 2.05), (10.8, 0.24, 3.3), MAT_WINDOW, COL_CULT, VR_DEG)
 fx_w, fy_w = vr_pt(15.74, -24.8)
-create_box("VilleRobert_Foyer_BaieOuest", (fx_w, fy_w, 2.2), (0.24, 6.2, 3.6), MAT_WINDOW, COL_CULT, VR_DEG)
+create_box("VilleRobert_Foyer_BaieOuest", (fx_w, fy_w, 2.05), (0.24, 6.4, 3.3), MAT_WINDOW, COL_CULT, VR_DEG)
 
-# 4. Glazed white courtyard gallery link connecting the modern theater cleanly to the courtyard & stone barn!
-gal_pts = vr_rect(12.2, 15.6, -15.4, 4.4)
-create_poly_mesh("Murs_Centre_Culturel_Ville_Robert_Galerie", gal_pts, 0.12, 4.2, MAT_WALL_WHITE, COL_CULT)
-create_flat_roof("Toit_VilleRobert_Galerie", gal_pts, 4.2, MAT_ROOF_PERI, MAT_WALL_WHITE, COL_CULT)
-# Continuous glazed gallery curtain wall facing courtyard (-u)
-gal_wx, gal_wy = vr_pt(12.14, -5.5)
-create_box("VilleRobert_Galerie_Verriere", (gal_wx, gal_wy, 2.05), (0.22, 16.5, 3.2), MAT_WINDOW, COL_CULT, VR_DEG)
-
-# G. Ornamental Tree Line curving gracefully along East flank of modern auditorium & NE corner (exact match to photo!)
+# G. Ornamental Tree Line curving gracefully along East flank of modern auditorium & behind North barn (exact video match!)
 VR_TREES = [
-    (34.2, -31.5, 1.15, True),
-    (34.8, -24.5, 1.12, True),
-    (35.0, -17.5, 1.08, False),
-    (35.0, -10.5, 1.12, True),
-    (34.8, -3.5, 1.08, True),
-    (26.5, -33.2, 1.05, True),
-    (19.5, -33.5, 1.02, False),
-    (11.5, 17.5, 1.48, True),
-    (3.5, 18.0, 1.38, False),
+    (34.2, -31.5, 1.18, True),
+    (34.8, -24.5, 1.15, True),
+    (35.0, -17.5, 1.10, False),
+    (35.0, -10.5, 1.14, True),
+    (34.8, -3.5, 1.10, True),
+    (26.5, -33.2, 1.08, True),
+    (19.5, -33.5, 1.05, False),
+    (11.5, 17.5, 1.50, True),
+    (3.5, 18.0, 1.40, False),
 ]
 for idx_vt, (vu, vv, vsc, vdk) in enumerate(VR_TREES, 1):
     vtx, vty = vr_pt(vu, vv)
@@ -2237,26 +2394,34 @@ for out_path in (GLB_OUT_ROOT, GLB_OUT_WEB):
 scene.render.engine = 'BLENDER_EEVEE_NEXT' if 'BLENDER_EEVEE_NEXT' in [e.identifier for e in bpy.types.RenderSettings.bl_rna.properties['engine'].enum_items] else 'BLENDER_EEVEE'
 scene.render.resolution_x = 1280
 scene.render.resolution_y = 720
-# Render 1: Oblique hero view of Mediatheque de l'Ic & Centre Culturel de La Ville Robert (exact user photo angle!)
+# Render 1: Mediatheque de l'Ic close-up from ENE-SSE (matching video frames 00:00 + 00:15: noble front gable + switchback steel stair!)
+scene.render.filepath = os.path.join(RENDER_DIR, "vue_mediatheque_face.png")
+cam.location = Vector((-195, 146, 26))
+direction = Vector((-226, 177, 6)) - cam.location
+cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
+bpy.ops.render.render(write_still=True)
+print("Rendered vue_mediatheque_face.png")
+
+# Render 2: Mediatheque de l'Ic back WSW gable + NNW chimney (matching video frames 00:07 + 00:11!)
+scene.render.filepath = os.path.join(RENDER_DIR, "vue_mediatheque_dos.png")
+cam.location = Vector((-258, 166, 28))
+direction = Vector((-226, 178, 6)) - cam.location
+cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
+bpy.ops.render.render(write_still=True)
+print("Rendered vue_mediatheque_dos.png")
+
+# Render 3: Centre Culturel de La Ville Robert hero angle (matching video frames 00:24-00:26: double porche + courtyard + zinc frontons!)
 scene.render.filepath = os.path.join(RENDER_DIR, "vue_pole_culturel.png")
-cam.location = Vector((-195, 114, 58))
-direction = Vector((-182, 198, 6)) - cam.location
+cam.location = Vector((-186, 134, 48))
+direction = Vector((-166, 198, 5)) - cam.location
 cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
 bpy.ops.render.render(write_still=True)
 print("Rendered vue_pole_culturel.png")
 
-# Render 2: High aerial view of Mediatheque + Ville Robert
+# Render 4: High combined overview of Mediatheque + Ville Robert
 scene.render.filepath = os.path.join(RENDER_DIR, "vue_pole_culturel_dessus.png")
-cam.location = Vector((-188, 178, 145))
-direction = Vector((-184, 196, 2)) - cam.location
+cam.location = Vector((-212, 114, 78))
+direction = Vector((-188, 196, 5)) - cam.location
 cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
 bpy.ops.render.render(write_still=True)
 print("Rendered vue_pole_culturel_dessus.png")
-
-# Render 3: Exact final panoramic framing requested by user (Church left, School center, Complex top-right, full background!)
-scene.render.filepath = os.path.join(RENDER_DIR, "vue_bourg_complet.png")
-cam.location = Vector((-192, -312, 166))
-direction = Vector((86, -4, 6)) - cam.location
-cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
-bpy.ops.render.render(write_still=True)
-print("Rendered vue_bourg_complet.png")
