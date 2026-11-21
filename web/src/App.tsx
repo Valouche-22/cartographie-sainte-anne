@@ -29,6 +29,7 @@ export const App: React.FC = () => {
   const isAutoScrollingRef = useRef(false);
   const scrollTweenRef = useRef<gsap.core.Tween | null>(null);
   const wheelLockUntilRef = useRef(0);
+  const labelDelayTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     fetch(`./data/school-data.json?v=${__BUILD_ID__}`)
@@ -40,7 +41,12 @@ export const App: React.FC = () => {
   const applySectionState = useCallback(
     (sectionIdx: number) => {
       if (!data) return;
+      const wasHero = sectionIdxRef.current <= 0;
       sectionIdxRef.current = sectionIdx;
+      if (labelDelayTimerRef.current !== null) {
+        window.clearTimeout(labelDelayTimerRef.current);
+        labelDelayTimerRef.current = null;
+      }
       if (sectionIdx <= 0) {
         setIsHero(true);
         setHideRoofs(false);
@@ -52,7 +58,15 @@ export const App: React.FC = () => {
         const sc = data.scenes[sceneIdx];
         if (sc) {
           setHideRoofs(sc.hideRoofs);
-          setShowLabels(sc.showLabels);
+          if (wasHero && sceneIdx === 0 && sc.showLabels) {
+            setShowLabels(false);
+            labelDelayTimerRef.current = window.setTimeout(() => {
+              labelDelayTimerRef.current = null;
+              setShowLabels(true);
+            }, 500);
+          } else {
+            setShowLabels(sc.showLabels);
+          }
           if (sc.id !== 'classes') {
             setClassBuildingFocus('all');
           }
