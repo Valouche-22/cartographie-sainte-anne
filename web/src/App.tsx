@@ -32,7 +32,7 @@ export const App: React.FC = () => {
   const [cameraPresetTrigger, setCameraPresetTrigger] = useState<{ preset: CameraPreset; seq: number } | null>(null);
 
   useEffect(() => {
-    fetch('./data/school-data.json')
+    fetch(`./data/school-data.json?v=${__BUILD_ID__}`)
       .then((r) => r.json())
       .then((json: SchoolData) => setData(json))
       .catch(() => setLoadError('Impossible de charger school-data.json'));

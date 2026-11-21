@@ -55,3 +55,7 @@ export interface SchoolData {
 }
 
 export type CameraPreset = 'general' | 'aerial' | 'front' | 'top' | 'church' | 'culture' | 'stadium';
+
+declare global {
+  const __BUILD_ID__: string;
+}

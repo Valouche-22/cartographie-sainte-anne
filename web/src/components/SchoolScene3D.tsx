@@ -141,7 +141,7 @@ export const SchoolScene3D: React.FC<Props> = ({
     // Load GLB
     const loader = new GLTFLoader();
     loader.load(
-      './models/ecole_sainte_anne.glb',
+      `./models/ecole_sainte_anne.glb?v=${__BUILD_ID__}`,
       (gltf) => {
         const root = gltf.scene;
         const roofs: THREE.Object3D[] = [];
