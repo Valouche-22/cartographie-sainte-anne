@@ -295,7 +295,8 @@ export const SchoolScene3D: React.FC<Props> = ({
     skyDome.frustumCulled = false;
     scene.add(skyDome);
 
-    const camera = new THREE.PerspectiveCamera(44, container.clientWidth / container.clientHeight, 2.5, 2600);
+    const initialFov = container.clientWidth <= 860 ? 56 : 44;
+    const camera = new THREE.PerspectiveCamera(initialFov, container.clientWidth / container.clientHeight, 2.5, 2600);
     camera.position.set(...data.heroCamera.pos);
     cameraRef.current = camera;
 
@@ -431,12 +432,14 @@ export const SchoolScene3D: React.FC<Props> = ({
       const w = container.clientWidth;
       const h = container.clientHeight;
       if (w <= 0 || h <= 0) return;
+      camera.fov = w <= 860 ? 56 : 44;
       camera.aspect = w / h;
+      camera.updateProjectionMatrix();
       renderer.setSize(w, h);
       const isSplitNow = !freeExploreRef.current && !isHeroRef.current;
       if (isSplitNow) {
         viewOffsetRef.current.x = w > 860 ? -COL_WIDTH_PX / 2 : 0;
-        viewOffsetRef.current.y = w <= 860 ? h * 0.23 : 0;
+        viewOffsetRef.current.y = w <= 860 ? h * 0.275 : 0;
       } else {
         viewOffsetRef.current.x = 0;
         viewOffsetRef.current.y = 0;
@@ -508,7 +511,7 @@ export const SchoolScene3D: React.FC<Props> = ({
           const activeScene = data.scenes[activeSceneIndexRef.current];
           const focusIds = !freeExploreRef.current ? activeScene?.focusLabels : undefined;
           const leftBound = !freeExploreRef.current && !isHeroRef.current && w > 860 ? COL_WIDTH_PX + 12 : 12;
-          const bottomBound = !freeExploreRef.current && !isHeroRef.current && w <= 860 ? h * 0.52 : h - 12;
+          const bottomBound = !freeExploreRef.current && !isHeroRef.current && w <= 860 ? h * 0.45 - 12 : h - 12;
 
           const focusMode = !freeExploreRef.current && activeScene?.id === 'classes' ? classBuildingFocusRef.current : 'all';
           const allowedBuildings = focusMode !== 'all' ? CLASS_FOCUS_VIEWS[focusMode].buildings : null;
@@ -602,7 +605,7 @@ export const SchoolScene3D: React.FC<Props> = ({
     const h = container?.clientHeight || window.innerHeight;
 
     const targetOffX = !isHero && w > 860 ? -COL_WIDTH_PX / 2 : 0;
-    const targetOffY = !isHero && w <= 860 ? h * 0.23 : 0;
+    const targetOffY = !isHero && w <= 860 ? h * 0.275 : 0;
 
     gsap.killTweensOf(viewOffsetRef.current);
     gsap.to(viewOffsetRef.current, {

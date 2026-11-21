@@ -125,6 +125,7 @@ body {
 .canvas-container.interactive {
   pointer-events: auto;
   cursor: grab;
+  touch-action: none;
 }
 
 .canvas-container.interactive:active {
@@ -914,27 +915,203 @@ body {
   }
 }
 
-/* Mobile */
+/* Mobile (phones & small tablets <= 860px; desktop untouched) */
 @media (max-width: 860px) {
-  .editorial-column {
+  .corner-free-btn {
+    top: calc(12px + env(safe-area-inset-top));
+    right: 12px;
+    padding: 7px 13px;
+    font-size: 0.76rem;
+  }
+
+  .hero-cover {
+    height: 100dvh;
+    padding: 0 22px calc(86px + env(safe-area-inset-bottom));
+    pointer-events: auto;
+  }
+
+  .hero-h1 {
+    font-size: clamp(2rem, 9vw, 2.75rem);
+  }
+
+  .hero-sub {
+    font-size: 0.96rem;
+    margin-bottom: 18px;
+  }
+
+  .scroll-cue {
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    padding: 8px 15px;
+  }
+
+  .scroll-cue.in-split {
+    display: none;
+  }
+
+  /* Bottom sheet pinned to lower 55% while top 45% keeps 3D map live */
+  .editorial-column.mobile-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
+    height: 55dvh;
+    margin-top: 0;
     border-right: none;
-    border-top: 1px solid var(--line);
-    margin-top: 52vh;
+    border-top: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -10px 32px rgba(15, 23, 42, 0.16);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--white);
   }
 
-  .col-sticky-top {
-    top: 0;
+  .mobile-sheet .col-sticky-top {
+    position: relative;
+    top: auto;
+    padding: 16px 18px 11px;
+    flex-shrink: 0;
   }
 
-  .col-progress-fill {
+  .mobile-sheet .col-sticky-top::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: 999px;
+    background: #cbd5e1;
+  }
+
+  .mobile-sheet .col-progress-fill {
     background-size: 100vw 100%;
   }
 
-  .chapter-panel {
-    height: auto;
-    min-height: 46vh;
-    padding: 28px 20px 64px;
-    overflow: visible;
+  .mobile-sheet-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 14px 16px 18px;
+    background: radial-gradient(circle at 0% 0%, var(--accent-soft) 0%, #ffffff 58%);
+  }
+
+  .mobile-sheet .chapter-title {
+    font-size: 1.24rem;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+
+  .mobile-sheet .fact-list {
+    gap: 6px;
+  }
+
+  .mobile-sheet .fact-row {
+    padding: 9px 12px;
+    border-radius: 9px;
+  }
+
+  .mobile-sheet .fact-label {
+    font-size: 0.74rem;
+  }
+
+  .mobile-sheet .fact-value {
+    font-size: 0.84rem;
+    line-height: 1.44;
+  }
+
+  .mobile-sheet .building-focus-bar {
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  .mobile-sheet .building-focus-btn {
+    padding: 7px 11px;
+    font-size: 0.75rem;
+  }
+
+  .mobile-sheet .back-home-btn {
+    margin-top: 16px;
+    padding: 8px 16px 10px;
+    font-size: 0.8rem;
+  }
+
+  .mobile-sheet .col-sticky-bottom {
+    position: relative;
+    bottom: auto;
+    flex-shrink: 0;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    gap: 6px;
+  }
+
+  .mobile-sheet .step-nav-btn {
+    padding: 7px 10px;
+    font-size: 0.74rem;
+  }
+
+  .mobile-sheet .step-dots {
+    gap: 5px;
+  }
+
+  .mobile-sheet .step-dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .mobile-sheet .step-dot.active {
+    width: 16px;
+  }
+
+  /* Compact 3D labels on small screens */
+  .label-pill {
+    padding: 3px 8px;
+    font-size: 0.65rem;
+    gap: 4px;
+  }
+
+  .label-dot {
+    width: 6.5px;
+    height: 6.5px;
+  }
+
+  /* Free Explore on mobile: sleek single-row scrollable dock + full-width info panel */
+  .toolbar {
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    max-width: calc(100vw - 20px);
+    padding: 6px 8px;
+    gap: 4px;
+  }
+
+  .toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tool-btn {
+    flex-shrink: 0;
+    padding: 7px 11px;
+    font-size: 0.75rem;
+  }
+
+  .tool-sep {
+    flex-shrink: 0;
+  }
+
+  .info-panel {
+    top: calc(56px + env(safe-area-inset-top));
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: 36dvh;
+    overflow-y: auto;
+    padding: 13px 15px;
   }
 }
