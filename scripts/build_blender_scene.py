@@ -961,10 +961,10 @@ add_room_poly("Classe_PS_MS", s1_rect(25.10, 32.20, -11.35, -4.10), Z_RM0, Z_RM1
 # 5. Orange fonce : Classe de TPS/PS/MS (chamfered to follow S1 SE diagonal wall cleanly!)
 tps_poly = [s1_uv(23.40, -11.70), s1_uv(30.40, -11.70), s1_uv(30.40, -16.85), s1_uv(27.75, -19.30), s1_uv(23.40, -19.30)]
 add_room_poly("Classe_TPS_PS_MS", tps_poly, Z_RM0, Z_RM1, (0.78, 0.16, 0.02), "CLASSES")
-# 6. Noir : Classe de GS
-add_room_poly("Classe_GS", s1_rect(2.15, 9.35, -23.95, -14.80), Z_RM0, Z_RM1, (0.04, 0.05, 0.06), "CLASSES")
-# 7. Violet : Classe de CP
-add_room_poly("Classe_CP", s1_rect(9.65, 16.95, -23.95, -14.80), Z_RM0, Z_RM1, (0.36, 0.08, 0.72), "CLASSES")
+# 6. Violet : Classe de GS (echangee avec CP)
+add_room_poly("Classe_GS", s1_rect(2.15, 9.35, -23.95, -14.80), Z_RM0, Z_RM1, (0.36, 0.08, 0.72), "CLASSES")
+# 7. Noir : Classe de CP (echangee avec GS)
+add_room_poly("Classe_CP", s1_rect(9.65, 16.95, -23.95, -14.80), Z_RM0, Z_RM1, (0.04, 0.05, 0.06), "CLASSES")
 
 # 8. Rouge : Preau des maternelles (exact inset of Pavillon S4 + Annexe S5)
 if "batiment.34015558" in by_id:
@@ -976,10 +976,31 @@ if "batiment.34015559" in by_id:
 if "batiment.34015560" in by_id:
     add_room_poly("Prefabrique", offset_poly_2d(by_id["batiment.34015560"]["pts"], -0.42), Z_RM0, Z_RM1, (0.76, 0.12, 0.36), "CLASSES")
 
-# Remaining provisional rooms in Batiment Nord N1 & Batiment Est E2 (awaiting room assignments)
+# EXACT MAPPING FOR BATIMENT NORD N1 (origin at SW corner -22.92, 27.86, angle 18.1 deg)
+_n1_ox, _n1_oy = -22.92, 27.86
+_n1_rad = math.radians(18.1)
+_n1_ux, _n1_uy = math.cos(_n1_rad), math.sin(_n1_rad)
+_n1_vx, _n1_vy = -math.sin(_n1_rad), math.cos(_n1_rad)
+def n1_uv(u, v):
+    return (_n1_ox + u * _n1_ux + v * _n1_vx, _n1_oy + u * _n1_uy + v * _n1_vy)
+def n1_rect(u0, u1, v0, v1):
+    return [n1_uv(u0, v0), n1_uv(u1, v0), n1_uv(u1, v1), n1_uv(u0, v1)]
+
+# Sanitaires (meme vert #16a34a que dans le batiment principal!)
+add_room_poly("Sanitaires_Nord", n1_rect(0.45, 4.15, 0.45, 7.80), Z_RM0, Z_RM1, (0.07, 0.48, 0.12), "CLASSES")
+# Bureau directrice (ambre dore harmonise)
+add_room_poly("Bureau_Directrice", n1_rect(4.45, 7.30, 0.45, 4.40), Z_RM0, Z_RM1, (0.92, 0.50, 0.05), "CLASSES")
+# Photocopieuse et materiel (bleu clair)
+add_room_poly("Local_Photocopieuse", n1_rect(4.45, 8.55, 4.70, 7.80), Z_RM0, Z_RM1, (0.08, 0.52, 0.85), "CLASSES")
+# Classe de CP/CE1 (violet harmonise)
+add_room_poly("Classe_CP_CE1", n1_rect(8.85, 17.45, 0.45, 7.60), Z_RM0, Z_RM1, (0.36, 0.08, 0.72), "CLASSES")
+# Local materiel (vert d'eau / sarcelle distinct du vert sanitaires)
+add_room_poly("Local_Materiel", n1_rect(17.75, 21.15, 5.45, 7.50), Z_RM0, Z_RM1, (0.05, 0.42, 0.40), "CLASSES")
+# Classe de CE2 (bleu fonce)
+add_room_poly("Classe_CE2", n1_rect(21.45, 29.15, 0.45, 7.30), Z_RM0, Z_RM1, (0.05, 0.14, 0.68), "CLASSES")
+
+# Remaining provisional rooms in Batiment Est E2 (awaiting room assignments)
 other_rooms_spec = [
-    ("Classe_06", (-17.0, 35.8, 0.15), (7.8, 5.8, 2.6), 18.1, (0.34, 0.76, 0.76)),
-    ("Classe_07", (-5.5, 39.2, 0.15), (7.8, 5.8, 2.6), 18.1, (0.88, 0.56, 0.72)),
     ("Classe_08", (45.2, 24.5, 0.15), (4.4, 6.6, 2.6), 21.5, (0.72, 0.78, 0.38)),
     ("Classe_09", (48.5, 13.5, 0.15), (4.4, 6.6, 2.6), 21.5, (0.48, 0.62, 0.88)),
     ("Classe_10", (52.0, 3.0, 0.15), (4.4, 5.6, 2.6), 21.5, (0.90, 0.54, 0.36)),
