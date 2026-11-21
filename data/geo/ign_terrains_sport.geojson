@@ -1,0 +1,657 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "terrain_de_sport.63866",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -2.81111237,
+                48.57009633,
+                95.5
+              ],
+              [
+                -2.81104612,
+                48.57040534,
+                96.1
+              ],
+              [
+                -2.81155596,
+                48.57044353,
+                95.8
+              ],
+              [
+                -2.81161159,
+                48.57013684,
+                95.8
+              ],
+              [
+                -2.81111237,
+                48.57009633,
+                95.5
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "cleabs": "TERRSPOR0000000076202300",
+        "nature": "Terrain de tennis",
+        "nature_detaillee": null,
+        "etat_de_l_objet": "En service",
+        "date_creation": "2007-05-15T08:59:17.727Z",
+        "date_modification": "2024-06-11T08:06:45.497Z",
+        "date_d_apparition": null,
+        "date_de_confirmation": "2024-04-25Z",
+        "sources": "MSS 2024",
+        "identifiants_sources": "MSS:I222510007",
+        "methode_d_acquisition_planimetrique": "Photogrammétrie",
+        "precision_planimetrique": 2.5,
+        "methode_d_acquisition_altimetrique": "Photogrammétrie",
+        "precision_altimetrique": 1.5
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "terrain_de_sport.84195",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -2.81177787,
+                48.56881993,
+                -1000
+              ],
+              [
+                -2.81182479,
+                48.56859394,
+                -1000
+              ],
+              [
+                -2.81160012,
+                48.56857787,
+                -1000
+              ],
+              [
+                -2.81154944,
+                48.56880675,
+                -1000
+              ],
+              [
+                -2.81177787,
+                48.56881993,
+                -1000
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "cleabs": "TERRSPOR0000002489633804",
+        "nature": "Petit terrain multi-sports",
+        "nature_detaillee": "City-stade",
+        "etat_de_l_objet": "En service",
+        "date_creation": "2025-04-18T07:11:36.748Z",
+        "date_modification": null,
+        "date_d_apparition": null,
+        "date_de_confirmation": null,
+        "sources": null,
+        "identifiants_sources": null,
+        "methode_d_acquisition_planimetrique": "Orthophotographie",
+        "precision_planimetrique": 3,
+        "methode_d_acquisition_altimetrique": "Pas de Z",
+        "precision_altimetrique": 9999
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "terrain_de_sport.84229",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -2.81102163,
+                48.56898592,
+                104
+              ],
+              [
+                -2.81111755,
+                48.56899295,
+                104
+              ],
+              [
+                -2.81114293,
+                48.56890331,
+                104
+              ],
+              [
+                -2.81118281,
+                48.56893203,
+                104
+              ],
+              [
+                -2.81124242,
+                48.56896699,
+                104
+              ],
+              [
+                -2.81131059,
+                48.56899342,
+                104
+              ],
+              [
+                -2.81139158,
+                48.56901291,
+                104
+              ],
+              [
+                -2.81146577,
+                48.56902011,
+                104
+              ],
+              [
+                -2.81154072,
+                48.56902185,
+                104
+              ],
+              [
+                -2.81159989,
+                48.56901625,
+                104
+              ],
+              [
+                -2.811677,
+                48.56900075,
+                104
+              ],
+              [
+                -2.81174865,
+                48.56897289,
+                104
+              ],
+              [
+                -2.811809,
+                48.56894107,
+                104
+              ],
+              [
+                -2.81185868,
+                48.56889896,
+                104
+              ],
+              [
+                -2.81189445,
+                48.56885391,
+                104
+              ],
+              [
+                -2.81191429,
+                48.56881235,
+                104
+              ],
+              [
+                -2.81200256,
+                48.56839582,
+                104
+              ],
+              [
+                -2.81200875,
+                48.5683414,
+                104
+              ],
+              [
+                -2.81200442,
+                48.5682902,
+                104
+              ],
+              [
+                -2.81197876,
+                48.56824275,
+                104
+              ],
+              [
+                -2.81194955,
+                48.56819998,
+                104
+              ],
+              [
+                -2.81189926,
+                48.56815103,
+                104
+              ],
+              [
+                -2.81184081,
+                48.5681142,
+                104
+              ],
+              [
+                -2.81177108,
+                48.56808604,
+                104
+              ],
+              [
+                -2.81170045,
+                48.56807417,
+                104
+              ],
+              [
+                -2.81162336,
+                48.56806531,
+                104
+              ],
+              [
+                -2.81154601,
+                48.56806639,
+                104
+              ],
+              [
+                -2.81147026,
+                48.56808182,
+                104
+              ],
+              [
+                -2.81138209,
+                48.56810779,
+                104
+              ],
+              [
+                -2.81133938,
+                48.56812701,
+                104
+              ],
+              [
+                -2.8113161,
+                48.56812545,
+                104
+              ],
+              [
+                -2.81133718,
+                48.56802159,
+                104
+              ],
+              [
+                -2.81123941,
+                48.56801014,
+                104
+              ],
+              [
+                -2.81102163,
+                48.56898592,
+                104
+              ]
+            ],
+            [
+              [
+                -2.81182102,
+                48.56881691,
+                104
+              ],
+              [
+                -2.81181161,
+                48.56883,
+                104
+              ],
+              [
+                -2.81179537,
+                48.56885515,
+                104
+              ],
+              [
+                -2.81176998,
+                48.56888345,
+                104
+              ],
+              [
+                -2.81172586,
+                48.56891448,
+                104
+              ],
+              [
+                -2.81169,
+                48.56893427,
+                104
+              ],
+              [
+                -2.81163232,
+                48.56895333,
+                104
+              ],
+              [
+                -2.81156853,
+                48.56896637,
+                104
+              ],
+              [
+                -2.81151146,
+                48.56896646,
+                104
+              ],
+              [
+                -2.8114628,
+                48.56896884,
+                104
+              ],
+              [
+                -2.81141739,
+                48.56896384,
+                104
+              ],
+              [
+                -2.81135833,
+                48.56894599,
+                104
+              ],
+              [
+                -2.81128145,
+                48.56891457,
+                104
+              ],
+              [
+                -2.81125723,
+                48.56889231,
+                104
+              ],
+              [
+                -2.8112305,
+                48.56887197,
+                104
+              ],
+              [
+                -2.81119568,
+                48.56882767,
+                104
+              ],
+              [
+                -2.81118684,
+                48.56878481,
+                104
+              ],
+              [
+                -2.81118582,
+                48.56873886,
+                104
+              ],
+              [
+                -2.81129896,
+                48.56825256,
+                104
+              ],
+              [
+                -2.8113512,
+                48.56819679,
+                104
+              ],
+              [
+                -2.81142106,
+                48.56815278,
+                104
+              ],
+              [
+                -2.81149892,
+                48.56813183,
+                104
+              ],
+              [
+                -2.81157933,
+                48.56812159,
+                104
+              ],
+              [
+                -2.8116389,
+                48.56811957,
+                104
+              ],
+              [
+                -2.81168981,
+                48.5681252,
+                104
+              ],
+              [
+                -2.81174577,
+                48.5681396,
+                104
+              ],
+              [
+                -2.81178832,
+                48.56815556,
+                104
+              ],
+              [
+                -2.81184067,
+                48.56818637,
+                104
+              ],
+              [
+                -2.81188455,
+                48.56822661,
+                104
+              ],
+              [
+                -2.81191067,
+                48.56826592,
+                104
+              ],
+              [
+                -2.81192276,
+                48.56830141,
+                104
+              ],
+              [
+                -2.81192449,
+                48.56835364,
+                104
+              ],
+              [
+                -2.81182102,
+                48.56881691,
+                104
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "cleabs": "TERRSPOR0000002489633803",
+        "nature": "Piste de sport",
+        "nature_detaillee": null,
+        "etat_de_l_objet": "En service",
+        "date_creation": "2025-04-18T07:11:36.748Z",
+        "date_modification": null,
+        "date_d_apparition": null,
+        "date_de_confirmation": "2015-07-01Z",
+        "sources": "MSS",
+        "identifiants_sources": "MSS:3506",
+        "methode_d_acquisition_planimetrique": "Photogrammétrie",
+        "precision_planimetrique": 2.5,
+        "methode_d_acquisition_altimetrique": "Photogrammétrie",
+        "precision_altimetrique": 1.5
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "terrain_de_sport.113445",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -2.8124122,
+                48.56794823,
+                -1000
+              ],
+              [
+                -2.81234278,
+                48.56781273,
+                -1000
+              ],
+              [
+                -2.81198605,
+                48.56789242,
+                -1000
+              ],
+              [
+                -2.81205902,
+                48.56802325,
+                -1000
+              ],
+              [
+                -2.8124122,
+                48.56794823,
+                -1000
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "cleabs": "TERRSPOR0000002000206879",
+        "nature": "Petit terrain multi-sports",
+        "nature_detaillee": "Terrain de basket-ball",
+        "etat_de_l_objet": "En service",
+        "date_creation": "2016-10-18T14:48:29.404Z",
+        "date_modification": "2024-05-29T07:20:45.505Z",
+        "date_d_apparition": null,
+        "date_de_confirmation": "2024-04-25Z",
+        "sources": "MSS 2024",
+        "identifiants_sources": "MSS:E002I222510006",
+        "methode_d_acquisition_planimetrique": "Orthophotographie",
+        "precision_planimetrique": 3,
+        "methode_d_acquisition_altimetrique": "Pas de Z",
+        "precision_altimetrique": 9999
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "terrain_de_sport.113449",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -2.81035357,
+                48.57014157,
+                97.3
+              ],
+              [
+                -2.81055594,
+                48.56936949,
+                97.3
+              ],
+              [
+                -2.80985125,
+                48.56927769,
+                97.3
+              ],
+              [
+                -2.80960497,
+                48.57003387,
+                97.3
+              ],
+              [
+                -2.81035357,
+                48.57014157,
+                97.3
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "cleabs": "TERRSPOR0000000298475774",
+        "nature": "Grand terrain de sport",
+        "nature_detaillee": "Terrain de football",
+        "etat_de_l_objet": "En service",
+        "date_creation": "2012-04-12T11:21:27.146Z",
+        "date_modification": "2024-12-17T13:23:36.545Z",
+        "date_d_apparition": null,
+        "date_de_confirmation": "2024-04-25Z",
+        "sources": "MSS 2024",
+        "identifiants_sources": "MSS:E008I222510007",
+        "methode_d_acquisition_planimetrique": "Photogrammétrie",
+        "precision_planimetrique": 2.5,
+        "methode_d_acquisition_altimetrique": "Photogrammétrie",
+        "precision_altimetrique": 1.5
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "terrain_de_sport.114154",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -2.81272255,
+                48.56811164,
+                104.4
+              ],
+              [
+                -2.81348968,
+                48.56794601,
+                105.3
+              ],
+              [
+                -2.8129966,
+                48.56705553,
+                105.8
+              ],
+              [
+                -2.81226037,
+                48.56721784,
+                105
+              ],
+              [
+                -2.81272255,
+                48.56811164,
+                104.4
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "cleabs": "TERRSPOR0000000076202315",
+        "nature": "Grand terrain de sport",
+        "nature_detaillee": "Terrain de football",
+        "etat_de_l_objet": "En service",
+        "date_creation": "2007-05-15T08:59:17.727Z",
+        "date_modification": "2024-05-29T07:20:45.505Z",
+        "date_d_apparition": null,
+        "date_de_confirmation": "2024-04-25Z",
+        "sources": "MSS 2024",
+        "identifiants_sources": "MSS:E001I222510006",
+        "methode_d_acquisition_planimetrique": "Photogrammétrie",
+        "precision_planimetrique": 2.5,
+        "methode_d_acquisition_altimetrique": "Photogrammétrie",
+        "precision_altimetrique": 1.5
+      }
+    }
+  ],
+  "totalFeatures": 6,
+  "numberMatched": 6,
+  "numberReturned": 6,
+  "timeStamp": "2026-11-21T09:27:01.414Z",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::4326"
+    }
+  }
+}
