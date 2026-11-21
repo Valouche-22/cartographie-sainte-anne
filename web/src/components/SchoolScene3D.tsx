@@ -25,11 +25,67 @@ interface Props {
 interface ProjectedLabel {
   id: string;
   label: string;
+  ax: number;
+  ay: number;
   x: number;
   y: number;
   visible: boolean;
   kind: 'building' | 'room';
   color?: string;
+}
+
+function resolveLabelOverlaps(
+  items: ProjectedLabel[],
+  leftBound: number,
+  rightBound: number,
+  topBound: number,
+  bottomBound: number
+): ProjectedLabel[] {
+  const vis = items.filter((it) => it.visible);
+  if (vis.length <= 1) return items;
+
+  const boxes = vis.map((it) => ({
+    it,
+    hw: (it.label.length * 6.4 + (it.color ? 30 : 20)) * 0.5 + 5,
+    hh: 14.5,
+  }));
+
+  for (let iter = 0; iter < 18; iter++) {
+    for (let i = 0; i < boxes.length; i++) {
+      for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i];
+        const b = boxes[j];
+        const dx = b.it.x - a.it.x;
+        const dy = b.it.y - a.it.y;
+        const minX = a.hw + b.hw;
+        const minY = a.hh + b.hh;
+        const ox = minX - Math.abs(dx);
+        const oy = minY - Math.abs(dy);
+        if (ox > 0 && oy > 0) {
+          // Prefer vertical separation unless horizontal is much smaller
+          if (oy <= ox * 0.85) {
+            const sy = dy >= 0 ? 1 : -1;
+            const shift = oy * 0.52 + 0.5;
+            a.it.y -= sy * shift;
+            b.it.y += sy * shift;
+          } else {
+            const sx = dx >= 0 ? 1 : -1;
+            const shift = ox * 0.52 + 0.5;
+            a.it.x -= sx * shift;
+            b.it.x += sx * shift;
+          }
+        }
+      }
+    }
+    // Gentle spring back toward anchor + viewport clamping
+    for (const b of boxes) {
+      b.it.x += (b.it.ax - b.it.x) * 0.06;
+      b.it.y += (b.it.ay - 22 - b.it.y) * 0.06;
+      b.it.x = Math.max(leftBound + b.hw, Math.min(rightBound - b.hw, b.it.x));
+      b.it.y = Math.max(topBound + b.hh, Math.min(bottomBound - b.hh, b.it.y));
+    }
+  }
+  return items;
 }
 
 const CLASSROOM_ROOF_PREFIXES = [
@@ -445,11 +501,12 @@ export const SchoolScene3D: React.FC<Props> = ({
           const next: ProjectedLabel[] = [];
           for (const it of items) {
             tmpVec.set(it.pos[0], it.pos[1], it.pos[2]).project(camera);
-            const x = (tmpVec.x * 0.5 + 0.5) * w;
-            const y = (-tmpVec.y * 0.5 + 0.5) * h;
-            const visible = tmpVec.z < 1 && x >= leftBound && x <= w - 12 && y >= 18 && y <= bottomBound;
-            next.push({ id: it.id, label: it.label, color: it.color, x, y, visible, kind: it.kind });
+            const ax = (tmpVec.x * 0.5 + 0.5) * w;
+            const ay = (-tmpVec.y * 0.5 + 0.5) * h;
+            const visible = tmpVec.z < 1 && ax >= leftBound && ax <= w - 12 && ay >= 18 && ay <= bottomBound;
+            next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: ax, y: ay - 22, visible, kind: it.kind });
           }
+          resolveLabelOverlaps(next, leftBound, w - 12, 18, bottomBound);
           setLabels(next);
         }
       }
@@ -576,6 +633,16 @@ export const SchoolScene3D: React.FC<Props> = ({
       <div className={`canvas-container ${freeExplore ? 'interactive' : 'scroll-locked'}`} ref={mountRef} />
       {showLabels && !(isHero && !freeExplore) && (
         <div className="labels-layer">
+          <svg className="labels-lines" aria-hidden="true">
+            {labels
+              .filter((l) => l.visible)
+              .map((l) => (
+                <g key={`line-${l.id}`}>
+                  <line x1={l.ax} y1={l.ay} x2={l.x} y2={l.y} className="label-leader" />
+                  <circle cx={l.ax} cy={l.ay} r={2.8} fill={l.color || '#111827'} className="label-anchor-dot" />
+                </g>
+              ))}
+          </svg>
           {labels
             .filter((l) => l.visible)
             .map((l) => {
@@ -600,7 +667,6 @@ export const SchoolScene3D: React.FC<Props> = ({
                     {l.color && <span className="label-dot" style={{ background: l.color }} />}
                     {l.label}
                   </span>
-                  <span className="label-stem" />
                 </div>
               );
             })}

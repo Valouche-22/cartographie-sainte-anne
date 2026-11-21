@@ -394,9 +394,27 @@ body {
   overflow: hidden;
 }
 
+.labels-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.label-leader {
+  stroke: rgba(17, 24, 39, 0.45);
+  stroke-width: 1.1;
+}
+
+.label-anchor-dot {
+  stroke: #ffffff;
+  stroke-width: 1.2;
+}
+
 .label-pin {
   position: absolute;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, -50%);
   pointer-events: none;
   display: flex;
   flex-direction: column;
@@ -411,13 +429,13 @@ body {
 .label-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 9px;
+  gap: 5px;
+  padding: 3px 8px;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(17, 24, 39, 0.14);
   color: var(--ink);
-  font-size: 0.74rem;
+  font-size: 0.71rem;
   font-weight: 500;
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(17, 24, 39, 0.1);
