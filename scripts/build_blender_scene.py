@@ -190,6 +190,41 @@ def create_poly_mesh(name, pts, z0, z1, mat, col_name):
     obj.data.materials.append(mat)
     return obj
 
+def create_hollow_walls(name, pts, z0, z1, wall_mat, col_name, wall_thick=0.28):
+    """Build open-top perimeter walls + interior floor slab so hiding the roof reveals interior classrooms."""
+    if len(pts) < 3:
+        return None
+    # Interior floor slab
+    floor_mat = get_mat("Sol_Interieur_Classes", (0.90, 0.89, 0.86), roughness=0.85)
+    create_poly_mesh(f"{name}_Sol", pts, z0, z0 + 0.12, floor_mat, col_name)
+    # Perimeter walls (extruded open shell + solidified inward/outward)
+    mesh = bpy.data.meshes.new(name)
+    obj = bpy.data.objects.new(name, mesh)
+    link_obj(obj, col_name)
+    bm = bmesh.new()
+    n = len(pts)
+    for i in range(n):
+        p1 = Vector((pts[i][0], pts[i][1], z0))
+        p2 = Vector((pts[(i + 1) % n][0], pts[(i + 1) % n][1], z0))
+        if (p2 - p1).length < 0.05:
+            continue
+        v1 = bm.verts.new(p1)
+        v2 = bm.verts.new(p2)
+        v3 = bm.verts.new(p2 + Vector((0, 0, z1 - z0)))
+        v4 = bm.verts.new(p1 + Vector((0, 0, z1 - z0)))
+        try:
+            bm.faces.new([v1, v2, v3, v4])
+        except ValueError:
+            pass
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.01)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bmesh.ops.solidify(bm, geom=bm.faces[:], thickness=wall_thick)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(mesh)
+    bm.free()
+    obj.data.materials.append(wall_mat)
+    return obj
+
 def create_box(name, loc, scale, mat, col_name, rot_z_deg=0.0, rot_x_deg=0.0, rot_y_deg=0.0, parent=None):
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
     obj = bpy.context.active_object
@@ -409,7 +444,7 @@ CUSTOM_IDS = set(SCHOOL_SPEC.keys()) | {"batiment.26311892", "batiment.15317836"
 # ==========================================================
 # 2. TERRAIN (EXPANDED SO NO HORIZON EDGE IS VISIBLE IN PANORAMIC VIEW!), CLEAN ROADS, PARKING & GRASS
 # ==========================================================
-bpy.ops.mesh.primitive_plane_add(size=2000, location=(100, 40, -0.08))
+bpy.ops.mesh.primitive_plane_add(size=2800, location=(160, 20, -0.08))
 terrain_base = bpy.context.active_object
 terrain_base.name = "Terrain_Base"
 terrain_base.data.materials.append(MAT_GROUND)
@@ -448,6 +483,28 @@ for idx, r in enumerate(site.get("roads", [])):
 for idx, r in enumerate(landmarks.get("wide_roads", [])):
     w = 3.6 if any(k in (r.get("name") or "").lower() for k in ("coubertin", "gaulle", "gueret", "guéret", "sports")) else 2.8
     build_road_mesh(f"Route_Bourg_{idx}", r["pts"], width=w, z_rd=-0.032)
+
+# Extra IGN roads East / behind Complexe sportif Louis Auffray
+EAST_ROADS_JSON = os.path.join(BASE_DIR, "data", "geo", "ign_east_context_roads.geojson")
+if os.path.exists(EAST_ROADS_JSON):
+    LAT0_R, LON0_R = 48.5702417, -2.8158111
+    MPD_LAT_R = 111194.92664455873
+    MPD_LON_R = MPD_LAT_R * math.cos(math.radians(LAT0_R))
+    with open(EAST_ROADS_JSON, "r", encoding="utf-8") as f_er:
+        er_feats = json.load(f_er).get("features", [])
+    er_idx = 0
+    for ft in er_feats:
+        geom = ft.get("geometry", {})
+        gtype = geom.get("type")
+        lines = [geom["coordinates"]] if gtype == "LineString" else (geom.get("coordinates", []) if gtype == "MultiLineString" else [])
+        for coords in lines:
+            pts = [((c[0] - LON0_R) * MPD_LON_R, (c[1] - LAT0_R) * MPD_LAT_R) for c in coords]
+            if len(pts) < 2:
+                continue
+            # Keep road segments outside the stadium footprint
+            if any(p[0] > 455 or p[1] > 28 or p[1] < -258 for p in pts):
+                er_idx += 1
+                build_road_mesh(f"Route_Est_{er_idx}", pts, width=2.8, z_rd=-0.034)
 
 # Exact black-outline courtyard (with TWO open gate segments on Rue des Ecoles: seg 0->1 Main Gate, seg 3->4 Second Gate!)
 BLACK_OUTLINE_POLY = [
@@ -639,13 +696,26 @@ create_flat_roof("Toit_Preau_Entree_S6", rot_rect(s6_cx, s6_cy, s6_len + 0.3, s6
 # ==========================================================
 # 4. BUILD ALL OTHER REAL SCHOOL + CANTINE + CONTEXT BUILDINGS
 # ==========================================================
+HOLLOW_CLASSROOM_BUILDINGS = {
+    "Batiment_Principal_S1",
+    "Batiment_Sud_Maternelle_S2",
+    "Batiment_Nord_N1",
+    "Batiment_Est_Principal_E2",
+    "Pavillon_Central_S4",
+    "Annexe_Sud_S5",
+    "Sas_Entree_S7",
+}
+
 for bid, (b_name, roof_type, wall_mat, default_h, col_name, roof_items) in SCHOOL_SPEC.items():
     b = by_id.get(bid)
     if not b:
         continue
     h = float(b.get("hauteur") or default_h)
     pts = b["pts"]
-    create_poly_mesh(f"Murs_{b_name}", pts, 0.05, 0.05 + h, wall_mat, col_name)
+    if b_name in HOLLOW_CLASSROOM_BUILDINGS:
+        create_hollow_walls(f"Murs_{b_name}", pts, 0.05, 0.05 + h, wall_mat, col_name)
+    else:
+        create_poly_mesh(f"Murs_{b_name}", pts, 0.05, 0.05 + h, wall_mat, col_name)
     if b["area"] > 28:
         add_facade_details(b_name, pts, 0.05, h, col_name)
 
@@ -1706,6 +1776,8 @@ COMPLEX_TREES = [
     (472, 12, 2.3), (475, -2, 2.6), (473, -18, 2.4), (476, -34, 2.7),
     (472, -50, 2.2), (475, -66, 2.5), (474, -84, 2.6), (472, -102, 2.3),
     (474, -120, 2.5), (471, -136, 2.2), (484, -12, 2.5), (486, -44, 2.7),
+    (466, -154, 2.3), (458, -172, 2.4), (452, -190, 2.5), (446, -210, 2.3),
+    (440, -230, 2.4), (424, -244, 2.2), (404, -248, 2.3),
     (485, -76, 2.6), (483, -110, 2.4),
 ]
 for idx_ft, (tx, ty, ts) in enumerate(COMPLEX_TREES, 1):
@@ -1727,6 +1799,7 @@ for k in range(18):
 # Merged into just 2 optimized meshes (neutral light-grey walls + neutral grey roofs) for ultra-fast WebGL rendering!
 WIDE_IGN_JSON = os.path.join(BASE_DIR, "data", "geo", "ign_bdtopo_wide.geojson")
 STAD_IGN_JSON = os.path.join(BASE_DIR, "data", "geo", "ign_stadium_batiments.geojson")
+EAST_IGN_JSON = os.path.join(BASE_DIR, "data", "geo", "ign_east_context_batiments.geojson")
 LAT0_G, LON0_G = 48.5702417, -2.8158111
 MPD_LAT = 111194.92664455873
 MPD_LON = MPD_LAT * math.cos(math.radians(LAT0_G))
@@ -1784,7 +1857,7 @@ def append_neutral_building(pts, h):
         v.co.z = h + rh
     return True
 
-for src_path in (WIDE_IGN_JSON, STAD_IGN_JSON):
+for src_path in (WIDE_IGN_JSON, STAD_IGN_JSON, EAST_IGN_JSON):
     if not os.path.exists(src_path):
         continue
     with open(src_path, "r", encoding="utf-8") as f_ign:
@@ -1808,8 +1881,8 @@ for src_path in (WIDE_IGN_JSON, STAD_IGN_JSON):
             continue
         cx_b = sum(p[0] for p in pts) / len(pts)
         cy_b = sum(p[1] for p in pts) / len(pts)
-        # Keep ALL neutral buildings across the full town horizon (especially filling the North / NW / NE background!)
-        in_town_view = (-460 <= cx_b <= 540 and -300 <= cy_b <= 480)
+        # Keep ALL neutral buildings across the full town horizon (including East / NE / SE behind Complexe sportif!)
+        in_town_view = (-460 <= cx_b <= 960 and -480 <= cy_b <= 480)
         if not in_town_view:
             continue
         # Exclude anything inside our detailed active polygons (School/Perisco, Complex red outline, Church parvis, Cultural Pole)
