@@ -1625,14 +1625,9 @@ track_outer = stadium_oval_pts(ov_cx, ov_cy, 52.0, 29.5, ov_deg)
 track_inner = stadium_oval_pts(ov_cx, ov_cy, 52.0, 23.0, ov_deg)
 create_poly_mesh("Stade_Piste_Athletisme_Ovale", track_outer, 0.03, 0.075, MAT_TRACK_SAND, "STADE_LOUIS_AUFFRAY")
 create_poly_mesh("Stade_Piste_Pelouse_Interieure", track_inner, 0.075, 0.095, MAT_PRAIRIE_SEC, "STADE_LOUIS_AUFFRAY")
-# Tangent 100m sprint straight extension on East side + crossing pedestrian paths on West side (exact photo match!)
+# Tangent 100m sprint straight extension on East side
 spr_x, spr_y = local_to_world(ov_cx, ov_cy, 8.0, -26.2, ov_deg)
 create_poly_mesh("Stade_Piste_LigneDroite", rot_rect(spr_x, spr_y, 76.0, 6.2, ov_deg), 0.03, 0.076, MAT_TRACK_SAND, "STADE_LOUIS_AUFFRAY")
-# Diagonal pedestrian access paths crossing NW curve to City-Stade & Red Playground
-p_diag1 = rot_rect(294.0, -158.0, 28.0, 2.2, -38.0)
-create_poly_mesh("Stade_Allee_Acces_1", p_diag1, 0.08, 0.10, MAT_TRACK_SAND, "STADE_LOUIS_AUFFRAY")
-p_diag2 = rot_rect(300.0, -155.0, 22.0, 2.0, 52.0)
-create_poly_mesh("Stade_Allee_Acces_2", p_diag2, 0.08, 0.10, MAT_TRACK_SAND, "STADE_LOUIS_AUFFRAY")
 
 # 2. PUMPTRACK DE PORDIC (rich sinuous dark asphalt track with earth embankments inside East/South half of oval!)
 pt_waypoints = [
