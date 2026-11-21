@@ -272,6 +272,14 @@ export const SchoolScene3D: React.FC<Props> = ({
             const mesh = obj as THREE.Mesh;
             mesh.castShadow = !isFlatGroundObject(mesh.name);
             mesh.receiveShadow = true;
+            if (mesh.name === 'Terrain_Base') {
+              // Replace square ground plane with a smooth circular disk
+              const diskGeo = new THREE.CircleGeometry(1400, 96);
+              diskGeo.rotateX(-Math.PI / 2);
+              diskGeo.translate(160, -0.12, -20);
+              mesh.geometry.dispose();
+              mesh.geometry = diskGeo;
+            }
             if (isClassroomRoofObject(mesh)) {
               classroomRoofs.push(mesh);
             }
