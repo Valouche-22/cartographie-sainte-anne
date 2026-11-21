@@ -262,79 +262,103 @@
   ],
   "rooms": [
     {
-      "id": "Classe_01",
-      "name": "Salle 01",
-      "level": "À compléter",
+      "id": "Salle_Sieste_Motricite",
+      "name": "Sieste et motricité",
+      "level": "Maternelle",
       "building": "Batiment_Principal_S1",
-      "category": "classe",
-      "color": "#3b82f6",
-      "position": [
-        8.8,
-        1.8,
-        -5.8
-      ],
-      "description": "Affectation à préciser.",
-      "indicative": true
+      "category": "motricite",
+      "color": "#2563eb",
+      "position": [9.62, 2.7, -4.6],
+      "description": "Salle de sieste et de motricité équipée de jeux.",
+      "indicative": false
     },
     {
-      "id": "Classe_02",
-      "name": "Salle 02",
-      "level": "À compléter",
+      "id": "Sanitaires_Ecole",
+      "name": "Sanitaires",
+      "level": "Sanitaires / toilettes",
       "building": "Batiment_Principal_S1",
-      "category": "classe",
-      "color": "#10b981",
-      "position": [
-        -0.5,
-        1.8,
-        2.5
-      ],
-      "description": "Affectation à préciser.",
-      "indicative": true
+      "category": "autre",
+      "color": "#16a34a",
+      "position": [12.61, 2.7, 3.46],
+      "description": "Sanitaires et toilettes du bâtiment principal.",
+      "indicative": false
     },
     {
-      "id": "Classe_03",
-      "name": "Salle 03",
-      "level": "À compléter",
+      "id": "Salle_Profs",
+      "name": "Salle des profs",
+      "level": "Équipe enseignante",
       "building": "Batiment_Principal_S1",
-      "category": "classe",
-      "color": "#f59e0b",
-      "position": [
-        8.5,
-        1.8,
-        5.5
-      ],
-      "description": "Affectation à préciser.",
-      "indicative": true
+      "category": "autre",
+      "color": "#eab308",
+      "position": [18.87, 2.7, 8.9],
+      "description": "Salle des professeurs.",
+      "indicative": false
     },
     {
-      "id": "Classe_04",
-      "name": "Salle 04",
-      "level": "À compléter",
+      "id": "Classe_PS_MS",
+      "name": "PS / MS",
+      "level": "Petite et Moyenne Section",
       "building": "Batiment_Principal_S1",
       "category": "classe",
-      "color": "#ef4444",
-      "position": [
-        15.0,
-        1.8,
-        8.0
-      ],
-      "description": "Affectation à préciser.",
-      "indicative": true
+      "color": "#fb923c",
+      "position": [16.14, 2.7, 17.14],
+      "description": "Classe de Petite et Moyenne Section (PS/MS).",
+      "indicative": false
     },
     {
-      "id": "Classe_05",
-      "name": "Salle 05",
-      "level": "À compléter",
+      "id": "Classe_TPS_PS_MS",
+      "name": "TPS / PS / MS",
+      "level": "Toute Petite, Petite et Moyenne Section",
       "building": "Batiment_Principal_S1",
       "category": "classe",
-      "color": "#8b5cf6",
-      "position": [
-        11.5,
-        1.8,
-        16.0
-      ],
-      "description": "Affectation à préciser.",
-      "indicative": true
+      "color": "#ea580c",
+      "position": [8.24, 2.7, 18.2],
+      "description": "Classe de Toute Petite, Petite et Moyenne Section (TPS/PS/MS).",
+      "indicative": false
+    },
+    {
+      "id": "Classe_GS",
+      "name": "GS",
+      "level": "Grande Section",
+      "building": "Batiment_Principal_S1",
+      "category": "classe",
+      "color": "#1f2937",
+      "position": [-2.82, 2.7, -0.26],
+      "description": "Classe de Grande Section (GS).",
+      "indicative": false
+    },
+    {
+      "id": "Classe_CP",
+      "name": "CP",
+      "level": "Cours Préparatoire",
+      "building": "Batiment_Principal_S1",
+      "category": "classe",
+      "color": "#9333ea",
+      "position": [-0.19, 2.7, 6.82],
+      "description": "Classe de Cours Préparatoire (CP).",
+      "indicative": false
+    },
+    {
+      "id": "Preau_Maternelles",
+      "name": "Préau des maternelles",
+      "level": "Maternelle",
+      "building": "Pavillon_Central_S4",
+      "category": "autre",
+      "color": "#dc2626",
+      "position": [4.04, 2.7, 25.2],
+      "description": "Préau couvert des classes de maternelle.",
+      "indicative": false
+    },
+    {
+      "id": "Prefabrique",
+      "name": "Préfabriqué",
+      "level": "Inutilisé",
+      "building": "Batiment_Sud_Maternelle_S2",
+      "category": "autre",
+      "color": "#ec4899",
+      "position": [-2.91, 2.7, 31.62],
+      "description": "Préfabriqué destiné à être retiré : il n'est plus utilisé depuis la fermeture d'une classe.",
+      "indicative": false
     },
     {
       "id": "Classe_06",
@@ -515,7 +539,10 @@
           "value": "9 salles de classe aux surfaces très hétérogènes"
         },
         {
-          "value": "1 salle de motricité équipée de jeux"
+          "value": "1 salle de sieste et de motricité équipée de jeux"
+        },
+        {
+          "value": "Préfabriqué inutilisé depuis la fermeture d'une classe, destiné à être retiré"
         }
       ],
       "camera": {
