@@ -245,7 +245,7 @@ const MOBILE_SCENE_MULTS: Record<string, number> = {
   'cantine-periscolaire': 0.98,
   eglise: 0.76,
   sport: 0.94,
-  culture: 1.42,
+  culture: 1.05,
   S1: 0.96,
   N1: 0.88,
   E2: 0.96,
