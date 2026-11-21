@@ -170,7 +170,7 @@ const CLASS_FOCUS_VIEWS: Record<'S1' | 'N1' | 'E2', { pos: [number, number, numb
     buildings: ['Batiment_Nord_N1'],
   },
   E2: {
-    pos: [16, 48, 8],
+    pos: [18, 54, 4],
     target: [47, 1, -14],
     buildings: ['Batiment_Est_E2'],
   },
@@ -523,6 +523,7 @@ export const SchoolScene3D: React.FC<Props> = ({
                   pos: r.position,
                   kind: 'room' as const,
                   offsetOutside: focusMode === 'all' && r.building === 'Batiment_Nord_N1',
+                  offsetAbove: focusMode === 'all' && r.building === 'Batiment_Est_E2',
                 }))
             : data.buildings
                 .filter((b) => !focusIds || focusIds.includes(b.id))
@@ -533,6 +534,7 @@ export const SchoolScene3D: React.FC<Props> = ({
                   pos: [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]] as [number, number, number],
                   kind: 'building' as const,
                   offsetOutside: false,
+                  offsetAbove: false,
                 }));
 
           const next: ProjectedLabel[] = [];
@@ -541,10 +543,10 @@ export const SchoolScene3D: React.FC<Props> = ({
             const ax = (tmpVec.x * 0.5 + 0.5) * w;
             const ay = (-tmpVec.y * 0.5 + 0.5) * h;
             const visible = tmpVec.z < 1 && ax >= leftBound && ax <= w - 12 && ay >= 18 && ay <= bottomBound;
-            // Place Bureau directrice label BELOW its room (stem pointing UP), and other N1 labels up-left in overview
+            // Place Bureau directrice label BELOW its room (stem pointing UP), N1 labels up-left, and E2 labels cleanly above in overview
             const isDirectrice = it.id === 'Bureau_Directrice';
             const initX = isDirectrice ? ax + 10 : it.offsetOutside ? ax - 42 : ax;
-            const initY = isDirectrice ? ay + 46 : it.offsetOutside ? ay - 48 : ay - 22;
+            const initY = isDirectrice ? ay + 46 : it.offsetOutside ? ay - 48 : it.offsetAbove ? ay - 42 : ay - 22;
             next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: initX, y: initY, visible, kind: it.kind });
           }
           resolveLabelOverlaps(next, leftBound, w - 12, 18, bottomBound);

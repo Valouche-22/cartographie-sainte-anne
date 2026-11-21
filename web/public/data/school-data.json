@@ -368,7 +368,7 @@
       "category": "autre",
       "color": "#16a34a",
       "position": [-22.02, 2.7, -32.5],
-      "description": "Sanitaires du bâtiment Nord.",
+      "description": "Sanitaires du bâtiment Cycle 2.",
       "indicative": false
     },
     {
@@ -427,49 +427,59 @@
       "indicative": false
     },
     {
-      "id": "Classe_08",
-      "name": "Salle 08",
-      "level": "À compléter",
+      "id": "Classe_CM2",
+      "name": "CM2",
+      "level": "CM2",
       "building": "Batiment_Est_E2",
       "category": "classe",
-      "color": "#84cc16",
-      "position": [
-        45.2,
-        1.8,
-        -24.5
-      ],
-      "description": "Affectation à préciser.",
-      "indicative": true
+      "color": "#eab308",
+      "position": [40.88, 2.7, -30.52],
+      "description": "Classe de CM2.",
+      "indicative": false
     },
     {
-      "id": "Classe_09",
-      "name": "Salle 09",
-      "level": "À compléter",
+      "id": "Classe_CM1_CM2",
+      "name": "CM1 / CM2",
+      "level": "CM1 et CM2",
       "building": "Batiment_Est_E2",
       "category": "classe",
-      "color": "#6366f1",
-      "position": [
-        48.5,
-        1.8,
-        -13.5
-      ],
-      "description": "Affectation à préciser.",
-      "indicative": true
+      "color": "#2563eb",
+      "position": [43.75, 2.7, -23.24],
+      "description": "Classe de CM1 / CM2.",
+      "indicative": false
     },
     {
-      "id": "Classe_10",
-      "name": "Salle 10",
-      "level": "À compléter",
+      "id": "Classe_CE2_CM1",
+      "name": "CE2 / CM1",
+      "level": "CE2 et CM1",
       "building": "Batiment_Est_E2",
       "category": "classe",
-      "color": "#f97316",
-      "position": [
-        52.0,
-        1.8,
-        -3.0
-      ],
-      "description": "Affectation à préciser.",
-      "indicative": true
+      "color": "#9333ea",
+      "position": [46.90, 2.7, -15.27],
+      "description": "Classe de CE2 / CM1.",
+      "indicative": false
+    },
+    {
+      "id": "Sanitaires_Est",
+      "name": "Sanitaires",
+      "level": "Sanitaires / toilettes",
+      "building": "Batiment_Est_E2",
+      "category": "autre",
+      "color": "#16a34a",
+      "position": [51.38, 2.7, -9.51],
+      "description": "Sanitaires du bâtiment Cycle 3.",
+      "indicative": false
+    },
+    {
+      "id": "Local_APEL_OGEC",
+      "name": "Local APEL et OGEC",
+      "level": "Associations",
+      "building": "Batiment_Est_E2",
+      "category": "autre",
+      "color": "#dc2626",
+      "position": [52.87, 2.7, -0.96],
+      "description": "Local des associations APEL et OGEC.",
+      "indicative": false
     }
   ],
   "scenes": [

@@ -999,14 +999,34 @@ add_room_poly("Local_Materiel", n1_rect(17.75, 21.15, 5.45, 7.50), Z_RM0, Z_RM1,
 # Classe de CE2 (bleu fonce)
 add_room_poly("Classe_CE2", n1_rect(21.45, 29.15, 0.45, 7.30), Z_RM0, Z_RM1, (0.05, 0.14, 0.68), "CLASSES")
 
-# Remaining provisional rooms in Batiment Est E2 (awaiting room assignments)
-other_rooms_spec = [
-    ("Classe_08", (45.2, 24.5, 0.15), (4.4, 6.6, 2.6), 21.5, (0.72, 0.78, 0.38)),
-    ("Classe_09", (48.5, 13.5, 0.15), (4.4, 6.6, 2.6), 21.5, (0.48, 0.62, 0.88)),
-    ("Classe_10", (52.0, 3.0, 0.15), (4.4, 5.6, 2.6), 21.5, (0.90, 0.54, 0.36)),
+# EXACT MAPPING FOR BATIMENT EST E2 / CYCLE 3 (origin at NW courtyard corner 35.113, 32.871, angle -68.46 deg)
+_e2_ox, _e2_oy = 35.113, 32.871
+_e2_rad = math.radians(-68.46)
+_e2_ux, _e2_uy = math.cos(_e2_rad), math.sin(_e2_rad)
+_e2_vx, _e2_vy = -math.sin(_e2_rad), math.cos(_e2_rad)
+def e2_uv(u, v):
+    return (_e2_ox + u * _e2_ux + v * _e2_vx, _e2_oy + u * _e2_uy + v * _e2_vy)
+def e2_rect(u0, u1, v0, v1):
+    return [e2_uv(u0, v0), e2_uv(u1, v0), e2_uv(u1, v1), e2_uv(u0, v1)]
+
+# Jaune : Classe des CM2
+add_room_poly("Classe_CM2", e2_rect(0.45, 8.15, 0.45, 8.55), Z_RM0, Z_RM1, (0.90, 0.65, 0.04), "CLASSES")
+# Bleu : Classe des CM1/CM2
+add_room_poly("Classe_CM1_CM2", e2_rect(8.45, 15.80, 0.45, 8.55), Z_RM0, Z_RM1, (0.07, 0.20, 0.78), "CLASSES")
+# Violet : Classe des CE2/CM1
+add_room_poly("Classe_CE2_CM1", e2_rect(16.10, 25.30, 0.45, 8.55), Z_RM0, Z_RM1, (0.36, 0.08, 0.72), "CLASSES")
+# Sanitaires (meme vert #16a34a que dans les autres batiments!)
+add_room_poly("Sanitaires_Est", e2_rect(25.60, 29.75, 4.65, 8.55), Z_RM0, Z_RM1, (0.07, 0.48, 0.12), "CLASSES")
+# Rouge : Local APEL et OGEC (epouse exactement l'aile SE biaisee!)
+apel_poly = [
+    e2_uv(31.85, 0.85),
+    e2_uv(38.25, 0.95),
+    e2_uv(38.45, 1.60),
+    e2_uv(40.00, 1.60),
+    e2_uv(41.45, 8.55),
+    e2_uv(31.85, 8.55),
 ]
-for rname, loc, size, rot, col in other_rooms_spec:
-    add_room_block(rname, loc, size, rot, col, "CLASSES")
+add_room_poly("Local_APEL_OGEC", apel_poly, Z_RM0, Z_RM1, (0.68, 0.06, 0.06), "CLASSES")
 
 add_room_block("Salle_Cantine", (20.0, -43.5, 0.15), (24.0, 5.0, 2.0), 21.2, (0.28, 0.72, 0.42), "CANTINE")
 add_room_block("Salle_Periscolaire", (peri_cx, peri_cy, 0.15), (24.0, 6.5, 2.6), peri_deg, (0.76, 0.36, 0.78), "PERISCOLAIRE")
