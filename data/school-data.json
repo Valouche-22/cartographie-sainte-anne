@@ -185,9 +185,9 @@
         -177.6
       ],
       "cameraOffset": [
-        -76,
-        76,
-        -118
+        -128,
+        78,
+        -64
       ],
       "color": "#334155",
       "verified": true,
@@ -207,9 +207,9 @@
         -196.0
       ],
       "cameraOffset": [
-        -76,
-        76,
-        -118
+        -128,
+        78,
+        -64
       ],
       "color": "#334155",
       "verified": true,
@@ -229,9 +229,9 @@
         -202.0
       ],
       "cameraOffset": [
-        -76,
-        76,
-        -118
+        -128,
+        78,
+        -64
       ],
       "color": "#334155",
       "verified": true,
@@ -501,14 +501,14 @@
       ],
       "camera": {
         "pos": [
-          -46,
-          108,
-          92
+          -30,
+          118,
+          66
         ],
         "target": [
-          14,
+          15,
           0,
-          2
+          -2
         ]
       },
       "hideRoofs": true,
@@ -575,9 +575,9 @@
       ],
       "camera": {
         "pos": [
-          168,
+          148,
           118,
-          286
+          260
         ],
         "target": [
           372,
@@ -600,7 +600,7 @@
         { "value": "Parc de la Médiathèque" },
         { "value": "Centre culturel de La Ville Robert en face : spectacles organisés auxquels les élèves assistent" }
       ],
-      "camera": { "pos": [-76, 76, -118], "target": [-204, 2, -192] },
+      "camera": { "pos": [-128, 78, -64], "target": [-204, 2, -192] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
