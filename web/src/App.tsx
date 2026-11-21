@@ -295,6 +295,7 @@ export const App: React.FC = () => {
                 <span className="scroll-wheel" />
               </span>
               <span className="scroll-cue-text">Faire défiler vers le bas</span>
+              <ChevronDown size={15} className="scroll-cue-arrow" />
             </button>
           </section>
 
@@ -329,33 +330,56 @@ export const App: React.FC = () => {
             ))}
 
             <div className="col-sticky-bottom">
-              <button
-                type="button"
-                className="step-nav-btn"
-                onClick={() => goToSection(activeSceneIndex)}
-              >
-                <ChevronUp size={15} /> Précédent
-              </button>
-              <div className="step-dots" role="tablist" aria-label="Étapes de la visite">
-                {data.scenes.map((sc, idx) => (
+              <div className="col-scroll-hint">
+                {activeSceneIndex < totalChapters - 1 ? (
                   <button
-                    key={sc.id}
                     type="button"
-                    className={`step-dot ${idx === activeSceneIndex ? 'active' : ''}`}
-                    onClick={() => goToSection(idx + 1)}
-                    title={sc.title}
-                    aria-label={`Aller à ${sc.title}`}
-                  />
-                ))}
+                    className="scroll-next-hint"
+                    onClick={() => goToSection(activeSceneIndex + 2)}
+                  >
+                    <span>Défiler vers le bas · Suite : {data.scenes[activeSceneIndex + 1].title}</span>
+                    <ChevronDown size={14} className="hint-bounce" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="scroll-next-hint"
+                    onClick={() => goToSection(0)}
+                  >
+                    <span>Fin de la visite · Revenir au début</span>
+                    <ChevronUp size={14} />
+                  </button>
+                )}
               </div>
-              <button
-                type="button"
-                className="step-nav-btn"
-                disabled={activeSceneIndex >= totalChapters - 1}
-                onClick={() => goToSection(activeSceneIndex + 2)}
-              >
-                Suivant <ChevronDown size={15} />
-              </button>
+              <div className="col-nav-row">
+                <button
+                  type="button"
+                  className="step-nav-btn"
+                  onClick={() => goToSection(activeSceneIndex)}
+                >
+                  <ChevronUp size={15} /> Précédent
+                </button>
+                <div className="step-dots" role="tablist" aria-label="Étapes de la visite">
+                  {data.scenes.map((sc, idx) => (
+                    <button
+                      key={sc.id}
+                      type="button"
+                      className={`step-dot ${idx === activeSceneIndex ? 'active' : ''}`}
+                      onClick={() => goToSection(idx + 1)}
+                      title={sc.title}
+                      aria-label={`Aller à ${sc.title}`}
+                    />
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="step-nav-btn primary"
+                  disabled={activeSceneIndex >= totalChapters - 1}
+                  onClick={() => goToSection(activeSceneIndex + 2)}
+                >
+                  Suivant <ChevronDown size={15} />
+                </button>
+              </div>
             </div>
           </div>
         </main>
