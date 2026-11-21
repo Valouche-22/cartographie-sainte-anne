@@ -173,13 +173,13 @@ export const SchoolScene3D: React.FC<Props> = ({
     if (!container) return;
 
     const scene = new THREE.Scene();
-    const skyHorizon = new THREE.Color('#c8e2f8');
-    scene.background = skyHorizon;
-    // Very light distant atmospheric haze only past the town so buildings stay crisp
-    scene.fog = new THREE.Fog(skyHorizon, 950, 2100);
+    const horizonColor = new THREE.Color('#d8eaf7');
+    scene.background = horizonColor;
+    // Atmospheric horizon fog dissolving distant edges seamlessly into the sky
+    scene.fog = new THREE.Fog(horizonColor, 520, 1420);
 
-    // Clean blue sky dome visible behind the town horizon
-    const skyGeo = new THREE.SphereGeometry(2100, 32, 20);
+    // Smooth blue sky dome that ALWAYS follows the camera so it can NEVER be clipped by camera.far!
+    const skyGeo = new THREE.SphereGeometry(2000, 32, 20);
     const skyMat = new THREE.ShaderMaterial({
       side: THREE.BackSide,
       depthWrite: false,
@@ -187,58 +187,35 @@ export const SchoolScene3D: React.FC<Props> = ({
       uniforms: {
         topColor: { value: new THREE.Color('#5a9de0') },
         midColor: { value: new THREE.Color('#97c8f2') },
-        bottomColor: { value: skyHorizon },
+        horizonColor: { value: horizonColor },
       },
       vertexShader: `
-        varying vec3 vWorldPosition;
+        varying vec3 vLocalDir;
         void main() {
-          vec4 worldPos = modelMatrix * vec4(position, 1.0);
-          vWorldPosition = worldPos.xyz;
-          gl_Position = projectionMatrix * viewMatrix * worldPos;
+          vLocalDir = normalize(position);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
       fragmentShader: `
         uniform vec3 topColor;
         uniform vec3 midColor;
-        uniform vec3 bottomColor;
-        varying vec3 vWorldPosition;
+        uniform vec3 horizonColor;
+        varying vec3 vLocalDir;
         void main() {
-          float h = normalize(vWorldPosition).y;
-          float t1 = smoothstep(-0.18, 0.14, h);
-          float t2 = smoothstep(0.10, 0.55, h);
-          vec3 col = mix(bottomColor, midColor, t1);
+          float h = max(vLocalDir.y, 0.0);
+          float t1 = smoothstep(0.0, 0.22, h);
+          float t2 = smoothstep(0.16, 0.68, h);
+          vec3 col = mix(horizonColor, midColor, t1);
           col = mix(col, topColor, t2);
           gl_FragColor = vec4(col, 1.0);
         }
       `,
     });
     const skyDome = new THREE.Mesh(skyGeo, skyMat);
+    skyDome.frustumCulled = false;
     scene.add(skyDome);
 
-    // Soft radial alpha mask so Terrain_Base fades smoothly into the blue sky at its edges
-    const createRadialFadeAlphaMap = () => {
-      const size = 256;
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        const half = size / 2;
-        const grad = ctx.createRadialGradient(half, half, half * 0.58, half, half, half);
-        grad.addColorStop(0, '#ffffff');
-        grad.addColorStop(0.65, '#ffffff');
-        grad.addColorStop(0.88, '#666666');
-        grad.addColorStop(1, '#000000');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, size, size);
-      }
-      const tex = new THREE.CanvasTexture(canvas);
-      tex.needsUpdate = true;
-      return tex;
-    };
-    const terrainAlphaMap = createRadialFadeAlphaMap();
-
-    const camera = new THREE.PerspectiveCamera(44, container.clientWidth / container.clientHeight, 2.5, 2200);
+    const camera = new THREE.PerspectiveCamera(44, container.clientWidth / container.clientHeight, 2.5, 2600);
     camera.position.set(...data.heroCamera.pos);
     cameraRef.current = camera;
 
@@ -295,17 +272,6 @@ export const SchoolScene3D: React.FC<Props> = ({
             const mesh = obj as THREE.Mesh;
             mesh.castShadow = !isFlatGroundObject(mesh.name);
             mesh.receiveShadow = true;
-            if (mesh.name === 'Terrain_Base') {
-              // Trim oversized 2800m plane down to the town footprint and fade its perimeter smoothly into the sky
-              mesh.scale.set(0.56, 1, 0.44);
-              const baseMat = (mesh.material as THREE.MeshStandardMaterial)?.clone();
-              if (baseMat) {
-                baseMat.transparent = true;
-                baseMat.alphaMap = terrainAlphaMap;
-                baseMat.depthWrite = true;
-                mesh.material = baseMat;
-              }
-            }
             if (isClassroomRoofObject(mesh)) {
               classroomRoofs.push(mesh);
             }
@@ -442,6 +408,7 @@ export const SchoolScene3D: React.FC<Props> = ({
         controls.update();
       }
 
+      skyDome.position.copy(camera.position);
       renderer.render(scene, camera);
 
       frameCount++;
