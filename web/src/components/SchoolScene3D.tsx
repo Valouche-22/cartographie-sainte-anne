@@ -106,33 +106,49 @@ function resolveMobileLabelOverlaps(
     const wrapped = rawW > 148;
     const hw = Math.min(78, rawW * 0.5) + 4;
     const hh = wrapped ? 19 : 13;
-    return { it, hw, hh };
+    return { it, hw, hh, tx: it.ax, ty: it.ay - 54 };
   });
 
-  // Fan labels gently outward from their cluster center so they clear the building & spread into margins
-  if (boxes.length >= 2) {
+  // Push labels cleanly OUTSIDE the building footprint so they never obscure rooms or facades
+  if (boxes.length === 1) {
+    const b = boxes[0];
+    b.tx = b.it.ax;
+    b.ty = b.it.ay - 58;
+    b.it.x = b.tx;
+    b.it.y = b.ty;
+  } else {
     const cx = boxes.reduce((s, b) => s + b.it.ax, 0) / boxes.length;
     const cy = boxes.reduce((s, b) => s + b.it.ay, 0) / boxes.length;
+    const minAy = Math.min(...boxes.map((b) => b.it.ay));
+    const maxAy = Math.max(...boxes.map((b) => b.it.ay));
     for (const b of boxes) {
       const vx = b.it.ax - cx;
       const vy = b.it.ay - cy;
       const len = Math.hypot(vx, vy) || 1;
-      const pushX = (vx / len) * 24;
-      const pushY = vy >= 0 ? Math.max(20, (vy / len) * 32) : Math.min(-24, (vy / len) * 34);
-      b.it.x = b.it.ax + pushX;
-      b.it.y = b.it.ay + pushY;
+      const nx = vx / len;
+      const ny = vy / len;
+      if (vy <= 0) {
+        // Upper half of building -> push cleanly ABOVE the roofline
+        b.tx = b.it.ax + nx * 56;
+        b.ty = Math.min(minAy - 30, b.it.ay - 54) + ny * 18;
+      } else {
+        // Lower half of building -> push cleanly BELOW the building footprint
+        b.tx = b.it.ax + nx * 56;
+        b.ty = Math.max(maxAy + 28, b.it.ay + 50) + ny * 16;
+      }
+      b.it.x = b.tx;
+      b.it.y = b.ty;
     }
   }
 
-  // Clamp initial positions inside safe mobile bounds (avoiding top-right Vue libre button)
+  // Clamp inside safe mobile bounds (below top bar, left of right rail, above bottom card)
   const clampBox = (b: { it: ProjectedLabel; hw: number; hh: number }) => {
     b.it.x = Math.max(leftBound + b.hw, Math.min(rightBound - b.hw, b.it.x));
-    const effTop = b.it.x + b.hw > rightBound - 108 ? Math.max(topBound, 48) : topBound;
-    b.it.y = Math.max(effTop + b.hh, Math.min(bottomBound - b.hh, b.it.y));
+    b.it.y = Math.max(topBound + b.hh, Math.min(bottomBound - b.hh, b.it.y));
   };
   boxes.forEach(clampBox);
 
-  // 48 iterations: gentle tether during first 32, pure hard non-overlapping separation during final 16
+  // 48 iterations: gentle tether toward OUTWARD perimeter target (tx, ty) during first 30, pure hard non-overlap during final 18
   for (let iter = 0; iter < 48; iter++) {
     let anyOverlap = false;
     for (let i = 0; i < boxes.length; i++) {
@@ -147,7 +163,6 @@ function resolveMobileLabelOverlaps(
         const oy = minY - Math.abs(dy);
         if (ox > 0 && oy > 0) {
           anyOverlap = true;
-          // Strongly prefer vertical stacking on narrow portrait screens unless horizontal gap is tiny
           if (oy <= ox * 1.35) {
             const sy = dy >= 0 ? 1 : -1;
             const shift = oy * 0.54 + 0.8;
@@ -162,14 +177,14 @@ function resolveMobileLabelOverlaps(
         }
       }
     }
-    if (iter < 32) {
+    if (iter < 30) {
       for (const b of boxes) {
-        b.it.x += (b.it.ax - b.it.x) * 0.035;
-        b.it.y += (b.it.ay - b.it.y) * 0.025;
+        b.it.x += (b.tx - b.it.x) * 0.04;
+        b.it.y += (b.ty - b.it.y) * 0.04;
       }
     }
     boxes.forEach(clampBox);
-    if (!anyOverlap && iter >= 32) break;
+    if (!anyOverlap && iter >= 30) break;
   }
 
   return items;

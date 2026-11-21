@@ -34,7 +34,10 @@ export const App: React.FC = () => {
   const scrollTweenRef = useRef<gsap.core.Tween | null>(null);
   const wheelLockUntilRef = useRef(0);
   const labelDelayTimerRef = useRef<number | null>(null);
-  const mobileFeedRef = useRef<HTMLDivElement | null>(null);
+  const mobileDeckRef = useRef<HTMLDivElement | null>(null);
+  const mobileTrackRef = useRef<HTMLDivElement | null>(null);
+  const mobileTrackYRef = useRef({ y: 0 });
+  const mobileTweenRef = useRef<gsap.core.Tween | null>(null);
   const ecoleCarouselRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -151,14 +154,29 @@ export const App: React.FC = () => {
       const clamped = Math.max(0, Math.min(maxIdx, targetIdx));
 
       if (isMobile) {
-        const feed = mobileFeedRef.current;
         applySectionState(clamped);
-        if (feed) {
-          const slide = feed.querySelector<HTMLElement>(`[data-reel-index="${clamped}"]`);
-          if (slide) {
-            feed.scrollTo({ top: slide.offsetTop, behavior: instant ? 'auto' : 'smooth' });
+        const deck = mobileDeckRef.current;
+        const track = mobileTrackRef.current;
+        if (deck && track) {
+          const slideH = deck.clientHeight || window.innerHeight;
+          const destY = -clamped * slideH;
+          mobileTweenRef.current?.kill();
+          if (instant) {
+            mobileTrackYRef.current.y = destY;
+            track.style.transform = `translate3d(0, ${destY}px, 0)`;
           } else {
-            feed.scrollTo({ top: clamped * feed.clientHeight, behavior: instant ? 'auto' : 'smooth' });
+            mobileTweenRef.current = gsap.to(mobileTrackYRef.current, {
+              y: destY,
+              duration: 0.44,
+              ease: 'power3.out',
+              onUpdate: () => {
+                track.style.transform = `translate3d(0, ${mobileTrackYRef.current.y}px, 0)`;
+              },
+              onComplete: () => {
+                mobileTrackYRef.current.y = destY;
+                track.style.transform = `translate3d(0, ${destY}px, 0)`;
+              },
+            });
           }
         }
         return;
@@ -283,37 +301,109 @@ export const App: React.FC = () => {
     };
   }, [data, freeExplore, isMobile, applySectionState]);
 
-  // Mobile TikTok-style vertical snap feed observer
+  // Mobile GPU-composited TikTok-style vertical swipe engine (zero native scroll-snap jank; desktop untouched)
   useEffect(() => {
     if (!data || freeExplore || !isMobile) return;
-    const feed = mobileFeedRef.current;
-    if (!feed) return;
-    const slides = feed.querySelectorAll<HTMLElement>('.mobile-reel-slide');
-    if (!slides.length) return;
+    const deck = mobileDeckRef.current;
+    const track = mobileTrackRef.current;
+    if (!deck || !track) return;
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        let bestIdx: number | null = null;
-        let bestRatio = 0;
-        for (const entry of entries) {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.52 && entry.intersectionRatio > bestRatio) {
-            const raw = (entry.target as HTMLElement).dataset.reelIndex;
-            if (raw !== undefined) {
-              bestRatio = entry.intersectionRatio;
-              bestIdx = Number(raw);
-            }
-          }
-        }
-        if (bestIdx !== null && bestIdx !== sectionIdxRef.current) {
-          applySectionState(bestIdx);
-        }
-      },
-      { root: feed, threshold: [0.55, 0.75, 0.9] }
-    );
+    const maxIdx = data.scenes.length;
+    const syncToCurrent = () => {
+      const h = deck.clientHeight || window.innerHeight;
+      const y = -sectionIdxRef.current * h;
+      mobileTweenRef.current?.kill();
+      mobileTrackYRef.current.y = y;
+      track.style.transform = `translate3d(0, ${y}px, 0)`;
+    };
+    syncToCurrent();
 
-    slides.forEach((s) => io.observe(s));
-    return () => io.disconnect();
-  }, [data, freeExplore, isMobile, applySectionState]);
+    let startX = 0;
+    let startY = 0;
+    let startTime = 0;
+    let baseY = 0;
+    let axis: 'none' | 'v' | 'h' = 'none';
+    let lastDy = 0;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      mobileTweenRef.current?.kill();
+      const t = e.touches[0];
+      startX = t.clientX;
+      startY = t.clientY;
+      startTime = performance.now();
+      const h = deck.clientHeight || window.innerHeight;
+      baseY = -sectionIdxRef.current * h;
+      mobileTrackYRef.current.y = baseY;
+      axis = 'none';
+      lastDy = 0;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+
+      if (axis === 'none') {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        const inCarousel = !!(e.target as HTMLElement | null)?.closest('.mobile-carousel-track');
+        if (inCarousel && Math.abs(dx) >= Math.abs(dy) * 0.9) {
+          axis = 'h';
+          return;
+        }
+        axis = Math.abs(dy) >= Math.abs(dx) ? 'v' : 'h';
+      }
+
+      if (axis !== 'v') return;
+      e.preventDefault();
+      lastDy = dy;
+
+      const idx = sectionIdxRef.current;
+      // Gentle rubber-band resistance at first & last slide
+      const resisted =
+        (idx === 0 && dy > 0) || (idx === maxIdx && dy < 0) ? dy * 0.28 : dy;
+      const nextY = baseY + resisted;
+      mobileTrackYRef.current.y = nextY;
+      track.style.transform = `translate3d(0, ${nextY}px, 0)`;
+    };
+
+    const onTouchEnd = () => {
+      if (axis !== 'v') {
+        axis = 'none';
+        return;
+      }
+      axis = 'none';
+      const dt = Math.max(16, performance.now() - startTime);
+      const velocity = Math.abs(lastDy) / dt; // px/ms
+      const h = deck.clientHeight || window.innerHeight;
+      const threshold = Math.min(54, h * 0.08);
+      let targetIdx = sectionIdxRef.current;
+
+      if ((lastDy < -threshold || (lastDy < -18 && velocity > 0.28)) && targetIdx < maxIdx) {
+        targetIdx += 1;
+      } else if ((lastDy > threshold || (lastDy > 18 && velocity > 0.28)) && targetIdx > 0) {
+        targetIdx -= 1;
+      }
+
+      goToSection(targetIdx);
+    };
+
+    deck.addEventListener('touchstart', onTouchStart, { passive: true });
+    deck.addEventListener('touchmove', onTouchMove, { passive: false });
+    deck.addEventListener('touchend', onTouchEnd, { passive: true });
+    deck.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    window.addEventListener('resize', syncToCurrent);
+
+    return () => {
+      mobileTweenRef.current?.kill();
+      deck.removeEventListener('touchstart', onTouchStart);
+      deck.removeEventListener('touchmove', onTouchMove);
+      deck.removeEventListener('touchend', onTouchEnd);
+      deck.removeEventListener('touchcancel', onTouchEnd);
+      window.removeEventListener('resize', syncToCurrent);
+    };
+  }, [data, freeExplore, isMobile, goToSection]);
 
   const enterFreeExplore = () => {
     scrollTweenRef.current?.kill();
@@ -456,9 +546,10 @@ export const App: React.FC = () => {
             </div>
           )}
 
-          {/* TikTok-style mandatory vertical snap scroll feed */}
-          <main className="mobile-reel-feed" ref={mobileFeedRef}>
-            <section className="mobile-reel-slide mobile-reel-hero" data-reel-index={0} id="hero-cover">
+          {/* TikTok-style GPU-composited vertical swipe deck */}
+          <main className="mobile-reel-feed" ref={mobileDeckRef}>
+            <div className="mobile-reel-track" ref={mobileTrackRef}>
+              <section className="mobile-reel-slide mobile-reel-hero" data-reel-index={0} id="hero-cover">
               <div className="hero-backdrop" />
               <div className="hero-inner">
                 <h1 className="hero-h1">{data.school.name}</h1>
@@ -632,6 +723,7 @@ export const App: React.FC = () => {
                 </div>
               </section>
             ))}
+            </div>
           </main>
         </>
       )}
