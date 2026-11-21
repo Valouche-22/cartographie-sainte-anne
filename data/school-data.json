@@ -185,9 +185,9 @@
         -177.6
       ],
       "cameraOffset": [
-        -274,
-        108,
-        -48
+        -76,
+        76,
+        -118
       ],
       "color": "#334155",
       "verified": true,
@@ -207,9 +207,9 @@
         -196.0
       ],
       "cameraOffset": [
-        -274,
-        108,
-        -48
+        -76,
+        76,
+        -118
       ],
       "color": "#334155",
       "verified": true,
@@ -229,9 +229,9 @@
         -202.0
       ],
       "cameraOffset": [
-        -274,
-        108,
-        -48
+        -76,
+        76,
+        -118
       ],
       "color": "#334155",
       "verified": true,
@@ -417,133 +417,198 @@
       "id": "ecole",
       "title": "École Sainte-Anne",
       "rows": [
-        { "label": "Effectifs", "value": "220 élèves répartis en 9 classes" },
-        { "label": "Équipe", "value": "11 enseignants (dont 4 à mi-temps), une directrice également à mi-temps en classe, 2 AESH pour 3 élèves, et les ASEM / personnels OGEC" },
-        { "label": "Bâtiments", "value": "3 bâtiments et 1 préfabriqué (destiné à être retiré)" },
-        { "label": "Horaires", "value": "8h30 – 12h00 / 13h30 – 16h15 · Accompagnement personnalisé le mardi soir" },
-        { "label": "Organisation", "value": "Établissement indépendant (hors groupe scolaire), en lien avec le collège Saint-Pierre de Plérin" },
-        { "label": "Associations", "value": "APEL (parents d'élèves : soutien aux projets et sorties) et OGEC (gestion matérielle, financière et des personnels)" },
-        { "label": "Familles", "value": "Échanges par mail, Educartable et en face à face" },
-        { "label": "Transports", "value": "Réseau de transport TUB, BreizhGo et cars scolaires" }
+        {
+          "label": "Effectifs",
+          "value": "220 élèves répartis en 9 classes"
+        },
+        {
+          "label": "Équipe",
+          "value": "11 enseignants (dont 4 à mi-temps), une directrice également à mi-temps en classe, 2 AESH pour 3 élèves, et les ASEM / personnels OGEC"
+        },
+        {
+          "label": "Bâtiments",
+          "value": "3 bâtiments et 1 préfabriqué (destiné à être retiré)"
+        },
+        {
+          "label": "Horaires",
+          "value": "8h30 – 12h00 / 13h30 – 16h15 · Accompagnement personnalisé le mardi soir"
+        },
+        {
+          "label": "Organisation",
+          "value": "Établissement indépendant (hors groupe scolaire), en lien avec le collège Saint-Pierre de Plérin"
+        },
+        {
+          "label": "Associations",
+          "value": "APEL (parents d'élèves : soutien aux projets et sorties) et OGEC (gestion matérielle, financière et des personnels)"
+        },
+        {
+          "label": "Familles",
+          "value": "Échanges par mail, Educartable et en face à face"
+        },
+        {
+          "label": "Transports",
+          "value": "Réseau de transport TUB, BreizhGo et cars scolaires"
+        }
       ],
-      "camera": { "pos": [-82, 46, 76], "target": [10, 2, 4] },
+      "camera": {
+        "pos": [
+          -82,
+          46,
+          76
+        ],
+        "target": [
+          10,
+          2,
+          4
+        ]
+      },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
         "Batiment_Principal_S1",
         "Batiment_Nord_N1",
         "Batiment_Est_E2"
-      ]
+      ],
+      "swayAmp": 0.105
     },
     {
       "id": "cour",
       "title": "La cour",
       "rows": [
-        {
-          "value": "Terrains de foot et jeux collectifs"
-        },
-        {
-          "value": "Terrain et panier de basket"
-        },
-        {
-          "value": "Préau couvert"
-        },
-        {
-          "value": "Espace en herbe et grand arbre"
-        }
+        { "value": "Terrains de foot et jeux collectifs" },
+        { "value": "Terrain et panier de basket" },
+        { "value": "Préau couvert" },
+        { "value": "Espace en herbe et grand arbre" }
       ],
-      "camera": { "pos": [-52, 54, 62], "target": [4, 0, -2] },
+      "camera": { "pos": [-68, 72, -24], "target": [6, 0, 10] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
         "Preau_Ecole"
-      ]
+      ],
+      "swayAmp": 0.095
     },
     {
       "id": "classes",
       "title": "Les salles de classe",
       "rows": [
-        { "value": "9 salles de classe aux surfaces très hétérogènes" },
-        { "value": "1 salle de motricité équipée de jeux" }
+        {
+          "value": "9 salles de classe aux surfaces très hétérogènes"
+        },
+        {
+          "value": "1 salle de motricité équipée de jeux"
+        }
       ],
-      "camera": { "pos": [-30, 118, 66], "target": [15, 0, -2] },
+      "camera": {
+        "pos": [
+          -46,
+          108,
+          92
+        ],
+        "target": [
+          14,
+          0,
+          2
+        ]
+      },
       "hideRoofs": true,
-      "showLabels": true
+      "showLabels": true,
+      "swayAmp": 0.065
     },
     {
       "id": "cantine-periscolaire",
       "title": "Cantine et périscolaire",
       "rows": [
-        { "value": "Situés juste à côté de l'école" },
-        { "value": "Les animateurs viennent chercher les élèves dans les classes pour le repas du midi et pour le périscolaire" },
-        { "value": "Garderie le matin et le soir ; le goûter du périscolaire est pris à la cantine" }
+        {
+          "value": "Situés juste à côté de l'école"
+        },
+        {
+          "value": "Les animateurs viennent chercher les élèves dans les classes pour le repas du midi et pour le périscolaire"
+        },
+        {
+          "value": "Garderie le matin et le soir ; le goûter du périscolaire est pris à la cantine"
+        }
       ],
-      "camera": { "pos": [108, 56, 114], "target": [32, 0, 30] },
+      "camera": { "pos": [90, 44, 92], "target": [32, 0, 32] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
         "Batiment_Cantine",
         "Batiment_Periscolaire"
-      ]
+      ],
+      "swayAmp": 0.105
     },
     {
       "id": "eglise",
       "title": "Église Saint-Pierre",
       "rows": [
-        {
-          "value": "Lien avec la paroisse de Pordic : 3 intervenants extérieurs (catéchèse) et le curé"
-        },
-        {
-          "value": "1 h d'enseignement religieux le lundi matin"
-        },
-        {
-          "value": "Messes de Noël et de Pâques"
-        },
-        {
-          "value": "Uniquement pour les élèves volontaires"
-        }
+        { "value": "Lien avec la paroisse de Pordic : 3 intervenants extérieurs (catéchèse) et le curé" },
+        { "value": "1 h d'enseignement religieux le lundi matin" },
+        { "value": "Messes de Noël et de Pâques" },
+        { "value": "Uniquement pour les élèves volontaires" }
       ],
-      "camera": { "pos": [-268, 58, 12], "target": [-142, 16, -64] },
+      "camera": {
+        "pos": [
+          -268,
+          58,
+          12
+        ],
+        "target": [
+          -142,
+          16,
+          -64
+        ]
+      },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
         "Eglise_Saint_Pierre"
-      ]
+      ],
+      "swayAmp": 0.145
     },
     {
       "id": "sport",
       "title": "Complexe sportif Louis Auffray",
       "rows": [
-        {
-          "value": "Salles et terrains municipaux accessibles à pied depuis l'école"
-        },
-        {
-          "value": "Matériel mis à disposition par la commune de Pordic, en complément de la salle de motricité"
-        }
+        { "value": "Salles et terrains municipaux accessibles à pied depuis l'école" },
+        { "value": "Matériel mis à disposition par la commune de Pordic, en complément de la salle de motricité" }
       ],
-      "camera": { "pos": [168, 118, 286], "target": [372, 0, 108] },
+      "camera": {
+        "pos": [
+          168,
+          118,
+          286
+        ],
+        "target": [
+          372,
+          0,
+          108
+        ]
+      },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
         "Stade_Louis_Auffray"
-      ]
+      ],
+      "swayAmp": 0.165
     },
     {
       "id": "culture",
       "title": "Médiathèque de l'Ic et La Ville Robert",
       "rows": [
         { "value": "Médiathèque municipale accessible à pied : prêt de livres, ressources et albums de jeunesse utilisés dans les classes" },
-        { "value": "Parc de la Médiathèque attenant" },
+        { "value": "Parc de la Médiathèque" },
         { "value": "Centre culturel de La Ville Robert en face : spectacles organisés auxquels les élèves assistent" }
       ],
-      "camera": { "pos": [-274, 108, -48], "target": [-198, 2, -190] },
+      "camera": { "pos": [-76, 76, -118], "target": [-204, 2, -192] },
       "hideRoofs": false,
       "showLabels": true,
       "focusLabels": [
         "Mediatheque_Ic",
         "Parc_Mediatheque",
         "Centre_Culturel_Ville_Robert"
-      ]
+      ],
+      "swayAmp": 0.135
     }
   ]
 }
