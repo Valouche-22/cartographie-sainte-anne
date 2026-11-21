@@ -44,6 +44,38 @@ export const App: React.FC = () => {
       .catch(() => setLoadError('Impossible de charger les données.'));
   }, []);
 
+  // Automatically scale chapter spacing/typography down ONLY when a chapter overflows the viewport height
+  useEffect(() => {
+    if (!data || freeExplore) return;
+    const fitChapters = () => {
+      const panels = document.querySelectorAll<HTMLElement>('.chapter-panel');
+      const isDesktop = window.innerWidth > 860;
+      panels.forEach((panel) => {
+        const body = panel.querySelector<HTMLElement>('.chapter-body');
+        if (!body) return;
+        body.style.setProperty('--fit', '1');
+        if (!isDesktop) return;
+        const cs = window.getComputedStyle(panel);
+        const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+        const availH = panel.clientHeight - padY - 6;
+        if (availH <= 0 || body.scrollHeight <= availH) return;
+        for (const f of [0.94, 0.88, 0.82, 0.76, 0.71, 0.66, 0.61]) {
+          body.style.setProperty('--fit', String(f));
+          if (body.scrollHeight <= availH) break;
+        }
+      });
+    };
+    const raf = requestAnimationFrame(fitChapters);
+    window.addEventListener('resize', fitChapters);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(fitChapters);
+    }
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', fitChapters);
+    };
+  }, [data, freeExplore]);
+
   const applySectionState = useCallback(
     (sectionIdx: number) => {
       if (!data) return;
