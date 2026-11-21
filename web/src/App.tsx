@@ -254,6 +254,9 @@ export const App: React.FC = () => {
         <button className="tool-btn" onClick={() => triggerPreset('church')}>
           ⛪ Église
         </button>
+        <button className="tool-btn" onClick={() => triggerPreset('culture')}>
+          🎭 Ville Robert / Médiathèque
+        </button>
         <button className="tool-btn" onClick={() => triggerPreset('stadium')}>
           ⚽ Stade Louis Auffray
         </button>

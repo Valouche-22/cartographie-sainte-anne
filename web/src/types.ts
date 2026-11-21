@@ -54,4 +54,4 @@ export interface SchoolData {
   scenes: SceneStep[];
 }
 
-export type CameraPreset = 'general' | 'aerial' | 'front' | 'top' | 'church' | 'stadium';
+export type CameraPreset = 'general' | 'aerial' | 'front' | 'top' | 'church' | 'culture' | 'stadium';

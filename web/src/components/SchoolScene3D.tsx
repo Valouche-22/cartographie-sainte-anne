@@ -37,6 +37,7 @@ const PRESET_VIEWS: Record<CameraPreset, { pos: [number, number, number]; target
   front: { pos: [-68, 16, 10], target: [0, 3, 4] },
   top: { pos: [12, 145, 16], target: [12, 0, 16] },
   church: { pos: [-265, 78, 12], target: [-140, 22, -64] },
+  culture: { pos: [-218, 82, -92], target: [-188, 6, -196] },
   stadium: { pos: [210, 118, 245], target: [365, 4, 115] },
 };
 

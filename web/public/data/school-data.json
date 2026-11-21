@@ -196,6 +196,50 @@
       "description": "Située à 155 m au nord-ouest de l'école, l'église Saint-Pierre (plan en croix latine en granite clair de l'Île-Grande) est célèbre pour son clocher-tour néogothique surmonté d'une flèche ajourée culminant à ~51 m."
     },
     {
+      "id": "Mediatheque_Ic",
+      "meshPrefix": "Mediatheque_",
+      "roofName": "Toit_Mediatheque_",
+      "name": "Médiathèque de l'Ic",
+      "role": "Lecture publique, patrimoine & parc boisé",
+      "area_m2": 290.0,
+      "height_m": 12.6,
+      "position": [
+        -226.7,
+        9.0,
+        -177.6
+      ],
+      "cameraOffset": [
+        -210,
+        42,
+        -122
+      ],
+      "color": "#e0d8c4",
+      "verified": true,
+      "description": "Installée dans une élégante demeure bourgeoise bretonne en pierre claire à toit d'ardoise à quatre pans, cheminées, lucarnes et escalier extérieur métallique, bordée par sa dépendance en pierre et son parc arboré."
+    },
+    {
+      "id": "Centre_Culturel_Ville_Robert",
+      "meshPrefix": "VilleRobert_",
+      "roofName": "Toit_VilleRobert_",
+      "name": "Centre Culturel de La Ville Robert",
+      "role": "Salle de spectacles, expositions & cour patrimoniale",
+      "area_m2": 1650.0,
+      "height_m": 9.6,
+      "position": [
+        -162.0,
+        8.5,
+        -202.0
+      ],
+      "cameraOffset": [
+        -218,
+        82,
+        -92
+      ],
+      "color": "#c95b8c",
+      "verified": true,
+      "description": "Ensemble culturel emblématique de Pordic mêlant d'anciennes longères bretonnes en pierre dorée (toits d'ardoise, lucarne centrale, muret à arche) et une grande salle de spectacle contemporaine à toiture-terrasse autour d'une cour pavée, prolongée par un escalier piéton, des pelouses et un parking arboré."
+    },
+    {
       "id": "Stade_Louis_Auffray",
       "meshPrefix": "Stade_",
       "roofName": "Toit_Complexe_",
