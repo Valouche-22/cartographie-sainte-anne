@@ -10,6 +10,8 @@ gsap.registerPlugin(ScrollTrigger);
 export const App: React.FC = () => {
   const [data, setData] = useState<SchoolData | null>(null);
   const [loadPct, setLoadPct] = useState(0);
+  const [timePct, setTimePct] = useState(0);
+  const [minLoadDone, setMinLoadDone] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -30,6 +32,25 @@ export const App: React.FC = () => {
   const scrollTweenRef = useRef<gsap.core.Tween | null>(null);
   const wheelLockUntilRef = useRef(0);
   const labelDelayTimerRef = useRef<number | null>(null);
+
+  // Enforce a smooth 3-second minimum loading bar duration
+  useEffect(() => {
+    const duration = 3000;
+    const start = performance.now();
+    let rafId = 0;
+    const step = (now: number) => {
+      const elapsed = now - start;
+      const pct = Math.min(100, Math.round((elapsed / duration) * 100));
+      setTimePct(pct);
+      if (elapsed < duration) {
+        rafId = requestAnimationFrame(step);
+      } else {
+        setMinLoadDone(true);
+      }
+    };
+    rafId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
 
   useEffect(() => {
     fetch(`./data/school-data.json?v=${__BUILD_ID__}`)
@@ -242,13 +263,16 @@ export const App: React.FC = () => {
   const activeSceneId = data?.scenes[activeSceneIndex]?.id || 'ecole';
   const progressPct = totalChapters > 0 ? ((activeSceneIndex + 1) / totalChapters) * 100 : 0;
 
+  const showLoader = (!modelLoaded || !minLoadDone) && !loadError;
+  const displayedLoadPct = modelLoaded ? timePct : Math.min(timePct, Math.max(10, loadPct));
+
   return (
     <>
-      {!modelLoaded && !loadError && (
+      {showLoader && (
         <div className="loader-screen">
           <p className="loader-title">École Sainte-Anne</p>
           <div className="loader-bar-wrap">
-            <div className="loader-bar" style={{ width: `${Math.max(10, loadPct)}%` }} />
+            <div className="loader-bar" style={{ width: `${Math.max(4, displayedLoadPct)}%` }} />
           </div>
         </div>
       )}
