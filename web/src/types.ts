@@ -25,14 +25,20 @@ export interface RoomInfo {
   indicative?: boolean;
 }
 
+export interface SceneItem {
+  label: string;
+  value: string;
+}
+
 export interface SceneStep {
   id: string;
   step: string;
+  shortLabel: string;
+  kind: 'hero' | 'chapter' | 'synthesis';
+  eyebrow: string;
   title: string;
-  subtitle: string;
-  body: string;
-  facts?: string[];
-  points?: string[];
+  lead: string;
+  items?: SceneItem[];
   camera: {
     pos: [number, number, number];
     target: [number, number, number];
@@ -57,7 +63,7 @@ export interface SchoolData {
   scenes: SceneStep[];
 }
 
-export type CameraPreset = 'general' | 'aerial' | 'church' | 'culture' | 'stadium';
+export type CameraPreset = 'general' | 'cantine' | 'church' | 'culture' | 'stadium';
 
 declare global {
   const __BUILD_ID__: string;
