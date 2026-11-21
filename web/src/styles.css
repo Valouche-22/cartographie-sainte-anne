@@ -915,28 +915,13 @@ body {
   }
 }
 
-/* Mobile (phones & small tablets <= 860px; desktop untouched) */
+/* Mobile TikTok-style vertical snap scroll (<= 860px ONLY; desktop PC 100% untouched) */
 @media (max-width: 860px) {
   .corner-free-btn {
     top: calc(12px + env(safe-area-inset-top));
     right: 12px;
     padding: 7px 13px;
     font-size: 0.76rem;
-  }
-
-  .hero-cover {
-    height: 100dvh;
-    padding: 0 22px calc(86px + env(safe-area-inset-bottom));
-    pointer-events: auto;
-  }
-
-  .hero-h1 {
-    font-size: clamp(2rem, 9vw, 2.75rem);
-  }
-
-  .hero-sub {
-    font-size: 0.96rem;
-    margin-bottom: 18px;
   }
 
   .scroll-cue {
@@ -948,36 +933,162 @@ body {
     display: none;
   }
 
-  /* Bottom sheet pinned to lower 55% while top 45% keeps 3D map live */
-  .editorial-column.mobile-sheet {
+  /* Fixed top rainbow progress bar + compact frosted brand/step pill */
+  .mobile-reel-chrome {
     position: fixed;
+    top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
+    z-index: 45;
+    pointer-events: none;
+  }
+
+  .mobile-top-progress-track {
     width: 100%;
-    height: 55dvh;
-    margin-top: 0;
-    border-right: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.85);
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 -10px 32px rgba(15, 23, 42, 0.16);
+    height: 3px;
+    background: rgba(255, 255, 255, 0.35);
+    overflow: hidden;
+  }
+
+  .mobile-top-progress-fill {
+    height: 100%;
+    background: var(--rainbow);
+    background-size: 100vw 100%;
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .mobile-top-pill {
+    position: fixed;
+    top: calc(12px + env(safe-area-inset-top));
+    left: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px 5px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+    font-family: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .mobile-top-brand {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #0f2544;
+  }
+
+  /* Vertical rainbow progress dots on right edge (TikTok / Reels style) */
+  .mobile-reel-rail {
+    position: fixed;
+    right: 8px;
+    top: 23dvh;
+    transform: translateY(-50%);
+    z-index: 42;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    background: var(--white);
+    align-items: center;
+    gap: 7px;
+    padding: 8px 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
   }
 
-  .mobile-sheet .col-sticky-top {
+  .mobile-rail-dot {
+    width: 7px;
+    height: 7px;
+    padding: 0;
+    border-radius: 999px;
+    border: none;
+    background: var(--accent);
+    opacity: 0.8;
+    cursor: pointer;
+    transition: height 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .mobile-rail-dot.active {
+    height: 20px;
+    opacity: 1;
+  }
+
+  /* Full-screen vertical snap container */
+  .mobile-reel-feed {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    scrollbar-width: none;
+  }
+
+  .mobile-reel-feed::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-reel-slide {
     position: relative;
-    top: auto;
-    padding: 16px 18px 11px;
-    flex-shrink: 0;
+    height: 100dvh;
+    width: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
   }
 
-  .mobile-sheet .col-sticky-top::before {
-    content: '';
+  /* Slide 0: Hero */
+  .mobile-reel-hero {
+    justify-content: flex-end;
+    padding: 0 22px calc(86px + env(safe-area-inset-bottom));
+  }
+
+  .hero-h1 {
+    font-size: clamp(2rem, 9vw, 2.75rem);
+  }
+
+  .hero-sub {
+    font-size: 0.96rem;
+    margin-bottom: 18px;
+  }
+
+  /* Slides 1..7: Top 45% open 3D window + Bottom 55% snapped card */
+  .mobile-reel-window {
+    height: 45dvh;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+
+  .mobile-reel-card {
+    position: relative;
+    height: 55dvh;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px 16px calc(30px + env(safe-area-inset-bottom));
+    border-radius: 24px 24px 0 0;
+    background: radial-gradient(circle at 0% 0%, var(--accent-soft) 0%, #ffffff 58%);
+    border-top: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 -10px 34px rgba(15, 23, 42, 0.16);
+    overflow: hidden;
+  }
+
+  .mobile-reel-grabber {
     position: absolute;
-    top: 6px;
+    top: 8px;
     left: 50%;
     transform: translateX(-50%);
     width: 36px;
@@ -986,84 +1097,90 @@ body {
     background: #cbd5e1;
   }
 
-  .mobile-sheet .col-progress-fill {
-    background-size: 100vw 100%;
-  }
-
-  .mobile-sheet-scroll {
-    flex: 1;
-    min-height: 0;
+  .mobile-reel-body {
+    --mfit: 1;
+    width: 100%;
+    max-height: 100%;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    padding: 14px 16px 18px;
-    background: radial-gradient(circle at 0% 0%, var(--accent-soft) 0%, #ffffff 58%);
+    scrollbar-width: none;
+    opacity: 0.55;
+    transform: translateY(6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
   }
 
-  .mobile-sheet .chapter-title {
-    font-size: 1.24rem;
-    padding-bottom: 10px;
-    margin-bottom: 14px;
+  .mobile-reel-body::-webkit-scrollbar {
+    display: none;
   }
 
-  .mobile-sheet .fact-list {
-    gap: 6px;
+  .mobile-reel-body.is-active {
+    opacity: 1;
+    transform: translateY(0);
   }
 
-  .mobile-sheet .fact-row {
-    padding: 9px 12px;
+  .mobile-reel-body .chapter-title {
+    font-size: calc(1.24rem * var(--mfit));
+    gap: calc(8px * var(--mfit));
+    padding-bottom: calc(9px * var(--mfit));
+    margin-bottom: calc(12px * var(--mfit));
+  }
+
+  .mobile-reel-body .chapter-title::before {
+    width: calc(9px * var(--mfit));
+    height: calc(9px * var(--mfit));
+  }
+
+  .mobile-reel-body .fact-list {
+    gap: calc(5.5px * var(--mfit));
+  }
+
+  .mobile-reel-body .fact-row {
+    padding: calc(8px * var(--mfit)) calc(11px * var(--mfit));
     border-radius: 9px;
+    gap: calc(1.5px * var(--mfit));
   }
 
-  .mobile-sheet .fact-label {
-    font-size: 0.74rem;
+  .mobile-reel-body .fact-label {
+    font-size: calc(0.75rem * var(--mfit));
+    line-height: 1.2;
   }
 
-  .mobile-sheet .fact-value {
-    font-size: 0.84rem;
-    line-height: 1.44;
+  .mobile-reel-body .fact-value {
+    font-size: calc(0.84rem * var(--mfit));
+    line-height: calc(1.22 + 0.22 * var(--mfit));
   }
 
-  .mobile-sheet .building-focus-bar {
+  .mobile-reel-body .building-focus-bar {
     gap: 6px;
-    margin-top: 14px;
+    margin-top: calc(12px * var(--mfit));
   }
 
-  .mobile-sheet .building-focus-btn {
+  .mobile-reel-body .building-focus-btn {
     padding: 7px 11px;
     font-size: 0.75rem;
   }
 
-  .mobile-sheet .back-home-btn {
-    margin-top: 16px;
+  .mobile-reel-body .back-home-btn {
+    margin-top: 14px;
     padding: 8px 16px 10px;
     font-size: 0.8rem;
   }
 
-  .mobile-sheet .col-sticky-bottom {
-    position: relative;
-    bottom: auto;
-    flex-shrink: 0;
-    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
-    gap: 6px;
-  }
-
-  .mobile-sheet .step-nav-btn {
-    padding: 7px 10px;
-    font-size: 0.74rem;
-  }
-
-  .mobile-sheet .step-dots {
-    gap: 5px;
-  }
-
-  .mobile-sheet .step-dot {
-    width: 7px;
-    height: 7px;
-  }
-
-  .mobile-sheet .step-dot.active {
-    width: 16px;
+  .mobile-reel-next-hint {
+    position: absolute;
+    left: 50%;
+    bottom: calc(6px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 22px;
+    border: none;
+    background: transparent;
+    color: var(--accent-text);
+    opacity: 0.72;
+    cursor: pointer;
   }
 
   /* Compact 3D labels on small screens */

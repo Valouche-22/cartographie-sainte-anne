@@ -33,8 +33,7 @@ export const App: React.FC = () => {
   const scrollTweenRef = useRef<gsap.core.Tween | null>(null);
   const wheelLockUntilRef = useRef(0);
   const labelDelayTimerRef = useRef<number | null>(null);
-  const mobileScrollRef = useRef<HTMLDivElement | null>(null);
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const mobileFeedRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 860px)');
@@ -57,26 +56,42 @@ export const App: React.FC = () => {
       .catch(() => setLoadError('Impossible de charger les données.'));
   }, []);
 
-  // Automatically scale chapter spacing/typography down ONLY when a chapter overflows the viewport height
+  // Automatically scale chapter spacing/typography down ONLY when a chapter overflows its panel/card height
   useEffect(() => {
     if (!data || freeExplore) return;
     const fitChapters = () => {
-      const panels = document.querySelectorAll<HTMLElement>('.chapter-panel');
       const isDesktop = window.innerWidth > 860;
-      panels.forEach((panel) => {
-        const body = panel.querySelector<HTMLElement>('.chapter-body');
-        if (!body) return;
-        body.style.setProperty('--fit', '1');
-        if (!isDesktop) return;
-        const cs = window.getComputedStyle(panel);
-        const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-        const availH = panel.clientHeight - padY - 6;
-        if (availH <= 0 || body.scrollHeight <= availH) return;
-        for (const f of [0.94, 0.88, 0.82, 0.76, 0.71, 0.66, 0.61]) {
-          body.style.setProperty('--fit', String(f));
-          if (body.scrollHeight <= availH) break;
-        }
-      });
+      if (isDesktop) {
+        const panels = document.querySelectorAll<HTMLElement>('.chapter-panel');
+        panels.forEach((panel) => {
+          const body = panel.querySelector<HTMLElement>('.chapter-body');
+          if (!body) return;
+          body.style.setProperty('--fit', '1');
+          const cs = window.getComputedStyle(panel);
+          const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+          const availH = panel.clientHeight - padY - 6;
+          if (availH <= 0 || body.scrollHeight <= availH) return;
+          for (const f of [0.94, 0.88, 0.82, 0.76, 0.71, 0.66, 0.61]) {
+            body.style.setProperty('--fit', String(f));
+            if (body.scrollHeight <= availH) break;
+          }
+        });
+      } else {
+        const cards = document.querySelectorAll<HTMLElement>('.mobile-reel-card');
+        cards.forEach((card) => {
+          const body = card.querySelector<HTMLElement>('.mobile-reel-body');
+          if (!body) return;
+          body.style.setProperty('--mfit', '1');
+          const cs = window.getComputedStyle(card);
+          const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+          const availH = card.clientHeight - padY - 6;
+          if (availH <= 0 || body.scrollHeight <= availH) return;
+          for (const f of [0.94, 0.88, 0.83, 0.78, 0.73, 0.68, 0.63]) {
+            body.style.setProperty('--mfit', String(f));
+            if (body.scrollHeight <= availH) break;
+          }
+        });
+      }
     };
     const raf = requestAnimationFrame(fitChapters);
     window.addEventListener('resize', fitChapters);
@@ -87,7 +102,7 @@ export const App: React.FC = () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', fitChapters);
     };
-  }, [data, freeExplore]);
+  }, [data, freeExplore, isMobile]);
 
   const applySectionState = useCallback(
     (sectionIdx: number) => {
@@ -134,9 +149,15 @@ export const App: React.FC = () => {
       const clamped = Math.max(0, Math.min(maxIdx, targetIdx));
 
       if (isMobile) {
+        const feed = mobileFeedRef.current;
         applySectionState(clamped);
-        if (mobileScrollRef.current) {
-          mobileScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        if (feed) {
+          const slide = feed.querySelector<HTMLElement>(`[data-reel-index="${clamped}"]`);
+          if (slide) {
+            feed.scrollTo({ top: slide.offsetTop, behavior: instant ? 'auto' : 'smooth' });
+          } else {
+            feed.scrollTo({ top: clamped * feed.clientHeight, behavior: instant ? 'auto' : 'smooth' });
+          }
         }
         return;
       }
@@ -260,6 +281,38 @@ export const App: React.FC = () => {
     };
   }, [data, freeExplore, isMobile, applySectionState]);
 
+  // Mobile TikTok-style vertical snap feed observer
+  useEffect(() => {
+    if (!data || freeExplore || !isMobile) return;
+    const feed = mobileFeedRef.current;
+    if (!feed) return;
+    const slides = feed.querySelectorAll<HTMLElement>('.mobile-reel-slide');
+    if (!slides.length) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        let bestIdx: number | null = null;
+        let bestRatio = 0;
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.52 && entry.intersectionRatio > bestRatio) {
+            const raw = (entry.target as HTMLElement).dataset.reelIndex;
+            if (raw !== undefined) {
+              bestRatio = entry.intersectionRatio;
+              bestIdx = Number(raw);
+            }
+          }
+        }
+        if (bestIdx !== null && bestIdx !== sectionIdxRef.current) {
+          applySectionState(bestIdx);
+        }
+      },
+      { root: feed, threshold: [0.55, 0.75, 0.9] }
+    );
+
+    slides.forEach((s) => io.observe(s));
+    return () => io.disconnect();
+  }, [data, freeExplore, isMobile, applySectionState]);
+
   const enterFreeExplore = () => {
     scrollTweenRef.current?.kill();
     isAutoScrollingRef.current = false;
@@ -363,28 +416,47 @@ export const App: React.FC = () => {
         </button>
       )}
 
-      {data && !freeExplore && (
-        <main className={`guided-flow ${isMobile ? 'is-mobile' : ''}`}>
-          {/* Fullscreen opening view */}
-          {(!isMobile || isHero) && (
-            <section
-              className="hero-cover"
-              id="hero-cover"
-              onTouchStart={(e) => {
-                if (!isMobile) return;
-                const t = e.touches[0];
-                touchStartRef.current = { x: t.clientX, y: t.clientY };
-              }}
-              onTouchEnd={(e) => {
-                if (!isMobile || !touchStartRef.current) return;
-                const t = e.changedTouches[0];
-                const dy = touchStartRef.current.y - t.clientY;
-                touchStartRef.current = null;
-                if (dy > 45) {
-                  goToSection(1);
-                }
-              }}
-            >
+      {data && !freeExplore && isMobile && (
+        <>
+          {/* Mobile top rainbow progress bar + floating brand/step pill (visible on steps 1..7) */}
+          {!isHero && (
+            <div className="mobile-reel-chrome" data-active-scene={activeSceneId}>
+              <div className="mobile-top-progress-track" aria-hidden="true">
+                <div className="mobile-top-progress-fill" style={{ width: `${progressPct}%` }} />
+              </div>
+              <button
+                type="button"
+                className="mobile-top-pill"
+                onClick={() => goToSection(0)}
+              >
+                <span className="mobile-top-brand">{data.school.name}</span>
+                <span className="col-step-badge">
+                  {activeSceneIndex + 1} / {totalChapters}
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* TikTok-style vertical rainbow navigation rail on the right edge */}
+          {!isHero && (
+            <div className="mobile-reel-rail" role="tablist" aria-label="Étapes de la visite">
+              {data.scenes.map((sc, idx) => (
+                <button
+                  key={sc.id}
+                  type="button"
+                  data-scene={sc.id}
+                  className={`mobile-rail-dot ${idx === activeSceneIndex ? 'active' : ''}`}
+                  onClick={() => goToSection(idx + 1)}
+                  title={sc.title}
+                  aria-label={`Aller à ${sc.title}`}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* TikTok-style mandatory vertical snap scroll feed */}
+          <main className="mobile-reel-feed" ref={mobileFeedRef}>
+            <section className="mobile-reel-slide mobile-reel-hero" data-reel-index={0} id="hero-cover">
               <div className="hero-backdrop" />
               <div className="hero-inner">
                 <h1 className="hero-h1">{data.school.name}</h1>
@@ -399,187 +471,202 @@ export const App: React.FC = () => {
                 </button>
               </div>
             </section>
-          )}
 
-          {/* Desktop left column OR Mobile bottom sheet */}
-          {(!isMobile || !isHero) && (
-            <div
-              className={`editorial-column ${isMobile ? 'mobile-sheet' : ''}`}
-              data-active-scene={activeSceneId}
-              onTouchStart={(e) => {
-                if (!isMobile) return;
-                const t = e.touches[0];
-                touchStartRef.current = { x: t.clientX, y: t.clientY };
-              }}
-              onTouchEnd={(e) => {
-                if (!isMobile || !touchStartRef.current) return;
-                const t = e.changedTouches[0];
-                const dx = t.clientX - touchStartRef.current.x;
-                const dy = t.clientY - touchStartRef.current.y;
-                touchStartRef.current = null;
-                if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.3) {
-                  if (dx < 0 && activeSceneIndex < totalChapters - 1) {
-                    goToSection(activeSceneIndex + 2);
-                  } else if (dx > 0) {
-                    goToSection(activeSceneIndex);
-                  }
-                }
-              }}
-            >
-              <div className="col-sticky-top">
-                <span className="col-brand" onClick={() => goToSection(0)}>
-                  {data.school.name}
-                </span>
-                <span className="col-step-badge">
-                  {activeSceneIndex + 1} / {totalChapters}
-                </span>
-                <div className="col-progress-track" aria-hidden="true">
-                  <div className="col-progress-fill" style={{ width: `${progressPct}%` }} />
-                </div>
-              </div>
+            {data.scenes.map((sc, idx) => (
+              <section
+                className="mobile-reel-slide mobile-reel-chapter"
+                key={sc.id}
+                id={`chapter-${sc.id}`}
+                data-reel-index={idx + 1}
+                data-scene={sc.id}
+              >
+                {/* Top 45% intentionally transparent so live 3D scene & labels shine through */}
+                <div className="mobile-reel-window" aria-hidden="true" />
 
-              {isMobile ? (
-                <div className="mobile-sheet-scroll" ref={mobileScrollRef} data-scene={activeSceneId}>
-                  {(() => {
-                    const sc = data.scenes[activeSceneIndex];
-                    if (!sc) return null;
-                    return (
-                      <div className="chapter-body is-active" key={sc.id}>
-                        <h2 className="chapter-title">{sc.title}</h2>
+                {/* Bottom 55% snapped editorial card */}
+                <div className="mobile-reel-card">
+                  <div className="mobile-reel-grabber" aria-hidden="true" />
+                  <div className={`mobile-reel-body ${!isHero && idx === activeSceneIndex ? 'is-active' : ''}`}>
+                    <h2 className="chapter-title">{sc.title}</h2>
 
-                        <div className="fact-list">
-                          {sc.rows.map((row, rIdx) => (
-                            <div className="fact-row" key={rIdx}>
-                              {row.label && <span className="fact-label">{row.label}</span>}
-                              <p className="fact-value">{row.value}</p>
-                            </div>
-                          ))}
+                    <div className="fact-list">
+                      {sc.rows.map((row, rIdx) => (
+                        <div className="fact-row" key={rIdx}>
+                          {row.label && <span className="fact-label">{row.label}</span>}
+                          <p className="fact-value">{row.value}</p>
                         </div>
+                      ))}
+                    </div>
 
-                        {sc.id === 'classes' && (
-                          <div className="building-focus-bar" role="group" aria-label="Zoom par bâtiment">
-                            {(
-                              [
-                                { key: 'all', label: 'Vue globale' },
-                                { key: 'S1', label: 'Bâtiment Cycle 1' },
-                                { key: 'N1', label: 'Bâtiment Cycle 2' },
-                                { key: 'E2', label: 'Bâtiment Cycle 3' },
-                              ] as const
-                            ).map((opt) => (
-                              <button
-                                key={opt.key}
-                                type="button"
-                                className={`building-focus-btn ${classBuildingFocus === opt.key ? 'active' : ''}`}
-                                onClick={() => setClassBuildingFocus(opt.key)}
-                              >
-                                {opt.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-
-                        {sc.note && <p className="chapter-note">{sc.note}</p>}
-
-                        {activeSceneIndex === totalChapters - 1 && (
+                    {sc.id === 'classes' && (
+                      <div className="building-focus-bar" role="group" aria-label="Zoom par bâtiment">
+                        {(
+                          [
+                            { key: 'all', label: 'Vue globale' },
+                            { key: 'S1', label: 'Bâtiment Cycle 1' },
+                            { key: 'N1', label: 'Bâtiment Cycle 2' },
+                            { key: 'E2', label: 'Bâtiment Cycle 3' },
+                          ] as const
+                        ).map((opt) => (
                           <button
+                            key={opt.key}
                             type="button"
-                            className="back-home-btn"
-                            onClick={() => goToSection(0)}
+                            className={`building-focus-btn ${classBuildingFocus === opt.key ? 'active' : ''}`}
+                            onClick={() => setClassBuildingFocus(opt.key)}
                           >
-                            <ArrowUp size={15} />
-                            <span>Retour à l'accueil</span>
+                            {opt.label}
                           </button>
-                        )}
-                      </div>
-                    );
-                  })()}
-                </div>
-              ) : (
-                data.scenes.map((sc, idx) => (
-                  <section className="chapter-panel" key={sc.id} id={`chapter-${sc.id}`} data-scene={sc.id}>
-                    <div className={`chapter-body ${!isHero && idx === activeSceneIndex ? 'is-active' : ''}`}>
-                      <h2 className="chapter-title">{sc.title}</h2>
-
-                      <div className="fact-list">
-                        {sc.rows.map((row, rIdx) => (
-                          <div className="fact-row" key={rIdx}>
-                            {row.label && <span className="fact-label">{row.label}</span>}
-                            <p className="fact-value">{row.value}</p>
-                          </div>
                         ))}
                       </div>
+                    )}
 
-                      {sc.id === 'classes' && (
-                        <div className="building-focus-bar" role="group" aria-label="Zoom par bâtiment">
-                          {(
-                            [
-                              { key: 'all', label: 'Vue globale' },
-                              { key: 'S1', label: 'Bâtiment Cycle 1' },
-                              { key: 'N1', label: 'Bâtiment Cycle 2' },
-                              { key: 'E2', label: 'Bâtiment Cycle 3' },
-                            ] as const
-                          ).map((opt) => (
-                            <button
-                              key={opt.key}
-                              type="button"
-                              className={`building-focus-btn ${classBuildingFocus === opt.key ? 'active' : ''}`}
-                              onClick={() => setClassBuildingFocus(opt.key)}
-                            >
-                              {opt.label}
-                            </button>
-                          ))}
-                        </div>
-                      )}
+                    {sc.note && <p className="chapter-note">{sc.note}</p>}
 
-                      {sc.note && <p className="chapter-note">{sc.note}</p>}
+                    {idx === totalChapters - 1 && (
+                      <button
+                        type="button"
+                        className="back-home-btn"
+                        onClick={() => goToSection(0)}
+                      >
+                        <ArrowUp size={15} />
+                        <span>Retour à l'accueil</span>
+                      </button>
+                    )}
+                  </div>
 
-                      {idx === totalChapters - 1 && (
-                        <button
-                          type="button"
-                          className="back-home-btn"
-                          onClick={() => goToSection(0)}
-                        >
-                          <ArrowUp size={15} />
-                          <span>Retour à l'accueil</span>
-                        </button>
-                      )}
-                    </div>
-                  </section>
-                ))
-              )}
-
-              <div className="col-sticky-bottom">
-                <button
-                  type="button"
-                  className="step-nav-btn"
-                  onClick={() => goToSection(activeSceneIndex)}
-                >
-                  <ChevronUp size={15} /> Précédent
-                </button>
-                <div className="step-dots" role="tablist" aria-label="Étapes de la visite">
-                  {data.scenes.map((sc, idx) => (
+                  {idx < totalChapters - 1 && (
                     <button
-                      key={sc.id}
                       type="button"
-                      data-scene={sc.id}
-                      className={`step-dot ${idx === activeSceneIndex ? 'active' : ''}`}
-                      onClick={() => goToSection(idx + 1)}
-                      title={sc.title}
-                      aria-label={`Aller à ${sc.title}`}
-                    />
-                  ))}
+                      className="mobile-reel-next-hint"
+                      onClick={() => goToSection(idx + 2)}
+                      aria-label="Étape suivante"
+                    >
+                      <ChevronDown size={18} className="scroll-cue-arrow" />
+                    </button>
+                  )}
                 </div>
-                <button
-                  type="button"
-                  className="step-nav-btn primary"
-                  disabled={activeSceneIndex >= totalChapters - 1}
-                  onClick={() => goToSection(activeSceneIndex + 2)}
-                >
-                  Suivant <ChevronDown size={15} />
-                </button>
+              </section>
+            ))}
+          </main>
+        </>
+      )}
+
+      {data && !freeExplore && !isMobile && (
+        <main className="guided-flow">
+          {/* Desktop fullscreen opening view (strictly untouched) */}
+          <section className="hero-cover" id="hero-cover">
+            <div className="hero-backdrop" />
+            <div className="hero-inner">
+              <h1 className="hero-h1">{data.school.name}</h1>
+              <p className="hero-sub">{data.school.city}</p>
+              <button
+                type="button"
+                className="hero-start-btn"
+                onClick={() => goToSection(1)}
+              >
+                <span>Commencer la visite</span>
+                <ArrowDown size={14} />
+              </button>
+            </div>
+          </section>
+
+          {/* Desktop left column (strictly untouched) */}
+          <div className="editorial-column" data-active-scene={activeSceneId}>
+            <div className="col-sticky-top">
+              <span className="col-brand" onClick={() => goToSection(0)}>
+                {data.school.name}
+              </span>
+              <span className="col-step-badge">
+                {activeSceneIndex + 1} / {totalChapters}
+              </span>
+              <div className="col-progress-track" aria-hidden="true">
+                <div className="col-progress-fill" style={{ width: `${progressPct}%` }} />
               </div>
             </div>
-          )}
+
+            {data.scenes.map((sc, idx) => (
+              <section className="chapter-panel" key={sc.id} id={`chapter-${sc.id}`} data-scene={sc.id}>
+                <div className={`chapter-body ${!isHero && idx === activeSceneIndex ? 'is-active' : ''}`}>
+                  <h2 className="chapter-title">{sc.title}</h2>
+
+                  <div className="fact-list">
+                    {sc.rows.map((row, rIdx) => (
+                      <div className="fact-row" key={rIdx}>
+                        {row.label && <span className="fact-label">{row.label}</span>}
+                        <p className="fact-value">{row.value}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {sc.id === 'classes' && (
+                    <div className="building-focus-bar" role="group" aria-label="Zoom par bâtiment">
+                      {(
+                        [
+                          { key: 'all', label: 'Vue globale' },
+                          { key: 'S1', label: 'Bâtiment Cycle 1' },
+                          { key: 'N1', label: 'Bâtiment Cycle 2' },
+                          { key: 'E2', label: 'Bâtiment Cycle 3' },
+                        ] as const
+                      ).map((opt) => (
+                        <button
+                          key={opt.key}
+                          type="button"
+                          className={`building-focus-btn ${classBuildingFocus === opt.key ? 'active' : ''}`}
+                          onClick={() => setClassBuildingFocus(opt.key)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {sc.note && <p className="chapter-note">{sc.note}</p>}
+
+                  {idx === totalChapters - 1 && (
+                    <button
+                      type="button"
+                      className="back-home-btn"
+                      onClick={() => goToSection(0)}
+                    >
+                      <ArrowUp size={15} />
+                      <span>Retour à l'accueil</span>
+                    </button>
+                  )}
+                </div>
+              </section>
+            ))}
+
+            <div className="col-sticky-bottom">
+              <button
+                type="button"
+                className="step-nav-btn"
+                onClick={() => goToSection(activeSceneIndex)}
+              >
+                <ChevronUp size={15} /> Précédent
+              </button>
+              <div className="step-dots" role="tablist" aria-label="Étapes de la visite">
+                {data.scenes.map((sc, idx) => (
+                  <button
+                    key={sc.id}
+                    type="button"
+                    data-scene={sc.id}
+                    className={`step-dot ${idx === activeSceneIndex ? 'active' : ''}`}
+                    onClick={() => goToSection(idx + 1)}
+                    title={sc.title}
+                    aria-label={`Aller à ${sc.title}`}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                className="step-nav-btn primary"
+                disabled={activeSceneIndex >= totalChapters - 1}
+                onClick={() => goToSection(activeSceneIndex + 2)}
+              >
+                Suivant <ChevronDown size={15} />
+              </button>
+            </div>
+          </div>
         </main>
       )}
 

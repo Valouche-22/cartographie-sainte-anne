@@ -732,7 +732,7 @@ export const SchoolScene3D: React.FC<Props> = ({
             }
           }
           if (isMobileNow) {
-            resolveMobileLabelOverlaps(next, leftBound, w - 8, 16, bottomBound);
+            resolveMobileLabelOverlaps(next, leftBound, w - 30, 54, bottomBound);
           } else {
             resolveLabelOverlaps(next, leftBound, w - 12, 18, bottomBound);
           }
