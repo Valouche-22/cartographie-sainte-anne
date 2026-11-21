@@ -541,9 +541,10 @@ export const SchoolScene3D: React.FC<Props> = ({
             const ax = (tmpVec.x * 0.5 + 0.5) * w;
             const ay = (-tmpVec.y * 0.5 + 0.5) * h;
             const visible = tmpVec.z < 1 && ax >= leftBound && ax <= w - 12 && ay >= 18 && ay <= bottomBound;
-            // Offset Batiment Nord labels gently up-left in overview so the colored rooms stay completely unobstructed
-            const initX = it.offsetOutside ? ax - 42 : ax;
-            const initY = it.offsetOutside ? ay - 48 : ay - 22;
+            // Place Bureau directrice label BELOW its room (stem pointing UP), and other N1 labels up-left in overview
+            const isDirectrice = it.id === 'Bureau_Directrice';
+            const initX = isDirectrice ? ax + 10 : it.offsetOutside ? ax - 42 : ax;
+            const initY = isDirectrice ? ay + 46 : it.offsetOutside ? ay - 48 : ay - 22;
             next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: initX, y: initY, visible, kind: it.kind });
           }
           resolveLabelOverlaps(next, leftBound, w - 12, 18, bottomBound);

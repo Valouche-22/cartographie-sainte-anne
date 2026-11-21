@@ -334,9 +334,9 @@ export const App: React.FC = () => {
                       {(
                         [
                           { key: 'all', label: 'Vue globale' },
-                          { key: 'S1', label: 'Bâtiment principal' },
-                          { key: 'N1', label: 'Bâtiment Nord' },
-                          { key: 'E2', label: 'Bâtiment Est' },
+                          { key: 'S1', label: 'Bâtiment Cycle 1' },
+                          { key: 'N1', label: 'Bâtiment Cycle 2' },
+                          { key: 'E2', label: 'Bâtiment Cycle 3' },
                         ] as const
                       ).map((opt) => (
                         <button
