@@ -15,6 +15,7 @@ interface Props {
   selectedBuilding: BuildingInfo | null;
   selectedRoom: RoomInfo | null;
   cameraPresetTrigger: { preset: CameraPreset; seq: number } | null;
+  classBuildingFocus?: 'all' | 'S1' | 'N1' | 'E2';
   onSelectBuilding: (b: BuildingInfo) => void;
   onSelectRoom: (r: RoomInfo) => void;
   onLoadProgress: (pct: number) => void;
@@ -46,6 +47,8 @@ function resolveLabelOverlaps(
 
   const boxes = vis.map((it) => ({
     it,
+    tx: it.x,
+    ty: it.y,
     hw: (it.label.length * 6.4 + (it.color ? 30 : 20)) * 0.5 + 5,
     hh: 14.5,
   }));
@@ -77,10 +80,10 @@ function resolveLabelOverlaps(
         }
       }
     }
-    // Gentle spring back toward anchor + viewport clamping
+    // Gentle spring back toward preferred position + viewport clamping
     for (const b of boxes) {
-      b.it.x += (b.it.ax - b.it.x) * 0.06;
-      b.it.y += (b.it.ay - 22 - b.it.y) * 0.06;
+      b.it.x += (b.tx - b.it.x) * 0.06;
+      b.it.y += (b.ty - b.it.y) * 0.06;
       b.it.x = Math.max(leftBound + b.hw, Math.min(rightBound - b.hw, b.it.x));
       b.it.y = Math.max(topBound + b.hh, Math.min(bottomBound - b.hh, b.it.y));
     }
@@ -155,6 +158,24 @@ const PRESET_VIEWS: Record<CameraPreset, { pos: [number, number, number]; target
   stadium: { pos: [126, 100, 192], target: [372, 0, 113] },
 };
 
+const CLASS_FOCUS_VIEWS: Record<'S1' | 'N1' | 'E2', { pos: [number, number, number]; target: [number, number, number]; buildings: string[] }> = {
+  S1: {
+    pos: [-16, 68, 42],
+    target: [6, 0, 10],
+    buildings: ['Batiment_Principal_S1', 'Pavillon_Central_S4', 'Batiment_Sud_Maternelle_S2'],
+  },
+  N1: {
+    pos: [-18, 44, -6],
+    target: [-11, 1, -36],
+    buildings: ['Batiment_Nord_N1'],
+  },
+  E2: {
+    pos: [16, 48, 8],
+    target: [47, 1, -14],
+    buildings: ['Batiment_Est_E2'],
+  },
+};
+
 export const SchoolScene3D: React.FC<Props> = ({
   data,
   isHero,
@@ -165,6 +186,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   selectedBuilding,
   selectedRoom,
   cameraPresetTrigger,
+  classBuildingFocus = 'all',
   onSelectBuilding,
   onSelectRoom,
   onLoadProgress,
@@ -190,11 +212,13 @@ export const SchoolScene3D: React.FC<Props> = ({
   const freeExploreRef = useRef(freeExplore);
   const isHeroRef = useRef(isHero);
   const activeSceneIndexRef = useRef(activeSceneIndex);
+  const classBuildingFocusRef = useRef(classBuildingFocus);
   showLabelsRef.current = showLabels;
   hideRoofsRef.current = hideRoofs;
   freeExploreRef.current = freeExplore;
   isHeroRef.current = isHero;
   activeSceneIndexRef.current = activeSceneIndex;
+  classBuildingFocusRef.current = classBuildingFocus;
 
   const animateGuidedCamera = (
     pos: [number, number, number],
@@ -486,17 +510,30 @@ export const SchoolScene3D: React.FC<Props> = ({
           const leftBound = !freeExploreRef.current && !isHeroRef.current && w > 860 ? COL_WIDTH_PX + 12 : 12;
           const bottomBound = !freeExploreRef.current && !isHeroRef.current && w <= 860 ? h * 0.52 : h - 12;
 
+          const focusMode = !freeExploreRef.current && activeScene?.id === 'classes' ? classBuildingFocusRef.current : 'all';
+          const allowedBuildings = focusMode !== 'all' ? CLASS_FOCUS_VIEWS[focusMode].buildings : null;
+
           const items = hideRoofsRef.current
-            ? data.rooms.map((r) => ({ id: r.id, label: r.name, color: r.color, pos: r.position, kind: 'room' as const }))
+            ? data.rooms
+                .filter((r) => !allowedBuildings || allowedBuildings.includes(r.building))
+                .map((r) => ({
+                  id: r.id,
+                  label: r.name,
+                  color: r.color,
+                  pos: r.position,
+                  kind: 'room' as const,
+                  offsetOutside: focusMode === 'all' && r.building === 'Batiment_Nord_N1',
+                }))
             : data.buildings
-              .filter((b) => !focusIds || focusIds.includes(b.id))
-              .map((b) => ({
-                id: b.id,
-                label: b.name,
-                color: undefined,
-                pos: [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]] as [number, number, number],
-                kind: 'building' as const,
-              }));
+                .filter((b) => !focusIds || focusIds.includes(b.id))
+                .map((b) => ({
+                  id: b.id,
+                  label: b.name,
+                  color: undefined,
+                  pos: [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]] as [number, number, number],
+                  kind: 'building' as const,
+                  offsetOutside: false,
+                }));
 
           const next: ProjectedLabel[] = [];
           for (const it of items) {
@@ -504,7 +541,10 @@ export const SchoolScene3D: React.FC<Props> = ({
             const ax = (tmpVec.x * 0.5 + 0.5) * w;
             const ay = (-tmpVec.y * 0.5 + 0.5) * h;
             const visible = tmpVec.z < 1 && ax >= leftBound && ax <= w - 12 && ay >= 18 && ay <= bottomBound;
-            next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: ax, y: ay - 22, visible, kind: it.kind });
+            // Offset Batiment Nord labels gently up-left in overview so the colored rooms stay completely unobstructed
+            const initX = it.offsetOutside ? ax - 42 : ax;
+            const initY = it.offsetOutside ? ay - 48 : ay - 22;
+            next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: initX, y: initY, visible, kind: it.kind });
           }
           resolveLabelOverlaps(next, leftBound, w - 12, 18, bottomBound);
           setLabels(next);
@@ -588,9 +628,14 @@ export const SchoolScene3D: React.FC<Props> = ({
       return;
     }
     if (sc) {
-      animateGuidedCamera(sc.camera.pos, sc.camera.target, 1.35);
+      if (sc.id === 'classes' && classBuildingFocus !== 'all') {
+        const sub = CLASS_FOCUS_VIEWS[classBuildingFocus];
+        animateGuidedCamera(sub.pos, sub.target, 1.05);
+      } else {
+        animateGuidedCamera(sc.camera.pos, sc.camera.target, 1.35);
+      }
     }
-  }, [isHero, activeSceneIndex, freeExplore, data]);
+  }, [isHero, activeSceneIndex, freeExplore, classBuildingFocus, data]);
 
   useEffect(() => {
     for (const r of classroomRoofsRef.current) {

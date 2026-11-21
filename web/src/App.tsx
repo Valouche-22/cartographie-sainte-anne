@@ -21,6 +21,7 @@ export const App: React.FC = () => {
   const [selectedBuilding, setSelectedBuilding] = useState<BuildingInfo | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<RoomInfo | null>(null);
   const [cameraPresetTrigger, setCameraPresetTrigger] = useState<{ preset: CameraPreset; seq: number } | null>(null);
+  const [classBuildingFocus, setClassBuildingFocus] = useState<'all' | 'S1' | 'N1' | 'E2'>('all');
 
   // Smooth magnetic section scrolling state
   // sectionIdx: 0 = hero-cover, 1..N = data.scenes[0..N-1]
@@ -52,6 +53,9 @@ export const App: React.FC = () => {
         if (sc) {
           setHideRoofs(sc.hideRoofs);
           setShowLabels(sc.showLabels);
+          if (sc.id !== 'classes') {
+            setClassBuildingFocus('all');
+          }
         }
       }
     },
@@ -250,6 +254,7 @@ export const App: React.FC = () => {
           selectedBuilding={selectedBuilding}
           selectedRoom={selectedRoom}
           cameraPresetTrigger={cameraPresetTrigger}
+          classBuildingFocus={classBuildingFocus}
           onSelectBuilding={handleSelectBuilding}
           onSelectRoom={handleSelectRoom}
           onLoadProgress={setLoadPct}
@@ -323,6 +328,28 @@ export const App: React.FC = () => {
                       </div>
                     ))}
                   </div>
+
+                  {sc.id === 'classes' && (
+                    <div className="building-focus-bar" role="group" aria-label="Zoom par bâtiment">
+                      {(
+                        [
+                          { key: 'all', label: 'Vue globale' },
+                          { key: 'S1', label: 'Bâtiment principal' },
+                          { key: 'N1', label: 'Bâtiment Nord' },
+                          { key: 'E2', label: 'Bâtiment Est' },
+                        ] as const
+                      ).map((opt) => (
+                        <button
+                          key={opt.key}
+                          type="button"
+                          className={`building-focus-btn ${classBuildingFocus === opt.key ? 'active' : ''}`}
+                          onClick={() => setClassBuildingFocus(opt.key)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
                   {sc.note && <p className="chapter-note">{sc.note}</p>}
                 </div>

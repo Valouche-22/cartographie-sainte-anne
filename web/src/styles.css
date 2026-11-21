@@ -311,6 +311,37 @@ body {
   color: var(--ink-muted);
 }
 
+.building-focus-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.building-focus-btn {
+  padding: 6px 11px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.building-focus-btn:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.building-focus-btn.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+
 .col-sticky-bottom {
   position: sticky;
   bottom: 0;
