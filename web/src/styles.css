@@ -1068,14 +1068,18 @@ body {
 
   /* Compact 3D labels on small screens */
   .label-pill {
-    padding: 3px 8px;
-    font-size: 0.65rem;
+    padding: 2.5px 7px;
+    font-size: 0.62rem;
     gap: 4px;
+    max-width: 172px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .label-dot {
-    width: 6.5px;
-    height: 6.5px;
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
   }
 
   /* Free Explore on mobile: sleek single-row scrollable dock + full-width info panel */

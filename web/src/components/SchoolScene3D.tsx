@@ -91,6 +91,88 @@ function resolveLabelOverlaps(
   return items;
 }
 
+function resolveMobileLabelOverlaps(
+  items: ProjectedLabel[],
+  leftBound: number,
+  rightBound: number,
+  topBound: number,
+  bottomBound: number
+): ProjectedLabel[] {
+  const vis = items.filter((it) => it.visible);
+  if (vis.length === 0) return items;
+
+  const boxes = vis.map((it) => ({
+    it,
+    hw: Math.min(86, (it.label.length * 5.2 + (it.color ? 22 : 14)) * 0.5) + 4,
+    hh: 12.5,
+  }));
+
+  // Fan labels gently outward from their cluster center so they clear the building & spread into margins
+  if (boxes.length >= 2) {
+    const cx = boxes.reduce((s, b) => s + b.it.ax, 0) / boxes.length;
+    const cy = boxes.reduce((s, b) => s + b.it.ay, 0) / boxes.length;
+    for (const b of boxes) {
+      const vx = b.it.ax - cx;
+      const vy = b.it.ay - cy;
+      const len = Math.hypot(vx, vy) || 1;
+      const pushX = (vx / len) * 24;
+      const pushY = vy >= 0 ? Math.max(20, (vy / len) * 32) : Math.min(-24, (vy / len) * 34);
+      b.it.x = b.it.ax + pushX;
+      b.it.y = b.it.ay + pushY;
+    }
+  }
+
+  // Clamp initial positions inside safe mobile bounds (avoiding top-right Vue libre button)
+  const clampBox = (b: { it: ProjectedLabel; hw: number; hh: number }) => {
+    b.it.x = Math.max(leftBound + b.hw, Math.min(rightBound - b.hw, b.it.x));
+    const effTop = b.it.x + b.hw > rightBound - 108 ? Math.max(topBound, 48) : topBound;
+    b.it.y = Math.max(effTop + b.hh, Math.min(bottomBound - b.hh, b.it.y));
+  };
+  boxes.forEach(clampBox);
+
+  // 48 iterations: gentle tether during first 32, pure hard non-overlapping separation during final 16
+  for (let iter = 0; iter < 48; iter++) {
+    let anyOverlap = false;
+    for (let i = 0; i < boxes.length; i++) {
+      for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i];
+        const b = boxes[j];
+        const dx = b.it.x - a.it.x;
+        const dy = b.it.y - a.it.y;
+        const minX = a.hw + b.hw;
+        const minY = a.hh + b.hh;
+        const ox = minX - Math.abs(dx);
+        const oy = minY - Math.abs(dy);
+        if (ox > 0 && oy > 0) {
+          anyOverlap = true;
+          // Strongly prefer vertical stacking on narrow portrait screens unless horizontal gap is tiny
+          if (oy <= ox * 1.35) {
+            const sy = dy >= 0 ? 1 : -1;
+            const shift = oy * 0.54 + 0.8;
+            a.it.y -= sy * shift;
+            b.it.y += sy * shift;
+          } else {
+            const sx = dx >= 0 ? 1 : -1;
+            const shift = ox * 0.54 + 0.8;
+            a.it.x -= sx * shift;
+            b.it.x += sx * shift;
+          }
+        }
+      }
+    }
+    if (iter < 32) {
+      for (const b of boxes) {
+        b.it.x += (b.it.ax - b.it.x) * 0.035;
+        b.it.y += (b.it.ay - b.it.y) * 0.025;
+      }
+    }
+    boxes.forEach(clampBox);
+    if (!anyOverlap && iter >= 32) break;
+  }
+
+  return items;
+}
+
 const CLASSROOM_ROOF_PREFIXES = [
   'Toit_Batiment_Principal_S1',
   'Toit_Batiment_Sud_Maternelle_S2',
@@ -598,10 +680,18 @@ export const SchoolScene3D: React.FC<Props> = ({
           const leftBound = !freeExploreRef.current && !isHeroRef.current && w > 860 ? COL_WIDTH_PX + 12 : 12;
           const bottomBound = !freeExploreRef.current && !isHeroRef.current && w <= 860 ? h * 0.45 - 12 : h - 12;
 
+          const isMobileNow = w <= MOBILE_BREAKPOINT;
           const focusMode = !freeExploreRef.current && activeScene?.id === 'classes' ? classBuildingFocusRef.current : 'all';
           const allowedBuildings = focusMode !== 'all' ? CLASS_FOCUS_VIEWS[focusMode].buildings : null;
+          // On mobile in "Les salles de classe" overview (Vue globale), show the 4 building labels instead of 20 cramped rooms;
+          // tapping Cycle 1 / Cycle 2 / Cycle 3 zooms in and reveals all individual rooms cleanly. Desktop is untouched.
+          const mobileClassesOverview =
+            isMobileNow && !freeExploreRef.current && activeScene?.id === 'classes' && focusMode === 'all';
+          const effectiveFocusIds = mobileClassesOverview
+            ? ['Batiment_Principal_S1', 'Batiment_Nord_N1', 'Batiment_Est_E2', 'Batiment_Sud_Maternelle_S2']
+            : focusIds;
 
-          const items = hideRoofsRef.current
+          const items = hideRoofsRef.current && !mobileClassesOverview
             ? data.rooms
                 .filter((r) => !allowedBuildings || allowedBuildings.includes(r.building))
                 .map((r) => ({
@@ -610,11 +700,11 @@ export const SchoolScene3D: React.FC<Props> = ({
                   color: r.color,
                   pos: r.position,
                   kind: 'room' as const,
-                  offsetOutside: focusMode === 'all' && r.building === 'Batiment_Nord_N1',
-                  offsetAbove: focusMode === 'all' && r.building === 'Batiment_Est_E2',
+                  offsetOutside: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Nord_N1',
+                  offsetAbove: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Est_E2',
                 }))
             : data.buildings
-                .filter((b) => !focusIds || focusIds.includes(b.id))
+                .filter((b) => !effectiveFocusIds || effectiveFocusIds.includes(b.id))
                 .map((b) => ({
                   id: b.id,
                   label: b.name,
@@ -631,13 +721,21 @@ export const SchoolScene3D: React.FC<Props> = ({
             const ax = (tmpVec.x * 0.5 + 0.5) * w;
             const ay = (-tmpVec.y * 0.5 + 0.5) * h;
             const visible = tmpVec.z < 1 && ax >= leftBound && ax <= w - 12 && ay >= 18 && ay <= bottomBound;
-            // Place Bureau directrice label BELOW its room (stem pointing UP), N1 labels up-left, and E2 labels cleanly above in overview
-            const isDirectrice = it.id === 'Bureau_Directrice';
-            const initX = isDirectrice ? ax + 10 : it.offsetOutside ? ax - 42 : ax;
-            const initY = isDirectrice ? ay + 46 : it.offsetOutside ? ay - 48 : it.offsetAbove ? ay - 42 : ay - 22;
-            next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: initX, y: initY, visible, kind: it.kind });
+            if (isMobileNow) {
+              next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: ax, y: ay - 24, visible, kind: it.kind });
+            } else {
+              // Desktop (untouched): Place Bureau directrice label BELOW its room (stem pointing UP), N1 up-left, E2 above
+              const isDirectrice = it.id === 'Bureau_Directrice';
+              const initX = isDirectrice ? ax + 10 : it.offsetOutside ? ax - 42 : ax;
+              const initY = isDirectrice ? ay + 46 : it.offsetOutside ? ay - 48 : it.offsetAbove ? ay - 42 : ay - 22;
+              next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: initX, y: initY, visible, kind: it.kind });
+            }
           }
-          resolveLabelOverlaps(next, leftBound, w - 12, 18, bottomBound);
+          if (isMobileNow) {
+            resolveMobileLabelOverlaps(next, leftBound, w - 8, 16, bottomBound);
+          } else {
+            resolveLabelOverlaps(next, leftBound, w - 12, 18, bottomBound);
+          }
           setLabels(next);
         }
       }
