@@ -1515,29 +1515,8 @@ create_flat_roof("Toit_Annexe_Halle_Tennis", anx_pts, 4.2, MAT_DOME_WHITE, MAT_S
 create_vaulted_hall("Halle_Couverte_Tennis", 376.5, -19.5, 38.5, 36.5, -7.8, wall_h=4.6, arch_h=5.8,
                     mat_wall=MAT_DOME_WHITE, mat_roof=MAT_DOME_WHITE, mat_end_gable=MAT_DOME_WHITE, mat_arch_rim=None)
 
-# C. GRANDE PELOUSE VERTE (ZONE D'HERBE / BASEBALL / JEUX EXTERIEURS) + PETANQUE + SKATEPARK
-LAWN_COMPLEX_POLY = [
-    (346.0, 18.5),   # NW behind outdoor tennis courts
-    (464.5, 12.0),   # NE forest edge
-    (458.5, -90.0),  # East edge right up to boulodrome
-    (386.0, -90.0),  # SW edge behind North gym
-    (393.0, -40.0),  # Behind white vaulted tennis hall
-    (346.0, -36.0),  # Along North side of white tennis hall
-]
-create_poly_mesh("Pelouse_Complexe_Nord", LAWN_COMPLEX_POLY, 0.03, 0.038, MAT_GRASS, "STADE_LOUIS_AUFFRAY")
-
-bb_cx, bb_cy = 422.0, -68.0
-for bname, lx, ly, rad in [
-    ("Base_Marbre", -14.0, -14.0, 2.6),
-    ("Base_1", 4.0, -14.0, 2.2),
-    ("Base_2", 4.0, 4.0, 2.2),
-    ("Base_3", -14.0, 4.0, 2.2),
-    ("Monticule_Lanceur", -5.0, -5.0, 2.0),
-]:
-    bx, by = local_to_world(bb_cx, bb_cy, lx, ly, COMP_DEG)
-    bpy.ops.mesh.primitive_cylinder_add(vertices=18, radius=rad, depth=0.04, location=(bx, by, 0.045))
-    bo = bpy.context.active_object; bo.name = f"Baseball_{bname}"; bo.data.materials.append(MAT_TERRE_BATTUE)
-    scene.collection.objects.unlink(bo); link_obj(bo, "STADE_LOUIS_AUFFRAY")
+# C. GRANDE PELOUSE VERTE (ALIGNEE SUR LA GRILLE DU COMPLEXE, SANS SCINTILLEMENT) + PETANQUE + SKATEPARK
+create_poly_mesh("Pelouse_Complexe_Nord", rot_rect(428.0, -40.0, 64.0, 98.0, COMP_DEG), 0.04, 0.14, MAT_GRASS, "STADE_LOUIS_AUFFRAY")
 
 # 2. Boulodrome / Petanque gravel alleys
 pet_cx, pet_cy = 422.0, -102.0
