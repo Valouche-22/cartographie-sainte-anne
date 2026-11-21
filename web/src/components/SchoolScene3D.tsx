@@ -141,7 +141,7 @@ export const SchoolScene3D: React.FC<Props> = ({
     scene.background = new THREE.Color('#dce8f3');
     scene.fog = new THREE.Fog('#dce8f3', 750, 2100);
 
-    const camera = new THREE.PerspectiveCamera(44, container.clientWidth / container.clientHeight, 0.5, 2600);
+    const camera = new THREE.PerspectiveCamera(44, container.clientWidth / container.clientHeight, 2.5, 2200);
     camera.position.set(...data.heroCamera.pos);
     cameraRef.current = camera;
 
@@ -168,11 +168,12 @@ export const SchoolScene3D: React.FC<Props> = ({
     const hemi = new THREE.HemisphereLight(0xf0f7ff, 0x7c8774, 0.92);
     scene.add(hemi);
 
+    const shadowRes = Math.min(4096, renderer.capabilities.maxTextureSize || 2048);
     const sun = new THREE.DirectionalLight(0xfff9ee, 1.82);
     sun.position.set(160, 260, 140);
     sun.castShadow = true;
-    sun.shadow.mapSize.width = 2048;
-    sun.shadow.mapSize.height = 2048;
+    sun.shadow.mapSize.width = shadowRes;
+    sun.shadow.mapSize.height = shadowRes;
     sun.shadow.camera.near = 20;
     sun.shadow.camera.far = 1100;
     const d = 480;
@@ -180,7 +181,8 @@ export const SchoolScene3D: React.FC<Props> = ({
     sun.shadow.camera.right = d;
     sun.shadow.camera.top = d;
     sun.shadow.camera.bottom = -d;
-    sun.shadow.bias = -0.0005;
+    sun.shadow.bias = -0.0002;
+    sun.shadow.normalBias = 0.08;
     scene.add(sun);
 
     const loader = new GLTFLoader();

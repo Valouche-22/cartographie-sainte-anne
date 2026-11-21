@@ -190,40 +190,95 @@ def create_poly_mesh(name, pts, z0, z1, mat, col_name):
     obj.data.materials.append(mat)
     return obj
 
-def create_hollow_walls(name, pts, z0, z1, wall_mat, col_name, wall_thick=0.28):
-    """Build open-top perimeter walls + interior floor slab so hiding the roof reveals interior classrooms."""
-    if len(pts) < 3:
+def ensure_ccw(pts):
+    """Return a clean 2D polygon with counter-clockwise winding and no duplicate/micro segments."""
+    pts = list(pts)
+    if len(pts) > 1 and math.hypot(pts[0][0] - pts[-1][0], pts[0][1] - pts[-1][1]) < 1e-4:
+        pts = pts[:-1]
+    clean = []
+    for p in pts:
+        if not clean or math.hypot(p[0] - clean[-1][0], p[1] - clean[-1][1]) > 0.02:
+            clean.append((float(p[0]), float(p[1])))
+    if len(clean) > 1 and math.hypot(clean[0][0] - clean[-1][0], clean[0][1] - clean[-1][1]) < 0.02:
+        clean.pop()
+    if len(clean) < 3:
+        return clean
+    area = sum(clean[i][0] * clean[(i + 1) % len(clean)][1] - clean[(i + 1) % len(clean)][0] * clean[i][1] for i in range(len(clean)))
+    if area < 0:
+        clean.reverse()
+    return clean
+
+def offset_poly_2d(pts, dist):
+    """Exact 2D mitered polygon offset (dist > 0 = outward, dist < 0 = inward) for any CW or CCW polygon."""
+    ccw_pts = ensure_ccw(pts)
+    n = len(ccw_pts)
+    if n < 3 or abs(dist) < 1e-6:
+        return ccw_pts
+    out = []
+    for i in range(n):
+        p_prev = ccw_pts[(i - 1) % n]
+        p_curr = ccw_pts[i]
+        p_next = ccw_pts[(i + 1) % n]
+        e1x, e1y = p_curr[0] - p_prev[0], p_curr[1] - p_prev[1]
+        e2x, e2y = p_next[0] - p_curr[0], p_next[1] - p_curr[1]
+        l1 = math.hypot(e1x, e1y) or 1.0
+        l2 = math.hypot(e2x, e2y) or 1.0
+        e1x, e1y = e1x / l1, e1y / l1
+        e2x, e2y = e2x / l2, e2y / l2
+        # For CCW polygon, outward normal of edge (ex, ey) is (ey, -ex)
+        n1x, n1y = e1y, -e1x
+        n2x, n2y = e2y, -e2x
+        bx, by = n1x + n2x, n1y + n2y
+        bl = math.hypot(bx, by)
+        if bl < 1e-4:
+            out.append((p_curr[0] + n1x * dist, p_curr[1] + n1y * dist))
+        else:
+            bx, by = bx / bl, by / bl
+            cos_half = max(0.35, bx * n1x + by * n1y)
+            scale = dist / cos_half
+            out.append((p_curr[0] + bx * scale, p_curr[1] + by * scale))
+    return out
+
+def create_ring_walls(name, pts_outer, pts_inner, z0, z1, mat, col_name, parent=None):
+    """Build watertight open-top hollow ring walls between outer and inner 2D loops (ZERO solidify ambiguity)."""
+    n = len(pts_outer)
+    if n < 3 or len(pts_inner) != n:
         return None
-    # Interior floor slab
-    floor_mat = get_mat("Sol_Interieur_Classes", (0.90, 0.89, 0.86), roughness=0.85)
-    create_poly_mesh(f"{name}_Sol", pts, z0, z0 + 0.12, floor_mat, col_name)
-    # Perimeter walls (extruded open shell + solidified inward/outward)
     mesh = bpy.data.meshes.new(name)
     obj = bpy.data.objects.new(name, mesh)
     link_obj(obj, col_name)
     bm = bmesh.new()
-    n = len(pts)
+    ob = [bm.verts.new((p[0], p[1], z0)) for p in pts_outer]
+    ot = [bm.verts.new((p[0], p[1], z1)) for p in pts_outer]
+    ib = [bm.verts.new((p[0], p[1], z0)) for p in pts_inner]
+    it = [bm.verts.new((p[0], p[1], z1)) for p in pts_inner]
     for i in range(n):
-        p1 = Vector((pts[i][0], pts[i][1], z0))
-        p2 = Vector((pts[(i + 1) % n][0], pts[(i + 1) % n][1], z0))
-        if (p2 - p1).length < 0.05:
-            continue
-        v1 = bm.verts.new(p1)
-        v2 = bm.verts.new(p2)
-        v3 = bm.verts.new(p2 + Vector((0, 0, z1 - z0)))
-        v4 = bm.verts.new(p1 + Vector((0, 0, z1 - z0)))
+        j = (i + 1) % n
         try:
-            bm.faces.new([v1, v2, v3, v4])
+            bm.faces.new([ob[i], ob[j], ot[j], ot[i]])  # outer wall (normal outward)
+            bm.faces.new([ib[j], ib[i], it[i], it[j]])  # inner wall (normal inward)
+            bm.faces.new([ot[i], ot[j], it[j], it[i]])  # top rim (normal +Z)
+            bm.faces.new([ob[j], ob[i], ib[i], ib[j]])  # bottom rim (normal -Z)
         except ValueError:
             pass
-    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.01)
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    bmesh.ops.solidify(bm, geom=bm.faces[:], thickness=wall_thick)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     bm.to_mesh(mesh)
     bm.free()
-    obj.data.materials.append(wall_mat)
+    obj.data.materials.append(mat)
+    if parent:
+        obj.parent = parent
     return obj
+
+def create_hollow_walls(name, pts, z0, z1, wall_mat, col_name, wall_thick=0.28):
+    """Build open-top perimeter walls (strictly inward thickness) + inset interior floor slab with ZERO Z-fighting."""
+    pts_out = ensure_ccw(pts)
+    if len(pts_out) < 3:
+        return None
+    pts_in = offset_poly_2d(pts_out, -wall_thick)
+    pts_floor = offset_poly_2d(pts_out, -wall_thick * 0.5)
+    floor_mat = get_mat("Sol_Interieur_Classes", (0.90, 0.89, 0.86), roughness=0.85)
+    create_poly_mesh(f"{name}_Sol", pts_floor, z0 + 0.01, z0 + 0.14, floor_mat, col_name)
+    return create_ring_walls(name, pts_out, pts_in, z0, z1, wall_mat, col_name)
 
 def create_box(name, loc, scale, mat, col_name, rot_z_deg=0.0, rot_x_deg=0.0, rot_y_deg=0.0, parent=None):
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
@@ -279,36 +334,25 @@ def create_hipped_roof(name, pts, z_base, ridge_h, mat, col_name, overhang=0.25,
     return obj
 
 def create_flat_roof(name, pts, z_base, mat_membrane, mat_parapet, col_name, roof_items=None):
-    slab = create_poly_mesh(name, pts, z_base, z_base + 0.30, mat_membrane, col_name)
+    pts_ccw = ensure_ccw(pts)
+    slab = create_poly_mesh(name, pts_ccw, z_base + 0.02, z_base + 0.28, mat_membrane, col_name)
     if not slab:
         return None
-    bm = bmesh.new()
-    n = len(pts)
-    for i in range(n):
-        p1 = Vector((pts[i][0], pts[i][1], z_base + 0.22))
-        p2 = Vector((pts[(i + 1) % n][0], pts[(i + 1) % n][1], z_base + 0.22))
-        bm.faces.new([
-            bm.verts.new(p1), bm.verts.new(p2),
-            bm.verts.new(p2 + Vector((0, 0, 0.38))), bm.verts.new(p1 + Vector((0, 0, 0.38)))
-        ])
-    bmesh.ops.solidify(bm, geom=bm.faces[:], thickness=0.20)
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    pmesh = bpy.data.meshes.new(f"{name}_Acrotere")
-    pobj = bpy.data.objects.new(f"{name}_Acrotere", pmesh)
-    link_obj(pobj, col_name)
-    bm.to_mesh(pmesh)
-    bm.free()
-    pobj.data.materials.append(mat_parapet)
-    pobj.parent = slab
+    pts_par_out = offset_poly_2d(pts_ccw, +0.03)
+    pts_par_in = offset_poly_2d(pts_ccw, -0.20)
+    create_ring_walls(f"{name}_Acrotere", pts_par_out, pts_par_in, z_base + 0.28, z_base + 0.60, mat_parapet, col_name, parent=slab)
 
     if roof_items:
         for idx, (sx, sy, sw, sl, sh, rot_d, mat_it) in enumerate(roof_items, 1):
-            create_box(f"{name}_Detail_{idx}", (sx, sy, z_base + 0.30 + sh * 0.5), (sw, sl, sh), mat_it, col_name, rot_d, parent=slab)
+            create_box(f"{name}_Detail_{idx}", (sx, sy, z_base + 0.29 + sh * 0.5), (sw, sl, sh), mat_it, col_name, rot_d, parent=slab)
     return slab
 
 def add_facade_details(b_name, pts, z_base, height, col_name):
-    create_poly_mesh(f"Soubassement_{b_name}", pts, z_base, z_base + 0.45, MAT_WALL_BASE, col_name)
-    n = len(pts)
+    pts_ccw = ensure_ccw(pts)
+    # Offset architectural plinth cleanly outward by 5 cm so it NEVER Z-fights with exterior walls!
+    plinth_pts = offset_poly_2d(pts_ccw, +0.05)
+    create_poly_mesh(f"Soubassement_{b_name}", plinth_pts, z_base, z_base + 0.45, MAT_WALL_BASE, col_name)
+    n = len(pts_ccw)
     n_floors = 2 if height >= 5.0 else 1
     win_mesh = bpy.data.meshes.new(f"Fenetres_{b_name}")
     win_obj = bpy.data.objects.new(f"Fenetres_{b_name}", win_mesh)
@@ -320,23 +364,20 @@ def add_facade_details(b_name, pts, z_base, height, col_name):
     link_obj(frm_obj, col_name)
     bm_f = bmesh.new()
 
-    signed_area = sum(pts[i][0] * pts[(i + 1) % n][1] - pts[(i + 1) % n][0] * pts[i][1] for i in range(n))
-    ccw = signed_area > 0
-
     for i in range(n):
-        p1 = Vector((pts[i][0], pts[i][1], 0))
-        p2 = Vector((pts[(i + 1) % n][0], pts[(i + 1) % n][1], 0))
+        p1 = Vector((pts_ccw[i][0], pts_ccw[i][1], 0))
+        p2 = Vector((pts_ccw[(i + 1) % n][0], pts_ccw[(i + 1) % n][1], 0))
         edge = p2 - p1
         length = edge.length
         if length < 3.2:
             continue
         dir_v = edge.normalized()
-        norm = Vector((dir_v.y, -dir_v.x, 0)) if ccw else Vector((-dir_v.y, dir_v.x, 0))
+        norm = Vector((dir_v.y, -dir_v.x, 0))  # strictly outward for CCW
         count = max(1, int((length - 1.4) // 2.7))
         for k in range(count):
             t = (k + 0.5) / count
-            pos_f = p1.lerp(p2, t) + norm * 0.04
-            pos_w = p1.lerp(p2, t) + norm * 0.08
+            pos_f = p1.lerp(p2, t) + norm * 0.055
+            pos_w = p1.lerp(p2, t) + norm * 0.095
             for fl in range(n_floors):
                 wz = z_base + 1.45 + fl * 2.55
                 if wz + 0.8 > z_base + height - 0.35:
@@ -356,11 +397,11 @@ def add_facade_details(b_name, pts, z_base, height, col_name):
                     bm_w.verts.new(pos_w - dir_v * gw + Vector((0, 0, wz + gh))),
                 ])
     if len(bm_w.faces) > 0:
-        bmesh.ops.solidify(bm_w, geom=bm_w.faces[:], thickness=0.05)
+        bmesh.ops.solidify(bm_w, geom=bm_w.faces[:], thickness=0.035)
         bmesh.ops.recalc_face_normals(bm_w, faces=bm_w.faces)
         bm_w.to_mesh(win_mesh)
         win_obj.data.materials.append(MAT_WINDOW)
-        bmesh.ops.solidify(bm_f, geom=bm_f.faces[:], thickness=0.06)
+        bmesh.ops.solidify(bm_f, geom=bm_f.faces[:], thickness=0.05)
         bmesh.ops.recalc_face_normals(bm_f, faces=bm_f.faces)
         bm_f.to_mesh(frm_mesh)
         frm_obj.data.materials.append(MAT_FRAME)
@@ -537,7 +578,7 @@ create_poly_mesh("Cour_Complete_Enrobe", BLACK_OUTLINE_POLY, -0.01, 0.05, MAT_CO
 
 # Sandy East esplanade between Preau E1 and Grand Batiment Est E2
 EAST_COUR_POLY = [(25.0, -8.0), (49.0, -3.0), (42.0, 34.0), (19.0, 16.0)]
-create_poly_mesh("Cour_Est_Esplanade", EAST_COUR_POLY, 0.05, 0.062, MAT_COUR_EST, "COURS")
+create_poly_mesh("Cour_Est_Esplanade", EAST_COUR_POLY, 0.055, 0.085, MAT_COUR_EST, "COURS")
 
 # Clean Cantine parking lot (aligned strictly along the Cantine SE facade, stopping cleanly before the tree)
 rad_p = math.radians(21.2)
@@ -556,14 +597,14 @@ for i in range(10):
 
 # Real grass spaces
 GRASS_NW = [(-6.5, 21.5), (9.0, 23.0), (5.5, 36.2), (-8.5, 32.0)]
-create_poly_mesh("Espace_Herbe_Nord", GRASS_NW, 0.05, 0.075, MAT_GRASS, "VEGETATION")
+create_poly_mesh("Espace_Herbe_Nord", GRASS_NW, 0.055, 0.095, MAT_GRASS, "VEGETATION")
 
 GRASS_PERI = [(51.0, -49.5), (65.2, -47.2), (63.8, -61.5), (53.0, -61.5)]
-create_poly_mesh("Espace_Herbe_Periscolaire", GRASS_PERI, 0.05, 0.078, MAT_GRASS, "VEGETATION")
+create_poly_mesh("Espace_Herbe_Periscolaire", GRASS_PERI, 0.055, 0.095, MAT_GRASS, "VEGETATION")
 
 # SW grass lawn (green patch on user photo: right of S6 preau & wire fence, left of second gate!)
 GRASS_SW = [(-35.2, -29.8), (-25.2, -39.2), (-21.8, -33.2), (-29.8, -26.5)]
-create_poly_mesh("Espace_Herbe_SudOuest", GRASS_SW, 0.05, 0.078, MAT_GRASS, "VEGETATION")
+create_poly_mesh("Espace_Herbe_SudOuest", GRASS_SW, 0.055, 0.095, MAT_GRASS, "VEGETATION")
 
 # Gravel rectangle under big NW tree
 GRAVEL_OUTER = rot_rect(-13.5, 20.5, 5.2, 4.4, 18.1)
@@ -738,33 +779,33 @@ for bid, (b_name, roof_type, wall_mat, default_h, col_name, roof_items) in SCHOO
     elif roof_type == "hip_zinc":
         create_hipped_roof(f"Toit_{b_name}", pts, z_top, 1.5, MAT_ROOF_ZINC, col_name, overhang=0.18, taper=0.12)
     elif roof_type == "cantine_special":
-        # Clean solid Cantine roof deck (no internal parapet artifact cutting across the middle!)
-        c_roof = create_poly_mesh(f"Toit_{b_name}", pts, z_top, z_top + 0.30, MAT_ROOF_FLAT_DARK, col_name)
-        # Solid infill central technical block between North & South wings so NOTHING ever floats!
-        center_deck_pts = rot_rect(21.5, -49.2, 26.5, 11.5, 21.2)
-        create_poly_mesh("Murs_Cantine_Central_Tech", center_deck_pts, 0.05, z_top, MAT_WALL_CANTINE, col_name)
-        cd = create_poly_mesh("Toit_Cantine_Dalle_Centrale", center_deck_pts, z_top, z_top + 0.30, MAT_ROOF_FLAT_DARK, col_name)
+        # Clean solid Cantine roof deck (offset cleanly from Murs top and central infill — ZERO Z-fighting!)
+        c_roof = create_poly_mesh(f"Toit_{b_name}", pts, z_top + 0.02, z_top + 0.30, MAT_ROOF_FLAT_DARK, col_name)
+        # Solid infill central technical block strictly nested below c_roof top so ZERO coplanar faces exist!
+        center_deck_pts = rot_rect(21.5, -49.2, 26.2, 11.2, 21.2)
+        create_poly_mesh("Murs_Cantine_Central_Tech", center_deck_pts, 0.05, z_top - 0.03, MAT_WALL_CANTINE, col_name)
+        cd = create_poly_mesh("Toit_Cantine_Dalle_Centrale", center_deck_pts, z_top - 0.02, z_top + 0.24, MAT_ROOF_FLAT_DARK, col_name)
         if cd and c_roof: cd.parent = c_roof
-        # North hall roof strictly seated on North wing walls
+        # North hall roof cleanly seated on top of c_roof
         hall_n = rot_rect(19.5, -42.6, 31.0, 6.4, 21.2)
-        hn = create_hipped_roof("Toit_Cantine_Aile_Nord", hall_n, z_top + 0.28, 1.35, MAT_ROOF_CANTINE_1, col_name, overhang=0.05, taper=0.25)
+        hn = create_hipped_roof("Toit_Cantine_Aile_Nord", hall_n, z_top + 0.31, 1.35, MAT_ROOF_CANTINE_1, col_name, overhang=0.05, taper=0.25)
         if hn and c_roof: hn.parent = c_roof
-        # South hall roof strictly seated on South wing walls
+        # South hall roof cleanly seated on top of c_roof
         hall_s = rot_rect(23.5, -56.2, 27.5, 6.6, 21.2)
-        hs = create_hipped_roof("Toit_Cantine_Aile_Sud", hall_s, z_top + 0.28, 1.30, MAT_ROOF_CANTINE_2, col_name, overhang=0.05, taper=0.25)
+        hs = create_hipped_roof("Toit_Cantine_Aile_Sud", hall_s, z_top + 0.31, 1.30, MAT_ROOF_CANTINE_2, col_name, overhang=0.05, taper=0.25)
         if hs and c_roof: hs.parent = c_roof
         # Grounded central kitchen HVAC units + connecting ventilation duct strictly sitting on center_deck!
         duct_x, duct_y = 21.5, -49.4
-        create_box("Toit_Cantine_Gaine_CVC", (duct_x, duct_y, z_top + 0.30 + 0.26), (17.5, 0.55, 0.52), MAT_HVAC, col_name, 21.2, parent=c_roof)
+        create_box("Toit_Cantine_Gaine_CVC", (duct_x, duct_y, z_top + 0.25 + 0.26), (17.5, 0.55, 0.52), MAT_HVAC, col_name, 21.2, parent=c_roof)
         for idx_h, (lx, sx, sy, sz) in enumerate([
             (-6.5, 3.2, 1.4, 0.85), (-1.2, 2.6, 1.5, 1.00), (4.2, 2.2, 1.4, 0.80), (8.2, 1.6, 1.4, 0.68)
         ], 1):
             hx, hy = local_to_world(duct_x, duct_y, lx, 0.0, 21.2)
-            create_box(f"Toit_Cantine_CVC_{idx_h}", (hx, hy, z_top + 0.30 + sz / 2), (sx, sy, sz), MAT_HVAC, col_name, 21.2, parent=c_roof)
+            create_box(f"Toit_Cantine_CVC_{idx_h}", (hx, hy, z_top + 0.25 + sz / 2), (sx, sy, sz), MAT_HVAC, col_name, 21.2, parent=c_roof)
 
 # S1 NE Pyramidal Zinc Pavilion
 s1_pav_pts = [(1.7, 8.1), (13.4, 12.4), (16.5, 3.8), (4.8, -0.5)]
-create_hipped_roof("Toit_Batiment_Principal_S1_Pavillon", s1_pav_pts, 4.45, 2.1, MAT_ROOF_ZINC, "BATIMENTS", overhang=0.02, taper=0.10)
+create_hipped_roof("Toit_Batiment_Principal_S1_Pavillon", s1_pav_pts, 4.74, 1.85, MAT_ROOF_ZINC, "BATIMENTS", overhang=0.02, taper=0.10)
 
 # Context buildings
 ctx_idx = 0
@@ -775,7 +816,7 @@ for b in all_ign:
     h = float(b.get("hauteur") or 4.0)
     pts = b["pts"]
     create_poly_mesh(f"Contexte_Bat_{ctx_idx}", pts, 0.0, h, MAT_WALL_CONTEXT, "TERRAIN")
-    create_hipped_roof(f"Contexte_Toit_{ctx_idx}", pts, h, min(1.6, h * 0.32), MAT_ROOF_CONTEXT, "TERRAIN", overhang=0.12, taper=0.45)
+    create_hipped_roof(f"Contexte_Toit_{ctx_idx}", pts, h + 0.02, min(1.6, h * 0.32), MAT_ROOF_CONTEXT, "TERRAIN", overhang=0.12, taper=0.45)
 
 # ==========================================================
 # 5. BROWN WIRE FENCE SEPARATING COURTS + RECALIBRATED FOOTBALL COURTS!
@@ -1280,8 +1321,8 @@ if ch:
     # 9B. ARCHITECTURE NEO-GOTHIQUE DE L'EGLISE SAINT-PIERRE
     # ----------------------------------------------------------
     # 1. Exact IGN 131-vertex granite base/aisle masonry body (up to z=9.6m) + darker granite plinth
-    create_poly_mesh("Murs_Eglise_Soubassement", ch_pts, 0.35, 1.45, MAT_GRANITE_DARK, "EGLISE_PORDIC")
-    create_poly_mesh("Murs_Eglise_Saint_Pierre_BasCotes", ch_pts, 1.40, ch_h_aisle, MAT_GRANITE, "EGLISE_PORDIC")
+    create_poly_mesh("Murs_Eglise_Soubassement", offset_poly_2d(ch_pts, +0.06), 0.35, 1.45, MAT_GRANITE_DARK, "EGLISE_PORDIC")
+    create_poly_mesh("Murs_Eglise_Saint_Pierre_BasCotes", ch_pts, 1.45, ch_h_aisle, MAT_GRANITE, "EGLISE_PORDIC")
 
     # Clean lean-to slate roofs (appentis) on both North & South side aisles along the nave!
     for side_a in (-1, 1):
@@ -1847,7 +1888,7 @@ def append_neutral_building(pts, h):
     cx = sum(p[0] for p in pts) / len(pts)
     cy = sum(p[1] for p in pts) / len(pts)
     try:
-        rbot = [bm_ctx_roofs.verts.new((p[0], p[1], h)) for p in pts]
+        rbot = [bm_ctx_roofs.verts.new((p[0], p[1], h + 0.02)) for p in pts]
         rf_bot = bm_ctx_roofs.faces.new(rbot)
     except ValueError:
         return True
@@ -2211,8 +2252,8 @@ for up_m in (-7.0, -2.5, 2.0, 6.4):
 # 1. Main Manor Body (13.8m x 13.0m, 2 full stories + true DOUBLE-PITCHED SLATE GABLE ROOF along med_deg!)
 MAT_MEDIA_ROSE = get_mat("Crepi_Rose_Mediatheque", (0.76, 0.56, 0.50), roughness=0.84)
 med_pts = rot_rect(med_cx, med_cy, 13.8, 13.0, med_deg)
-create_poly_mesh("Murs_Mediatheque_Ic_Soubassement", med_pts, 0.12, 0.85, MAT_GRANITE_DARK, COL_CULT)
-create_poly_mesh("Murs_Mediatheque_Ic_Manoir", med_pts, 0.80, 8.35, MAT_MEDIA_ROSE, COL_CULT)
+create_poly_mesh("Murs_Mediatheque_Ic_Soubassement", offset_poly_2d(med_pts, +0.045), 0.12, 0.85, MAT_GRANITE_DARK, COL_CULT)
+create_poly_mesh("Murs_Mediatheque_Ic_Manoir", med_pts, 0.85, 8.35, MAT_MEDIA_ROSE, COL_CULT)
 # Floor stringcourse band & crisp cornice band wrapping all 4 facades
 create_box("Mediatheque_Ic_Bandeau", (med_cx, med_cy, 4.42), (14.08, 13.28, 0.26), MAT_CHURCH_TRIM, COL_CULT, med_deg)
 create_box("Mediatheque_Ic_Corniche", (med_cx, med_cy, 8.28), (14.28, 13.48, 0.34), MAT_CHURCH_TRIM, COL_CULT, med_deg)
