@@ -245,7 +245,7 @@ const MOBILE_SCENE_MULTS: Record<string, number> = {
   'cantine-periscolaire': 0.98,
   eglise: 0.76,
   sport: 0.94,
-  culture: 1.42,
+  culture: 1.08,
   S1: 0.96,
   N1: 0.88,
   E2: 0.96,
@@ -455,9 +455,9 @@ export const SchoolScene3D: React.FC<Props> = ({
     camera.position.set(...initHero.pos);
     cameraRef.current = camera;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    const renderer = new THREE.WebGLRenderer({ antialias: !isMobInit, powerPreference: 'high-performance' });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobInit ? 1.5 : 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -478,7 +478,7 @@ export const SchoolScene3D: React.FC<Props> = ({
     const hemi = new THREE.HemisphereLight(0xf0f7ff, 0x7c8774, 0.92);
     scene.add(hemi);
 
-    const shadowRes = Math.min(4096, renderer.capabilities.maxTextureSize || 2048);
+    const shadowRes = isMobInit ? 1024 : Math.min(4096, renderer.capabilities.maxTextureSize || 2048);
     const sun = new THREE.DirectionalLight(0xfff9ee, 1.82);
     sun.position.set(160, 260, 140);
     sun.castShadow = true;
@@ -688,7 +688,8 @@ export const SchoolScene3D: React.FC<Props> = ({
       renderer.render(scene, camera);
 
       frameCount++;
-      if (frameCount % 3 === 0) {
+      const labelStep = w <= MOBILE_BREAKPOINT ? 6 : 3;
+      if (frameCount % labelStep === 0) {
         if (!showLabelsRef.current || (isHeroRef.current && !freeExploreRef.current)) {
           setLabels((prev) => (prev.length ? [] : prev));
         } else {

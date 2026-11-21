@@ -966,11 +966,9 @@ body {
     gap: 8px;
     padding: 5px 8px 5px 12px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(12px) saturate(150%);
-    -webkit-backdrop-filter: blur(12px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
     font-family: inherit;
     cursor: pointer;
     pointer-events: auto;
@@ -996,11 +994,9 @@ body {
     gap: 7px;
     padding: 8px 5px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.62);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.78);
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
   }
 
   .mobile-rail-dot {
@@ -1020,7 +1016,7 @@ body {
     opacity: 1;
   }
 
-  /* Full-screen vertical snap container */
+  /* Full-screen vertical snap container (no CSS scroll-behavior:smooth so touch flicks stay 60fps native!) */
   .mobile-reel-feed {
     position: fixed;
     inset: 0;
@@ -1029,9 +1025,10 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
+    touch-action: pan-y;
+    transform: translateZ(0);
     scrollbar-width: none;
   }
 
@@ -1047,6 +1044,7 @@ body {
     scroll-snap-stop: always;
     display: flex;
     flex-direction: column;
+    contain: layout style;
   }
 
   /* Slide 0: Hero */
