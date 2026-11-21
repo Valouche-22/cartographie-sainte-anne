@@ -60,8 +60,8 @@ const PRESET_VIEWS: Record<CameraPreset, { pos: [number, number, number]; target
   general: { pos: [-74, 46, 82], target: [10, 0, 8] },
   cantine: { pos: [90, 44, 92], target: [32, 0, 32] },
   church: { pos: [-252, 54, 4], target: [-142, 16, -64] },
-  culture: { pos: [-76, 76, -118], target: [-204, 2, -192] },
-  stadium: { pos: [168, 118, 286], target: [372, 0, 108] },
+  culture: { pos: [-128, 78, -64], target: [-204, 2, -192] },
+  stadium: { pos: [148, 118, 260], target: [372, 0, 108] },
 };
 
 export const SchoolScene3D: React.FC<Props> = ({
@@ -424,7 +424,7 @@ export const SchoolScene3D: React.FC<Props> = ({
     gsap.to(viewOffsetRef.current, {
       x: targetOffX,
       y: targetOffY,
-      duration: 0.95,
+      duration: 1.1,
       ease: 'power2.inOut',
     });
 
@@ -438,16 +438,16 @@ export const SchoolScene3D: React.FC<Props> = ({
       amp: targetAmp,
       vert: targetVert,
       zoom: targetZoom,
-      duration: 1.0,
+      duration: 1.15,
       ease: 'power2.inOut',
     });
 
     if (isHero) {
-      animateGuidedCamera(data.heroCamera.pos, data.heroCamera.target, 1.15);
+      animateGuidedCamera(data.heroCamera.pos, data.heroCamera.target, 1.25);
       return;
     }
     if (sc) {
-      animateGuidedCamera(sc.camera.pos, sc.camera.target, 1.25);
+      animateGuidedCamera(sc.camera.pos, sc.camera.target, 1.35);
     }
   }, [isHero, activeSceneIndex, freeExplore, data]);
 

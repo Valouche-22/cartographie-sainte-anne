@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowDown, ChevronDown, ChevronUp, X } from 'lucide-react';
@@ -22,6 +22,13 @@ export const App: React.FC = () => {
   const [selectedRoom, setSelectedRoom] = useState<RoomInfo | null>(null);
   const [cameraPresetTrigger, setCameraPresetTrigger] = useState<{ preset: CameraPreset; seq: number } | null>(null);
 
+  // Smooth magnetic section scrolling state
+  // sectionIdx: 0 = hero-cover, 1..N = data.scenes[0..N-1]
+  const sectionIdxRef = useRef(0);
+  const isAutoScrollingRef = useRef(false);
+  const scrollTweenRef = useRef<gsap.core.Tween | null>(null);
+  const wheelLockUntilRef = useRef(0);
+
   useEffect(() => {
     fetch(`./data/school-data.json?v=${__BUILD_ID__}`)
       .then((r) => r.json())
@@ -29,6 +36,109 @@ export const App: React.FC = () => {
       .catch(() => setLoadError('Impossible de charger les données.'));
   }, []);
 
+  const applySectionState = useCallback(
+    (sectionIdx: number) => {
+      if (!data) return;
+      sectionIdxRef.current = sectionIdx;
+      if (sectionIdx <= 0) {
+        setIsHero(true);
+        setHideRoofs(false);
+        setShowLabels(false);
+      } else {
+        const sceneIdx = Math.min(sectionIdx - 1, data.scenes.length - 1);
+        setIsHero(false);
+        setActiveSceneIndex(sceneIdx);
+        const sc = data.scenes[sceneIdx];
+        if (sc) {
+          setHideRoofs(sc.hideRoofs);
+          setShowLabels(sc.showLabels);
+        }
+      }
+    },
+    [data]
+  );
+
+  const goToSection = useCallback(
+    (targetIdx: number, instant = false) => {
+      if (!data) return;
+      const maxIdx = data.scenes.length;
+      const clamped = Math.max(0, Math.min(maxIdx, targetIdx));
+      const elId = clamped === 0 ? 'hero-cover' : `chapter-${data.scenes[clamped - 1].id}`;
+      const targetEl = document.getElementById(elId);
+      if (!targetEl) return;
+
+      const targetY = clamped === 0 ? 0 : targetEl.getBoundingClientRect().top + window.scrollY;
+      applySectionState(clamped);
+
+      scrollTweenRef.current?.kill();
+      if (instant) {
+        isAutoScrollingRef.current = false;
+        window.scrollTo(0, targetY);
+        return;
+      }
+
+      isAutoScrollingRef.current = true;
+      wheelLockUntilRef.current = performance.now() + 820;
+
+      const proxy = { y: window.scrollY };
+      scrollTweenRef.current = gsap.to(proxy, {
+        y: targetY,
+        duration: 1.05,
+        ease: 'power2.inOut',
+        onUpdate: () => {
+          window.scrollTo(0, proxy.y);
+        },
+        onComplete: () => {
+          window.scrollTo(0, targetY);
+          isAutoScrollingRef.current = false;
+        },
+      });
+    },
+    [data, applySectionState]
+  );
+
+  // Smooth magnetic wheel + keyboard navigation
+  useEffect(() => {
+    if (!data || freeExplore) return;
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (Math.abs(e.deltaY) < 8) return;
+      const now = performance.now();
+      if (now < wheelLockUntilRef.current) return;
+      const dir = e.deltaY > 0 ? 1 : -1;
+      const next = Math.max(0, Math.min(data.scenes.length, sectionIdxRef.current + dir));
+      if (next !== sectionIdxRef.current) {
+        goToSection(next);
+      }
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        goToSection(sectionIdxRef.current + 1);
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        goToSection(sectionIdxRef.current - 1);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSection(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSection(data.scenes.length);
+      }
+    };
+
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('keydown', onKeyDown);
+      scrollTweenRef.current?.kill();
+    };
+  }, [data, freeExplore, goToSection]);
+
+  // Fallback ScrollTrigger sync for manual scrollbar dragging or touch scrolling
   useEffect(() => {
     if (!data || freeExplore) return;
     const triggers: ScrollTrigger[] = [];
@@ -41,14 +151,10 @@ export const App: React.FC = () => {
           start: 'top center',
           end: 'bottom 45%',
           onEnter: () => {
-            setIsHero(true);
-            setHideRoofs(false);
-            setShowLabels(false);
+            if (!isAutoScrollingRef.current) applySectionState(0);
           },
           onEnterBack: () => {
-            setIsHero(true);
-            setHideRoofs(false);
-            setShowLabels(false);
+            if (!isAutoScrollingRef.current) applySectionState(0);
           },
         })
       );
@@ -57,13 +163,7 @@ export const App: React.FC = () => {
     const chapterEls = document.querySelectorAll('.chapter-panel');
     chapterEls.forEach((el, idx) => {
       const activate = () => {
-        setIsHero(false);
-        setActiveSceneIndex(idx);
-        const sc = data.scenes[idx];
-        if (sc) {
-          setHideRoofs(sc.hideRoofs);
-          setShowLabels(sc.showLabels);
-        }
+        if (!isAutoScrollingRef.current) applySectionState(idx + 1);
       };
       triggers.push(
         ScrollTrigger.create({
@@ -80,14 +180,11 @@ export const App: React.FC = () => {
     return () => {
       triggers.forEach((t) => t.kill());
     };
-  }, [data, freeExplore]);
-
-  const scrollToElement = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+  }, [data, freeExplore, applySectionState]);
 
   const enterFreeExplore = () => {
+    scrollTweenRef.current?.kill();
+    isAutoScrollingRef.current = false;
     setFreeExplore(true);
     setSelectedBuilding(null);
     setSelectedRoom(null);
@@ -95,21 +192,13 @@ export const App: React.FC = () => {
   };
 
   const returnToGuidedTour = () => {
+    const savedSection = sectionIdxRef.current;
     setFreeExplore(false);
     setSelectedBuilding(null);
     setSelectedRoom(null);
     setTimeout(() => {
-      if (isHero) {
-        scrollToElement('hero-cover');
-      } else {
-        const sc = data?.scenes[activeSceneIndex];
-        if (sc) {
-          setHideRoofs(sc.hideRoofs);
-          setShowLabels(sc.showLabels);
-          scrollToElement(`chapter-${sc.id}`);
-        }
-      }
-    }, 60);
+      goToSection(savedSection, true);
+    }, 50);
   };
 
   const triggerPreset = (preset: CameraPreset) => {
@@ -189,7 +278,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 className="hero-start-btn"
-                onClick={() => scrollToElement(`chapter-${data.scenes[0].id}`)}
+                onClick={() => goToSection(1)}
               >
                 <span>Parcourir</span>
                 <ArrowDown size={14} />
@@ -200,7 +289,7 @@ export const App: React.FC = () => {
           {/* Clean white left column */}
           <div className="editorial-column">
             <div className="col-sticky-top">
-              <span className="col-brand" onClick={() => scrollToElement('hero-cover')}>
+              <span className="col-brand" onClick={() => goToSection(0)}>
                 {data.school.name}
               </span>
               <span className="col-step-badge">
@@ -231,11 +320,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 className="step-nav-btn"
-                onClick={() =>
-                  activeSceneIndex === 0
-                    ? scrollToElement('hero-cover')
-                    : scrollToElement(`chapter-${data.scenes[activeSceneIndex - 1].id}`)
-                }
+                onClick={() => goToSection(activeSceneIndex)}
               >
                 <ChevronUp size={15} /> Précédent
               </button>
@@ -243,10 +328,7 @@ export const App: React.FC = () => {
                 type="button"
                 className="step-nav-btn"
                 disabled={activeSceneIndex >= totalChapters - 1}
-                onClick={() => {
-                  const next = data.scenes[activeSceneIndex + 1];
-                  if (next) scrollToElement(`chapter-${next.id}`);
-                }}
+                onClick={() => goToSection(activeSceneIndex + 2)}
               >
                 Suivant <ChevronDown size={15} />
               </button>
