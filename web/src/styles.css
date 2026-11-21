@@ -155,6 +155,69 @@ body {
   background: #f3f4f6;
 }
 
+.scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: opacity 0.2s ease;
+}
+
+.scroll-cue:hover {
+  opacity: 1;
+}
+
+.scroll-mouse {
+  width: 22px;
+  height: 34px;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.scroll-wheel {
+  width: 3px;
+  height: 7px;
+  border-radius: 2px;
+  background: #ffffff;
+  animation: scrollWheelMove 1.8s ease-in-out infinite;
+}
+
+.scroll-cue-text {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 6px rgba(17, 24, 39, 0.55);
+}
+
+@keyframes scrollWheelMove {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(10px);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+
 /* Left reading column */
 .editorial-column {
   position: relative;
@@ -287,6 +350,32 @@ body {
 .step-nav-btn:disabled {
   opacity: 0.35;
   cursor: default;
+}
+
+.step-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.step-dot:hover {
+  background: #9ca3af;
+}
+
+.step-dot.active {
+  background: var(--ink);
+  transform: scale(1.25);
 }
 
 /* 3D Labels */

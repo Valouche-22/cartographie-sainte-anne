@@ -280,10 +280,22 @@ export const App: React.FC = () => {
                 className="hero-start-btn"
                 onClick={() => goToSection(1)}
               >
-                <span>Parcourir</span>
+                <span>Commencer la visite</span>
                 <ArrowDown size={14} />
               </button>
             </div>
+
+            <button
+              type="button"
+              className="scroll-cue"
+              onClick={() => goToSection(1)}
+              aria-label="Faire défiler vers le bas pour commencer"
+            >
+              <span className="scroll-mouse" aria-hidden="true">
+                <span className="scroll-wheel" />
+              </span>
+              <span className="scroll-cue-text">Faire défiler vers le bas</span>
+            </button>
           </section>
 
           {/* Clean white left column */}
@@ -324,6 +336,18 @@ export const App: React.FC = () => {
               >
                 <ChevronUp size={15} /> Précédent
               </button>
+              <div className="step-dots" role="tablist" aria-label="Étapes de la visite">
+                {data.scenes.map((sc, idx) => (
+                  <button
+                    key={sc.id}
+                    type="button"
+                    className={`step-dot ${idx === activeSceneIndex ? 'active' : ''}`}
+                    onClick={() => goToSection(idx + 1)}
+                    title={sc.title}
+                    aria-label={`Aller à ${sc.title}`}
+                  />
+                ))}
+              </div>
               <button
                 type="button"
                 className="step-nav-btn"
