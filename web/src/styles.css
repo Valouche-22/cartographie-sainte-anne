@@ -163,8 +163,8 @@ body {
   z-index: 40;
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 9px 15px;
+  gap: 8px;
+  padding: 9px 16px;
   border-radius: 999px;
   background: rgba(17, 24, 39, 0.72);
   backdrop-filter: blur(8px);
@@ -174,34 +174,25 @@ body {
   cursor: pointer;
   pointer-events: auto;
   box-shadow: 0 6px 20px rgba(17, 24, 39, 0.22);
-  transition: left 0.85s ease, background 0.15s ease;
-}
-
-.scroll-cue.in-split {
-  left: calc(var(--col-w) + (100vw - var(--col-w)) / 2);
+  transition: left 0.85s ease, background 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
 }
 
 .scroll-cue:hover {
   background: rgba(17, 24, 39, 0.88);
 }
 
-.scroll-mouse {
-  width: 18px;
-  height: 26px;
-  border: 1.5px solid rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  padding-top: 5px;
-  flex-shrink: 0;
+.scroll-cue.in-split {
+  left: calc(var(--col-w) + (100vw - var(--col-w)) / 2);
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  color: var(--ink);
+  box-shadow: 0 4px 16px rgba(17, 24, 39, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
-.scroll-wheel {
-  width: 2.5px;
-  height: 5px;
-  border-radius: 2px;
-  background: #ffffff;
-  animation: scrollWheelMove 1.8s ease-in-out infinite;
+.scroll-cue.in-split:hover {
+  background: rgba(255, 255, 255, 0.64);
 }
 
 .scroll-cue-text {
@@ -210,8 +201,7 @@ body {
   white-space: nowrap;
 }
 
-.scroll-cue-arrow,
-.hint-bounce {
+.scroll-cue-arrow {
   animation: gentleBounce 2s ease-in-out infinite;
 }
 
@@ -221,21 +211,6 @@ body {
   }
   50% {
     transform: translateY(3px);
-  }
-}
-
-@keyframes scrollWheelMove {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  70% {
-    transform: translateY(7px);
-    opacity: 0.2;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 0;
   }
 }
 

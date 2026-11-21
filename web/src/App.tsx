@@ -275,9 +275,6 @@ export const App: React.FC = () => {
           aria-label="Faire défiler vers le bas pour continuer"
         >
           <ChevronDown size={15} className="scroll-cue-arrow" />
-          <span className="scroll-mouse" aria-hidden="true">
-            <span className="scroll-wheel" />
-          </span>
           <span className="scroll-cue-text">Faire défiler vers le bas</span>
           <ChevronDown size={15} className="scroll-cue-arrow" />
         </button>
