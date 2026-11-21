@@ -1183,14 +1183,119 @@ body {
     cursor: pointer;
   }
 
-  /* Compact 3D labels on small screens */
+  .mobile-reel-body.has-carousel {
+    overflow: visible;
+  }
+
+  .mobile-carousel-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mobile-carousel-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    margin: 0 -4px;
+  }
+
+  .mobile-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-carousel-page {
+    flex: 0 0 100%;
+    width: 100%;
+    padding: 0 4px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .mobile-carousel-page .fact-list {
+    gap: 8px;
+  }
+
+  .mobile-carousel-page .fact-row {
+    padding: 10px 13px;
+    border-radius: 10px;
+    gap: 3px;
+  }
+
+  .mobile-carousel-page .fact-label {
+    font-size: 0.79rem;
+    line-height: 1.25;
+  }
+
+  .mobile-carousel-page .fact-value {
+    font-size: 0.87rem;
+    line-height: 1.44;
+  }
+
+  .mobile-carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding-top: 2px;
+  }
+
+  .mobile-carousel-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid var(--accent-border);
+    background: var(--white);
+    color: var(--accent-text);
+    cursor: pointer;
+    transition: opacity 0.18s ease, background 0.18s ease;
+  }
+
+  .mobile-carousel-arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .mobile-carousel-dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mobile-carousel-dot {
+    width: 7px;
+    height: 7px;
+    padding: 0;
+    border-radius: 999px;
+    border: none;
+    background: var(--accent);
+    opacity: 0.32;
+    cursor: pointer;
+    transition: width 0.22s ease, opacity 0.2s ease;
+  }
+
+  .mobile-carousel-dot.active {
+    width: 20px;
+    opacity: 1;
+  }
+
+  /* Compact, full-text 3D labels on small screens (wrap cleanly to 2 lines — never cut off!) */
   .label-pill {
-    padding: 2.5px 7px;
+    padding: 3.5px 8px;
+    border-radius: 10px;
     font-size: 0.62rem;
-    gap: 4px;
-    max-width: 172px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.2;
+    gap: 5px;
+    max-width: 152px;
+    white-space: normal;
+    text-align: left;
   }
 
   .label-dot {

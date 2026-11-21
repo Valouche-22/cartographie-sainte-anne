@@ -101,11 +101,13 @@ function resolveMobileLabelOverlaps(
   const vis = items.filter((it) => it.visible);
   if (vis.length === 0) return items;
 
-  const boxes = vis.map((it) => ({
-    it,
-    hw: Math.min(86, (it.label.length * 5.2 + (it.color ? 22 : 14)) * 0.5) + 4,
-    hh: 12.5,
-  }));
+  const boxes = vis.map((it) => {
+    const rawW = it.label.length * 5.3 + (it.color ? 24 : 16);
+    const wrapped = rawW > 148;
+    const hw = Math.min(78, rawW * 0.5) + 4;
+    const hh = wrapped ? 19 : 13;
+    return { it, hw, hh };
+  });
 
   // Fan labels gently outward from their cluster center so they clear the building & spread into margins
   if (boxes.length >= 2) {

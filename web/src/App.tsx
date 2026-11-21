@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, X } from 'lucide-react';
 import { SchoolScene3D } from './components/SchoolScene3D';
 import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from './types';
 
@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [selectedRoom, setSelectedRoom] = useState<RoomInfo | null>(null);
   const [cameraPresetTrigger, setCameraPresetTrigger] = useState<{ preset: CameraPreset; seq: number } | null>(null);
   const [classBuildingFocus, setClassBuildingFocus] = useState<'all' | 'S1' | 'N1' | 'E2'>('all');
+  const [ecoleCarouselPage, setEcoleCarouselPage] = useState(0);
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' ? window.matchMedia('(max-width: 860px)').matches : false
   );
@@ -34,6 +35,7 @@ export const App: React.FC = () => {
   const wheelLockUntilRef = useRef(0);
   const labelDelayTimerRef = useRef<number | null>(null);
   const mobileFeedRef = useRef<HTMLDivElement | null>(null);
+  const ecoleCarouselRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 860px)');
@@ -80,13 +82,13 @@ export const App: React.FC = () => {
         const cards = document.querySelectorAll<HTMLElement>('.mobile-reel-card');
         cards.forEach((card) => {
           const body = card.querySelector<HTMLElement>('.mobile-reel-body');
-          if (!body) return;
+          if (!body || body.classList.contains('has-carousel')) return;
           body.style.setProperty('--mfit', '1');
           const cs = window.getComputedStyle(card);
           const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
           const availH = card.clientHeight - padY - 6;
           if (availH <= 0 || body.scrollHeight <= availH) return;
-          for (const f of [0.94, 0.88, 0.83, 0.78, 0.73, 0.68, 0.63]) {
+          for (const f of [0.95, 0.9, 0.85, 0.8]) {
             body.style.setProperty('--mfit', String(f));
             if (body.scrollHeight <= availH) break;
           }
@@ -486,17 +488,100 @@ export const App: React.FC = () => {
                 {/* Bottom 55% snapped editorial card */}
                 <div className="mobile-reel-card">
                   <div className="mobile-reel-grabber" aria-hidden="true" />
-                  <div className={`mobile-reel-body ${!isHero && idx === activeSceneIndex ? 'is-active' : ''}`}>
+                  <div
+                    className={`mobile-reel-body ${!isHero && idx === activeSceneIndex ? 'is-active' : ''} ${
+                      sc.id === 'ecole' ? 'has-carousel' : ''
+                    }`}
+                  >
                     <h2 className="chapter-title">{sc.title}</h2>
 
-                    <div className="fact-list">
-                      {sc.rows.map((row, rIdx) => (
-                        <div className="fact-row" key={rIdx}>
-                          {row.label && <span className="fact-label">{row.label}</span>}
-                          <p className="fact-value">{row.value}</p>
-                        </div>
-                      ))}
-                    </div>
+                    {sc.id === 'ecole' ? (
+                      (() => {
+                        const pages = [
+                          sc.rows.slice(0, 3),
+                          sc.rows.slice(3, 6),
+                          sc.rows.slice(6),
+                        ].filter((p) => p.length > 0);
+                        const scrollToPage = (pIdx: number) => {
+                          const clamped = Math.max(0, Math.min(pages.length - 1, pIdx));
+                          setEcoleCarouselPage(clamped);
+                          const el = ecoleCarouselRef.current;
+                          if (el) {
+                            el.scrollTo({ left: clamped * el.clientWidth, behavior: 'smooth' });
+                          }
+                        };
+                        return (
+                          <div className="mobile-carousel-wrap">
+                            <div
+                              className="mobile-carousel-track"
+                              ref={ecoleCarouselRef}
+                              onScroll={(e) => {
+                                const el = e.currentTarget;
+                                if (el.clientWidth > 0) {
+                                  const nextP = Math.round(el.scrollLeft / el.clientWidth);
+                                  if (nextP !== ecoleCarouselPage) {
+                                    setEcoleCarouselPage(nextP);
+                                  }
+                                }
+                              }}
+                            >
+                              {pages.map((pageRows, pIdx) => (
+                                <div className="mobile-carousel-page" key={pIdx}>
+                                  <div className="fact-list">
+                                    {pageRows.map((row, rIdx) => (
+                                      <div className="fact-row" key={rIdx}>
+                                        {row.label && <span className="fact-label">{row.label}</span>}
+                                        <p className="fact-value">{row.value}</p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="mobile-carousel-controls">
+                              <button
+                                type="button"
+                                className="mobile-carousel-arrow"
+                                disabled={ecoleCarouselPage <= 0}
+                                onClick={() => scrollToPage(ecoleCarouselPage - 1)}
+                                aria-label="Fiche précédente"
+                              >
+                                <ChevronLeft size={16} />
+                              </button>
+                              <div className="mobile-carousel-dots" role="tablist" aria-label="Pages d'informations">
+                                {pages.map((_, pIdx) => (
+                                  <button
+                                    key={pIdx}
+                                    type="button"
+                                    className={`mobile-carousel-dot ${ecoleCarouselPage === pIdx ? 'active' : ''}`}
+                                    onClick={() => scrollToPage(pIdx)}
+                                    aria-label={`Page ${pIdx + 1} sur ${pages.length}`}
+                                  />
+                                ))}
+                              </div>
+                              <button
+                                type="button"
+                                className="mobile-carousel-arrow"
+                                disabled={ecoleCarouselPage >= pages.length - 1}
+                                onClick={() => scrollToPage(ecoleCarouselPage + 1)}
+                                aria-label="Fiche suivante"
+                              >
+                                <ChevronRight size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })()
+                    ) : (
+                      <div className="fact-list">
+                        {sc.rows.map((row, rIdx) => (
+                          <div className="fact-row" key={rIdx}>
+                            {row.label && <span className="fact-label">{row.label}</span>}
+                            <p className="fact-value">{row.value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
                     {sc.id === 'classes' && (
                       <div className="building-focus-bar" role="group" aria-label="Zoom par bâtiment">
