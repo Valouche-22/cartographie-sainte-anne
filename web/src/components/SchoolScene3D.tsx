@@ -322,7 +322,11 @@ function adaptPoseForMobile(
   const s = baseScale * mult;
 
   const adjTarget: [number, number, number] =
-    sceneKey === 'culture' ? [-190, 2, -194] : target;
+    sceneKey === 'culture'
+      ? [-190, 2, -194]
+      : sceneKey === 'hero'
+      ? [6.5, 0, 4.2]
+      : target;
 
   return {
     pos: [
