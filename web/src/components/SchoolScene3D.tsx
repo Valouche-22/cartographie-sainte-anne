@@ -111,6 +111,8 @@ const MOBILE_LABEL_OFFSETS: Record<string, [number, number]> = {
   // Cantine et Périscolaire : tiges courtes et étiquettes propres au-dessus des bâtiments
   Batiment_Cantine: [0, -34],
   Batiment_Periscolaire: [0, -34],
+  // Église Saint-Pierre (mobile) : juste au-dessus de la croix du clocher
+  Eglise_Saint_Pierre: [0, -24],
   // Pôle culturel (mobile) : Médiathèque et La Ville Robert placées proprement au-dessus
   Mediatheque_Ic: [0, -58],
   Centre_Culturel_Ville_Robert: [-12, -56],
@@ -496,6 +498,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   const controlsRef = useRef<OrbitControls | null>(null);
   const classroomRoofsRef = useRef<THREE.Object3D[]>([]);
   const roomMeshesRef = useRef<Map<string, THREE.Mesh>>(new Map());
+  const churchCrossTopRef = useRef<[number, number, number] | null>(null);
   const courOverlaysRef = useRef<{
     root: THREE.Group;
     elemFill: THREE.MeshBasicMaterial;
@@ -711,6 +714,14 @@ export const SchoolScene3D: React.FC<Props> = ({
           r.visible = !hideRoofsRef.current;
         }
         scene.add(root);
+        root.updateMatrixWorld(true);
+        const crossObj =
+          root.getObjectByName('Clocher_Croix_Mat') || root.getObjectByName('Clocher_Eglise_Fleche');
+        if (crossObj) {
+          const crossBox = new THREE.Box3().setFromObject(crossObj);
+          const crossCenter = crossBox.getCenter(new THREE.Vector3());
+          churchCrossTopRef.current = [crossCenter.x, crossBox.max.y + 2.4, crossCenter.z];
+        }
         onLoaded();
       },
       (xhr) => {
@@ -927,7 +938,9 @@ export const SchoolScene3D: React.FC<Props> = ({
                     id: b.id,
                     label: b.name,
                     color: b.color,
-                    pos: [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]] as [number, number, number],
+                    pos: (b.id === 'Eglise_Saint_Pierre'
+                      ? churchCrossTopRef.current ?? [b.position[0], 54.5, b.position[2]]
+                      : [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]]) as [number, number, number],
                     kind: 'building' as const,
                     offsetOutside: false,
                     offsetAbove: false,
@@ -957,23 +970,64 @@ export const SchoolScene3D: React.FC<Props> = ({
               ];
 
           const next: ProjectedLabel[] = [];
+          const mobDistScale = isMobileNow ? 1.65 : 1.0;
+          const topLimit = isMobileNow ? 54 : 18;
           for (const it of items) {
+            // In Free Explore, hide far-away labels so distant landmarks never pile up on the horizon
+            let withinFreeRange = true;
+            if (freeExploreRef.current) {
+              const dxCam = it.pos[0] - camera.position.x;
+              const dyCam = it.pos[1] - camera.position.y;
+              const dzCam = it.pos[2] - camera.position.z;
+              const distCam = Math.hypot(dxCam, dyCam, dzCam);
+              const distTargetXZ = Math.hypot(it.pos[0] - controls.target.x, it.pos[2] - controls.target.z);
+              const maxCam =
+                it.kind === 'room'
+                  ? 160 * mobDistScale
+                  : it.id === 'Stade_Louis_Auffray'
+                  ? 340 * mobDistScale
+                  : 235 * mobDistScale;
+              const maxTarget = it.kind === 'room' ? 75 : it.id === 'Stade_Louis_Auffray' ? 135 : 115;
+              withinFreeRange = distCam <= maxCam && distTargetXZ <= maxTarget;
+            }
+
             tmpVec.set(it.pos[0], it.pos[1], it.pos[2]).project(camera);
             const ax = (tmpVec.x * 0.5 + 0.5) * w;
             const ay = (-tmpVec.y * 0.5 + 0.5) * h;
-            const visible = tmpVec.z < 1 && ax >= leftBound && ax <= w - 12 && ay >= 18 && ay <= bottomBound;
+            const visible =
+              withinFreeRange && tmpVec.z < 1 && ax >= leftBound && ax <= w - 12 && ay >= topLimit && ay <= bottomBound;
             if (isMobileNow) {
               next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: ax, y: ay - 24, visible, kind: it.kind });
             } else {
               // Desktop (untouched): Place Bureau directrice label BELOW its room (stem pointing UP), N1 up-left, E2 above
               const isDirectrice = it.id === 'Bureau_Directrice';
-              const initX = isDirectrice ? ax + 10 : it.offsetOutside ? ax - 42 : ax;
-              const initY = isDirectrice ? ay + 46 : it.offsetOutside ? ay - 48 : it.offsetAbove ? ay - 42 : ay - 22;
+              const isChurchNearTop = it.id === 'Eglise_Saint_Pierre' && ay < topLimit + 38;
+              const initX = isDirectrice
+                ? ax + 10
+                : isChurchNearTop
+                ? Math.min(w - 92, ax + 90)
+                : it.offsetOutside
+                ? ax - 42
+                : ax;
+              const initY = isDirectrice
+                ? ay + 46
+                : isChurchNearTop
+                ? Math.max(topLimit + 18, ay)
+                : it.offsetOutside
+                ? ay - 48
+                : it.offsetAbove
+                ? ay - 42
+                : ay - 24;
               next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: initX, y: initY, visible, kind: it.kind });
             }
           }
           if (isMobileNow) {
             resolveMobileLabelOverlaps(next, leftBound, w - 30, 54, bottomBound);
+            const churchMob = next.find((l) => l.id === 'Eglise_Saint_Pierre' && l.visible);
+            if (churchMob && churchMob.ay < topLimit + 36) {
+              churchMob.x = Math.min(w - 104, churchMob.ax + 84);
+              churchMob.y = Math.max(topLimit + 16, churchMob.ay);
+            }
           } else {
             resolveLabelOverlaps(next, leftBound, w - 12, 18, bottomBound);
           }
