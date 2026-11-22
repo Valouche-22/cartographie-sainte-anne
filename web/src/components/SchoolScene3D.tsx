@@ -112,7 +112,7 @@ const MOBILE_LABEL_OFFSETS: Record<string, [number, number]> = {
   Batiment_Cantine: [0, -34],
   Batiment_Periscolaire: [0, -34],
   // Église Saint-Pierre (mobile) : juste au-dessus de la croix du clocher
-  Eglise_Saint_Pierre: [0, -24],
+  Eglise_Saint_Pierre: [0, -18],
   // Pôle culturel (mobile) : Médiathèque et La Ville Robert placées proprement au-dessus
   Mediatheque_Ic: [0, -58],
   Centre_Culturel_Ville_Robert: [-12, -56],
@@ -720,7 +720,7 @@ export const SchoolScene3D: React.FC<Props> = ({
         if (crossObj) {
           const crossBox = new THREE.Box3().setFromObject(crossObj);
           const crossCenter = crossBox.getCenter(new THREE.Vector3());
-          churchCrossTopRef.current = [crossCenter.x, crossBox.max.y + 2.4, crossCenter.z];
+          churchCrossTopRef.current = [crossCenter.x, crossBox.max.y + 0.6, crossCenter.z];
         }
         onLoaded();
       },
@@ -939,7 +939,7 @@ export const SchoolScene3D: React.FC<Props> = ({
                     label: b.name,
                     color: b.color,
                     pos: (b.id === 'Eglise_Saint_Pierre'
-                      ? churchCrossTopRef.current ?? [b.position[0], 54.5, b.position[2]]
+                      ? churchCrossTopRef.current ?? [b.position[0], 52.7, b.position[2]]
                       : [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]]) as [number, number, number],
                     kind: 'building' as const,
                     offsetOutside: false,
@@ -1013,6 +1013,8 @@ export const SchoolScene3D: React.FC<Props> = ({
                 ? ay + 46
                 : isChurchNearTop
                 ? Math.max(topLimit + 18, ay)
+                : it.id === 'Eglise_Saint_Pierre'
+                ? ay - 18
                 : it.offsetOutside
                 ? ay - 48
                 : it.offsetAbove
