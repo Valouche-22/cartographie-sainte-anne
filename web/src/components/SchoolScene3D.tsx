@@ -286,7 +286,7 @@ const MOBILE_SCENE_MULTS: Record<string, number> = {
   eglise: 0.76,
   sport: 0.94,
   culture: 1.18,
-  S1: 0.96,
+  S1: 0.90,
   N1: 0.88,
   E2: 0.96,
   general: 1.0,
@@ -344,8 +344,8 @@ const PRESET_VIEWS: Record<CameraPreset, { pos: [number, number, number]; target
 
 const CLASS_FOCUS_VIEWS: Record<'S1' | 'N1' | 'E2', { pos: [number, number, number]; target: [number, number, number]; buildings: string[] }> = {
   S1: {
-    pos: [-16, 68, 42],
-    target: [6, 0, 10],
+    pos: [-19, 75, 50],
+    target: [5, 0, 15.5],
     buildings: ['Batiment_Principal_S1', 'Pavillon_Central_S4', 'Batiment_Sud_Maternelle_S2'],
   },
   N1: {

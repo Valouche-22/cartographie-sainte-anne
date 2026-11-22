@@ -12,15 +12,19 @@ const INSTITUTIONS = [
 ];
 
 const TOOLS = [
-  { name: 'Blender', src: './logos/blender.svg' },
-  { name: 'Python', src: './logos/python.svg' },
-  { name: 'HTML', src: './logos/html.svg' },
-  { name: 'CSS', src: './logos/css.svg' },
-  { name: 'JavaScript', src: './logos/javascript.svg' },
-  { name: 'Three.js', src: './logos/threejs.svg' },
+  // Cartographie et repérage
   { name: 'Géoportail', src: './logos/geoportail.png' },
   { name: 'OpenStreetMap', src: './logos/openstreetmap.svg' },
   { name: 'Google Earth', src: './logos/google-earth.svg' },
+  // Modélisation et rendu 3D
+  { name: 'Blender', src: './logos/blender.svg' },
+  { name: 'Python', src: './logos/python.svg' },
+  { name: 'Three.js', src: './logos/threejs.svg' },
+  // Développement web
+  { name: 'HTML', src: './logos/html.svg' },
+  { name: 'CSS', src: './logos/css.svg' },
+  { name: 'JavaScript', src: './logos/javascript.svg' },
+  // Versionnage, hébergement et assistance
   { name: 'Git', src: './logos/git.svg' },
   { name: 'GitHub', src: './logos/github.svg' },
   { name: 'Google Antigravity', src: './logos/google-antigravity.png' },
