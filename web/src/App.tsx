@@ -585,7 +585,9 @@ export const App: React.FC = () => {
           isHero={isHero}
           activeSceneIndex={activeSceneIndex}
           freeExplore={freeExplore}
-          hideRoofs={hideRoofs}
+          hideRoofs={
+            hideRoofs && !(isMobile && !freeExplore && activeSceneId === 'classes' && classBuildingFocus === 'all')
+          }
           showLabels={showLabels}
           selectedBuilding={selectedBuilding}
           selectedRoom={selectedRoom}
