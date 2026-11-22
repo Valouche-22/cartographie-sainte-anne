@@ -820,7 +820,8 @@ export const App: React.FC = () => {
                       })()
                     ) : sc.id === 'cour' ? (
                       <>
-                        <div className="cour-sections">
+                        <div className="cour-sections" data-active-cour={courFocus}>
+                          <div className="cour-active-frame" aria-hidden="true" />
                           {(
                             [
                               { key: 'elementaire', label: 'Cour élémentaire' },
@@ -829,17 +830,17 @@ export const App: React.FC = () => {
                           ).map((grp) => (
                             <div
                               key={grp.key}
-                              className={`cour-section ${courFocus === grp.key ? 'is-active' : 'is-inactive'}`}
+                              className={`cour-section ${courFocus === grp.key ? 'is-active' : ''}`}
                               onClick={() => setCourFocus(grp.key)}
                             >
                               <span className="fact-label cour-section-heading">{grp.label}</span>
-                              <div className="fact-list">
+                              <ul className="cour-plain-list">
                                 {COUR_ROWS[grp.key].map((text, rIdx) => (
-                                  <div className="fact-row" key={rIdx}>
-                                    <p className="fact-value">{text}</p>
-                                  </div>
+                                  <li className="fact-value" key={rIdx}>
+                                    {text}
+                                  </li>
                                 ))}
-                              </div>
+                              </ul>
                             </div>
                           ))}
                         </div>
@@ -964,7 +965,8 @@ export const App: React.FC = () => {
 
                   {sc.id === 'cour' ? (
                     <>
-                      <div className="cour-sections">
+                      <div className="cour-sections" data-active-cour={courFocus}>
+                        <div className="cour-active-frame" aria-hidden="true" />
                         {(
                           [
                             { key: 'elementaire', label: 'Cour élémentaire' },
@@ -973,17 +975,17 @@ export const App: React.FC = () => {
                         ).map((grp) => (
                           <div
                             key={grp.key}
-                            className={`cour-section ${courFocus === grp.key ? 'is-active' : 'is-inactive'}`}
+                            className={`cour-section ${courFocus === grp.key ? 'is-active' : ''}`}
                             onClick={() => setCourFocus(grp.key)}
                           >
                             <span className="fact-label cour-section-heading">{grp.label}</span>
-                            <div className="fact-list">
+                            <ul className="cour-plain-list">
                               {COUR_ROWS[grp.key].map((text, rIdx) => (
-                                <div className="fact-row" key={rIdx}>
-                                  <p className="fact-value">{text}</p>
-                                </div>
+                                <li className="fact-value" key={rIdx}>
+                                  {text}
+                                </li>
                               ))}
-                            </div>
+                            </ul>
                           </div>
                         ))}
                       </div>

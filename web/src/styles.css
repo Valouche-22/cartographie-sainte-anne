@@ -654,33 +654,55 @@ body {
 }
 
 .cour-sections {
-  display: flex;
-  flex-direction: column;
-  gap: calc(16px * var(--fit));
+  --cour-gap: calc(10px * var(--fit));
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--cour-gap);
+}
+
+.cour-active-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc((100% - var(--cour-gap)) / 2);
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1.5px solid rgba(239, 68, 68, 0.55);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  pointer-events: none;
+  z-index: 0;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.32s ease;
+}
+
+.cour-sections[data-active-cour='maternelle'] .cour-active-frame {
+  transform: translate3d(0, calc(100% + var(--cour-gap)), 0);
+  border-color: rgba(37, 99, 235, 0.55);
 }
 
 .cour-section {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: calc(7px * var(--fit));
+  justify-content: center;
+  gap: calc(8px * var(--fit));
+  padding: calc(15px * var(--fit)) calc(17px * var(--fit));
+  border-radius: 12px;
   cursor: pointer;
-  transition: opacity 0.28s ease;
-}
-
-.cour-section.is-inactive {
-  opacity: 0.42;
-}
-
-.cour-section.is-inactive:hover {
-  opacity: 0.72;
-}
-
-.cour-section.is-active {
-  opacity: 1;
 }
 
 .cour-section-heading {
-  padding-left: 2px;
+  font-size: calc(0.84rem * var(--fit));
+}
+
+.cour-plain-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: calc(5px * var(--fit));
 }
 
 .col-sticky-bottom {
@@ -1536,24 +1558,25 @@ body {
   }
 
   .mobile-reel-body .cour-sections {
-    gap: calc(9px * var(--mfit));
+    --cour-gap: calc(6px * var(--mfit));
   }
 
   .mobile-reel-body .cour-section {
+    padding: calc(9px * var(--mfit)) calc(12px * var(--mfit));
     gap: calc(4px * var(--mfit));
   }
 
-  .mobile-reel-body .cour-section .fact-list {
+  .mobile-reel-body .cour-section-heading {
+    font-size: calc(0.78rem * var(--mfit));
+  }
+
+  .mobile-reel-body .cour-plain-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: calc(5px * var(--mfit));
+    gap: calc(3px * var(--mfit)) calc(10px * var(--mfit));
   }
 
-  .mobile-reel-body .cour-section .fact-row {
-    padding: calc(6px * var(--mfit)) calc(8px * var(--mfit));
-  }
-
-  .mobile-reel-body .cour-section .fact-value {
+  .mobile-reel-body .cour-plain-list li {
     font-size: calc(0.76rem * var(--mfit));
     line-height: 1.24;
   }
