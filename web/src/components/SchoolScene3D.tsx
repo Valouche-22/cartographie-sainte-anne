@@ -92,48 +92,25 @@ function resolveLabelOverlaps(
   return items;
 }
 
-// Strategic per-label screen offsets (dx, dy in px) crafted specifically for mobile portrait views
-// so every label sits in open margin space with ZERO overlapping pills and ZERO crossed leader lines.
+// Minimal surgical overrides for mobile portrait ONLY — keeps all already-well-placed labels
+// in their original automatic positions and moves ONLY the few labels that crossed wires or covered rooms.
 // Desktop PC never calls resolveMobileLabelOverlaps and remains 100% untouched.
 const MOBILE_LABEL_OFFSETS: Record<string, [number, number]> = {
-  // École overview & Classes overview (4 corners around the campus)
-  Batiment_Nord_N1: [-34, -68],
-  Batiment_Est_E2: [16, -72],
-  Batiment_Principal_S1: [-86, 62],
-  Batiment_Sud_Maternelle_S2: [34, 58],
-  // Cour & Cantine/Périscolaire
-  Preau_Ecole: [-10, -56],
-  Zone_Cour_Elementaire: [-18, 44],
-  Zone_Cour_Maternelle: [18, 48],
-  Batiment_Periscolaire: [-14, -56],
-  Batiment_Cantine: [14, 54],
-  // Bâtiment Cycle 1 (9 rooms arranged in a 360° clockwise perimeter ring — zero wire crossings)
-  Classe_GS: [-58, -56],
-  Salle_Sieste_Motricite: [-24, -76],
-  Sanitaires_Ecole: [2, -62],
-  Salle_Profs: [34, -76],
-  Classe_PS_MS: [66, -40],
-  Classe_TPS_PS_MS: [78, 12],
-  Preau_Maternelles: [74, 42],
-  Prefabrique: [10, 56],
-  Classe_CP: [-54, 78],
-  // Bâtiment Cycle 2 (4 above + 2 below in strict left-to-right order — zero wire crossings)
-  Sanitaires_Nord: [-46, -54],
-  Local_Photocopieuse: [-10, -86],
-  Local_Materiel: [-20, -64],
-  Classe_CE2: [36, -56],
-  Bureau_Directrice: [-38, 62],
-  Classe_CP_CE1: [44, 68],
-  // Bâtiment Cycle 3 (alternating 3 above + 2 below in strict left-to-right order — zero wire crossings)
-  Classe_CM2: [-34, -58],
-  Classe_CE2_CM1: [4, -60],
-  Local_APEL_OGEC: [16, -66],
-  Classe_CM1_CM2: [-24, 58],
-  Sanitaires_Est: [6, 64],
-  // Pôle culturel (clean triangle framing all 3 landmarks)
-  Parc_Mediatheque: [14, -62],
-  Mediatheque_Ic: [-10, 68],
-  Centre_Culturel_Ville_Robert: [-18, -64],
+  // École / Classes overview: pull Cycle 1 slightly left so its wire doesn't cross Préfabriqué
+  Batiment_Principal_S1: [-68, 34],
+  // Bâtiment Cycle 1: pull TPS/PS/MS & Préau des maternelles to the open right courtyard (keep all other 7 untouched)
+  Classe_TPS_PS_MS: [72, 8],
+  Preau_Maternelles: [68, 30],
+  // Bâtiment Cycle 2: put Photocopieuse above its room and CP/CE1 below over the lawn (keep Sanitaires, Directrice, Local matériel, CE2 untouched)
+  Local_Photocopieuse: [-12, -58],
+  Classe_CP_CE1: [36, 58],
+  // Bâtiment Cycle 3: spread CM2 & CM1/CM2 cleanly above and lift Sanitaires above its green room (keep CE2/CM1 & APEL/OGEC untouched)
+  Classe_CM2: [-42, -52],
+  Classe_CM1_CM2: [8, -56],
+  Sanitaires_Est: [8, -54],
+  // Pôle culturel: clear facades cleanly below while keeping Parc de la Médiathèque untouched at top-left
+  Mediatheque_Ic: [-8, 52],
+  Centre_Culturel_Ville_Robert: [-10, 52],
 };
 
 function resolveMobileLabelOverlaps(
