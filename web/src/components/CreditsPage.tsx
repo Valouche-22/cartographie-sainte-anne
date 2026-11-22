@@ -36,9 +36,9 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
         </button>
       </header>
 
-      {/* Row 1: Établissement et partenaires */}
+      {/* Row 1: Établissement, formation et commune */}
       <div className="credits-block">
-        <h3 className="credits-section-label">Établissement et partenaires</h3>
+        <h3 className="credits-section-label">Établissement, formation et commune</h3>
         <div className="credits-institutions-grid">
           {INSTITUTIONS.map((inst) => (
             <div className="credits-inst-card" key={inst.name}>
@@ -89,8 +89,8 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
           <h3 className="credits-section-label">Mentions légales</h3>
           <ul className="credits-legal-list">
             <li>
-              <strong>Auteur :</strong> Valentin Sonneville, en lien avec l'ISFEC Bretagne et l'école Sainte-Anne (7 rue
-              des Écoles, 22590 Pordic).
+              <strong>Auteur :</strong> Valentin Sonneville, en lien avec l'ISFEC Bretagne et l'école Sainte-Anne de
+              Pordic.
             </li>
             <li>
               <strong>Hébergement :</strong> GitHub Pages (GitHub, Inc., San Francisco, États-Unis).
