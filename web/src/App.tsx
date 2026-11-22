@@ -7,6 +7,9 @@ import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from './types';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const COUR_FOCUS_ORDER: ('elementaire' | 'maternelle')[] = ['elementaire', 'maternelle'];
+const CLASS_FOCUS_ORDER: ('all' | 'S1' | 'N1' | 'E2')[] = ['all', 'S1', 'N1', 'E2'];
+
 export const App: React.FC = () => {
   const [data, setData] = useState<SchoolData | null>(null);
   const [minLoadDone, setMinLoadDone] = useState(false);
@@ -40,6 +43,10 @@ export const App: React.FC = () => {
   const mobileTrackYRef = useRef({ y: 0 });
   const mobileTweenRef = useRef<gsap.core.Tween | null>(null);
   const ecoleCarouselRef = useRef<HTMLDivElement | null>(null);
+  const classFocusRef = useRef<'all' | 'S1' | 'N1' | 'E2'>('all');
+  const courFocusRef = useRef<'elementaire' | 'maternelle'>('elementaire');
+  classFocusRef.current = classBuildingFocus;
+  courFocusRef.current = courFocus;
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 860px)');
@@ -111,9 +118,10 @@ export const App: React.FC = () => {
   }, [data, freeExplore, isMobile]);
 
   const applySectionState = useCallback(
-    (sectionIdx: number) => {
+    (sectionIdx: number, fromBelow = false) => {
       if (!data) return;
       const wasHero = sectionIdxRef.current <= 0;
+      const prevSecIdx = sectionIdxRef.current;
       sectionIdxRef.current = sectionIdx;
       if (labelDelayTimerRef.current !== null) {
         window.clearTimeout(labelDelayTimerRef.current);
@@ -139,11 +147,23 @@ export const App: React.FC = () => {
           } else {
             setShowLabels(sc.showLabels);
           }
-          if (sc.id !== 'classes') {
-            setClassBuildingFocus('all');
-          }
-          if (sc.id !== 'cour') {
-            setCourFocus('elementaire');
+          if (prevSecIdx !== sectionIdx) {
+            if (sc.id === 'classes') {
+              const initClass = fromBelow ? 'E2' : 'all';
+              classFocusRef.current = initClass;
+              setClassBuildingFocus(initClass);
+            } else {
+              classFocusRef.current = 'all';
+              setClassBuildingFocus('all');
+            }
+            if (sc.id === 'cour') {
+              const initCour = fromBelow ? 'maternelle' : 'elementaire';
+              courFocusRef.current = initCour;
+              setCourFocus(initCour);
+            } else {
+              courFocusRef.current = 'elementaire';
+              setCourFocus('elementaire');
+            }
           }
         }
       }
@@ -152,13 +172,13 @@ export const App: React.FC = () => {
   );
 
   const goToSection = useCallback(
-    (targetIdx: number, instant = false) => {
+    (targetIdx: number, instant = false, fromBelow = false) => {
       if (!data) return;
       const maxIdx = data.scenes.length;
       const clamped = Math.max(0, Math.min(maxIdx, targetIdx));
 
       if (isMobile) {
-        applySectionState(clamped);
+        applySectionState(clamped, fromBelow);
         const deck = mobileDeckRef.current;
         const track = mobileTrackRef.current;
         if (deck && track) {
@@ -191,7 +211,7 @@ export const App: React.FC = () => {
       if (!targetEl) return;
 
       const targetY = clamped === 0 ? 0 : targetEl.getBoundingClientRect().top + window.scrollY;
-      applySectionState(clamped);
+      applySectionState(clamped, fromBelow);
 
       scrollTweenRef.current?.kill();
       if (instant) {
@@ -220,6 +240,45 @@ export const App: React.FC = () => {
     [data, isMobile, applySectionState]
   );
 
+  // Step through sub-viewpoints on multi-view pages (La cour, Les salles de classe) before changing page
+  const stepGuided = useCallback(
+    (dir: 1 | -1): boolean => {
+      if (!data) return false;
+      const secIdx = sectionIdxRef.current;
+      if (secIdx >= 1) {
+        const sc = data.scenes[secIdx - 1];
+        if (sc?.id === 'cour') {
+          const cur = COUR_FOCUS_ORDER.indexOf(courFocusRef.current);
+          const nextSub = cur + dir;
+          if (nextSub >= 0 && nextSub < COUR_FOCUS_ORDER.length) {
+            const val = COUR_FOCUS_ORDER[nextSub];
+            courFocusRef.current = val;
+            setCourFocus(val);
+            wheelLockUntilRef.current = performance.now() + 720;
+            return false;
+          }
+        } else if (sc?.id === 'classes') {
+          const cur = CLASS_FOCUS_ORDER.indexOf(classFocusRef.current);
+          const nextSub = cur + dir;
+          if (nextSub >= 0 && nextSub < CLASS_FOCUS_ORDER.length) {
+            const val = CLASS_FOCUS_ORDER[nextSub];
+            classFocusRef.current = val;
+            setClassBuildingFocus(val);
+            wheelLockUntilRef.current = performance.now() + 720;
+            return false;
+          }
+        }
+      }
+      const nextPage = Math.max(0, Math.min(data.scenes.length, secIdx + dir));
+      if (nextPage !== secIdx) {
+        goToSection(nextPage, false, dir < 0);
+        return true;
+      }
+      return false;
+    },
+    [data, goToSection]
+  );
+
   // Smooth magnetic wheel + keyboard navigation (desktop only)
   useEffect(() => {
     if (!data || freeExplore || isMobile) return;
@@ -230,19 +289,16 @@ export const App: React.FC = () => {
       const now = performance.now();
       if (now < wheelLockUntilRef.current) return;
       const dir = e.deltaY > 0 ? 1 : -1;
-      const next = Math.max(0, Math.min(data.scenes.length, sectionIdxRef.current + dir));
-      if (next !== sectionIdxRef.current) {
-        goToSection(next);
-      }
+      stepGuided(dir);
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
         e.preventDefault();
-        goToSection(sectionIdxRef.current + 1);
+        stepGuided(1);
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
         e.preventDefault();
-        goToSection(sectionIdxRef.current - 1);
+        stepGuided(-1);
       } else if (e.key === 'Home') {
         e.preventDefault();
         goToSection(0);
@@ -259,7 +315,7 @@ export const App: React.FC = () => {
       window.removeEventListener('keydown', onKeyDown);
       scrollTweenRef.current?.kill();
     };
-  }, [data, freeExplore, isMobile, goToSection]);
+  }, [data, freeExplore, isMobile, goToSection, stepGuided]);
 
   // Fallback ScrollTrigger sync for manual scrollbar dragging (desktop only)
   useEffect(() => {
@@ -364,9 +420,21 @@ export const App: React.FC = () => {
       lastDy = dy;
 
       const idx = sectionIdxRef.current;
-      // Gentle rubber-band resistance at first & last slide
+      const sc = idx >= 1 ? data.scenes[idx - 1] : undefined;
+      const subStepNext =
+        dy < 0 &&
+        ((sc?.id === 'cour' && courFocusRef.current === 'elementaire') ||
+          (sc?.id === 'classes' && classFocusRef.current !== 'E2'));
+      const subStepPrev =
+        dy > 0 &&
+        ((sc?.id === 'cour' && courFocusRef.current === 'maternelle') ||
+          (sc?.id === 'classes' && classFocusRef.current !== 'all'));
+
+      // Gentle rubber-band resistance at bounds or when switching sub-viewpoint within the same slide
       const resisted =
-        (idx === 0 && dy > 0) || (idx === maxIdx && dy < 0) ? dy * 0.28 : dy;
+        (idx === 0 && dy > 0) || (idx === maxIdx && dy < 0) || subStepNext || subStepPrev
+          ? dy * 0.28
+          : dy;
       const nextY = baseY + resisted;
       mobileTrackYRef.current.y = nextY;
       track.style.transform = `translate3d(0, ${nextY}px, 0)`;
@@ -382,15 +450,16 @@ export const App: React.FC = () => {
       const velocity = Math.abs(lastDy) / dt; // px/ms
       const h = deck.clientHeight || window.innerHeight;
       const threshold = Math.min(54, h * 0.08);
-      let targetIdx = sectionIdxRef.current;
 
-      if ((lastDy < -threshold || (lastDy < -18 && velocity > 0.28)) && targetIdx < maxIdx) {
-        targetIdx += 1;
-      } else if ((lastDy > threshold || (lastDy > 18 && velocity > 0.28)) && targetIdx > 0) {
-        targetIdx -= 1;
+      if (lastDy < -threshold || (lastDy < -18 && velocity > 0.28)) {
+        const movedPage = stepGuided(1);
+        if (!movedPage) goToSection(sectionIdxRef.current);
+      } else if (lastDy > threshold || (lastDy > 18 && velocity > 0.28)) {
+        const movedPage = stepGuided(-1);
+        if (!movedPage) goToSection(sectionIdxRef.current);
+      } else {
+        goToSection(sectionIdxRef.current);
       }
-
-      goToSection(targetIdx);
     };
 
     deck.addEventListener('touchstart', onTouchStart, { passive: true });
@@ -407,7 +476,7 @@ export const App: React.FC = () => {
       deck.removeEventListener('touchcancel', onTouchEnd);
       window.removeEventListener('resize', syncToCurrent);
     };
-  }, [data, freeExplore, isMobile, goToSection]);
+  }, [data, freeExplore, isMobile, goToSection, stepGuided]);
 
   const enterFreeExplore = () => {
     scrollTweenRef.current?.kill();
@@ -504,7 +573,7 @@ export const App: React.FC = () => {
         <button
           type="button"
           className={`scroll-cue ${!isHero ? 'in-split' : ''}`}
-          onClick={() => goToSection(isHero ? 1 : activeSceneIndex + 2)}
+          onClick={() => stepGuided(1)}
           aria-label="Faire défiler vers le bas pour continuer"
         >
           <ChevronDown size={15} className="scroll-cue-arrow" />
@@ -740,7 +809,7 @@ export const App: React.FC = () => {
                     <button
                       type="button"
                       className="mobile-reel-next-hint"
-                      onClick={() => goToSection(idx + 2)}
+                      onClick={() => stepGuided(1)}
                       aria-label="Étape suivante"
                     >
                       <ChevronDown size={18} className="scroll-cue-arrow" />
@@ -864,7 +933,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 className="step-nav-btn"
-                onClick={() => goToSection(activeSceneIndex)}
+                onClick={() => stepGuided(-1)}
               >
                 <ChevronUp size={15} /> Précédent
               </button>
@@ -885,7 +954,7 @@ export const App: React.FC = () => {
                 type="button"
                 className="step-nav-btn primary"
                 disabled={activeSceneIndex >= totalChapters - 1}
-                onClick={() => goToSection(activeSceneIndex + 2)}
+                onClick={() => stepGuided(1)}
               >
                 Suivant <ChevronDown size={15} />
               </button>
