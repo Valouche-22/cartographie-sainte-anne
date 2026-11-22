@@ -963,8 +963,17 @@ export const SchoolScene3D: React.FC<Props> = ({
             } else {
               // Desktop (untouched): Place Bureau directrice label BELOW its room (stem pointing UP), N1 up-left, E2 above
               const isDirectrice = it.id === 'Bureau_Directrice';
+              const isMedia = it.id === 'Mediatheque_Ic';
               const initX = isDirectrice ? ax + 10 : it.offsetOutside ? ax - 42 : ax;
-              const initY = isDirectrice ? ay + 46 : it.offsetOutside ? ay - 48 : it.offsetAbove ? ay - 42 : ay - 22;
+              const initY = isDirectrice
+                ? ay + 46
+                : isMedia
+                ? ay - 54
+                : it.offsetOutside
+                ? ay - 48
+                : it.offsetAbove
+                ? ay - 42
+                : ay - 22;
               next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: initX, y: initY, visible, kind: it.kind });
             }
           }
