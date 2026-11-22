@@ -159,9 +159,8 @@ export const App: React.FC = () => {
           }
           if (prevSecIdx !== sectionIdx) {
             if (sc.id === 'classes') {
-              const initClass = fromBelow ? 'E2' : 'all';
-              classFocusRef.current = initClass;
-              setClassBuildingFocus(initClass);
+              classFocusRef.current = 'all';
+              setClassBuildingFocus('all');
             } else {
               classFocusRef.current = 'all';
               setClassBuildingFocus('all');
