@@ -108,6 +108,8 @@ const MOBILE_LABEL_OFFSETS: Record<string, [number, number]> = {
   Classe_CM2: [-42, -52],
   Classe_CM1_CM2: [8, -56],
   Sanitaires_Est: [8, -54],
+  // Cantine : tige courte et étiquette au-dessus du bâtiment
+  Batiment_Cantine: [0, -34],
   // Pôle culturel: clear facades cleanly below while keeping Parc de la Médiathèque untouched at top-left
   Mediatheque_Ic: [-8, 52],
   Centre_Culturel_Ville_Robert: [-10, 52],
