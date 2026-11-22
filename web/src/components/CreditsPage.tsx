@@ -15,11 +15,11 @@ const TOOLS = [
   { name: 'Blender', src: './logos/blender.svg' },
   { name: 'Python', src: './logos/python.svg' },
   { name: 'JavaScript', src: './logos/javascript.svg' },
-  { name: 'Géoportail', src: './logos/geoportail.svg' },
+  { name: 'Géoportail', src: './logos/geoportail.png' },
   { name: 'OpenStreetMap', src: './logos/openstreetmap.svg' },
   { name: 'Google Earth', src: './logos/google-earth.svg' },
   { name: 'GitHub', src: './logos/github.svg' },
-  { name: 'Google Antigravity', src: './logos/google-antigravity.svg' },
+  { name: 'Google Antigravity', src: './logos/google-antigravity.png' },
 ];
 
 export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
@@ -36,7 +36,7 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
         </button>
       </header>
 
-      {/* Row 1: Établissement et institutions */}
+      {/* Row 1: Établissement et partenaires */}
       <div className="credits-block">
         <h3 className="credits-section-label">Établissement et partenaires</h3>
         <div className="credits-institutions-grid">
@@ -71,18 +71,17 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
         <div className="credits-legal-col">
           <h3 className="credits-section-label">À propos et propriété</h3>
           <p className="credits-text">
-            Ce site a été créé par <strong>Valentin Sonneville</strong> dans le cadre d'un projet universitaire pour
-            présenter l'école Sainte-Anne de Pordic, ses bâtiments, ses classes et les lieux qui l'entourent.
+            Site créé par <strong>Valentin Sonneville</strong> dans le cadre d'un projet universitaire, pour présenter
+            l'école Sainte-Anne de Pordic, ses bâtiments, ses classes et les lieux qui l'entourent.
           </p>
           <p className="credits-text">
-            La cartographie, les modélisations 3D, les textes et le code restent la propriété de{' '}
-            <strong>Valentin Sonneville</strong>. Le projet est mis à disposition de{' '}
-            <strong>l'école Sainte-Anne de Pordic</strong> et de <strong>l'ISFEC Bretagne</strong>, qui peuvent
-            l'utiliser, le modifier et le faire évoluer pour leurs activités. Pour toute autre personne ou structure,
-            toute copie ou réutilisation demande l'accord préalable de son auteur.
+            Ce site (maquette 3D, textes, mise en page et code) est la stricte propriété de{' '}
+            <strong>Valentin Sonneville</strong> et de ses ayants droit, <strong>l'ISFEC Bretagne</strong> et{' '}
+            <strong>l'école Sainte-Anne de Pordic</strong>. Toute copie ou réutilisation sans autorisation est
+            interdite.
           </p>
           <p className="credits-text">
-            Les logos, marques et ressources de tiers restent la propriété de leurs titulaires respectifs.
+            Les logos, marques et données de tiers restent la propriété de leurs titulaires respectifs.
           </p>
         </div>
 
@@ -94,16 +93,14 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
               des Écoles, 22590 Pordic).
             </li>
             <li>
-              <strong>Hébergement :</strong> GitHub Pages (GitHub, Inc., 88 Colin P Kelly Jr St, San Francisco, CA
-              94107, États-Unis).
+              <strong>Hébergement :</strong> GitHub Pages (GitHub, Inc., San Francisco, États-Unis).
             </li>
             <li>
               <strong>Données cartographiques :</strong> IGN (Géoportail et BD TOPO®, Licence Ouverte Etalab 2.0) et
-              OpenStreetMap (contributeurs OpenStreetMap, licence ODbL).
+              OpenStreetMap (licence ODbL).
             </li>
             <li>
-              <strong>Vie privée et cookies :</strong> aucune donnée personnelle n'est collectée et aucun cookie de
-              suivi ou publicitaire n'est déposé.
+              <strong>Vie privée et cookies :</strong> aucune donnée personnelle collectée et aucun cookie de suivi.
             </li>
           </ul>
         </div>
