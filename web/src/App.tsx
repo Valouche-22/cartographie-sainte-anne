@@ -68,21 +68,21 @@ export const App: React.FC = () => {
   // Context-aware inactivity delay for the "Faire défiler vers le bas" hint:
   // hides immediately on any page or sub-viewpoint change, then reappears only if the user hasn't scrolled:
   // - Hero (page 1): 5.5s
-  // - École Sainte-Anne (page 2, longer reading): 10s
-  // - Multi-viewpoint pages (La cour, Les salles de classe): 3s per viewpoint
-  // - All other pages: 5s
+  // - École Sainte-Anne (page 2, longer reading): 20s
+  // - Multi-viewpoint pages (La cour, Les salles de classe): 6s per viewpoint
+  // - All other pages: 10s
   useEffect(() => {
     setShowScrollCue(false);
     if (!data || !modelLoaded || !minLoadDone || loadError || freeExplore || isCredits) return;
 
     const currentSceneId = data.scenes[activeSceneIndex]?.id;
-    let delayMs = 5000;
+    let delayMs = 10000;
     if (isHero) {
       delayMs = 5500;
     } else if (currentSceneId === 'ecole') {
-      delayMs = 10000;
+      delayMs = 20000;
     } else if (currentSceneId === 'cour' || currentSceneId === 'classes') {
-      delayMs = 3000;
+      delayMs = 6000;
     }
 
     const timer = window.setTimeout(() => setShowScrollCue(true), delayMs);

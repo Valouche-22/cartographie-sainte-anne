@@ -569,16 +569,12 @@
       "title": "La cour",
       "rows": [
         {
-          "value": "Terrains de foot et jeux collectifs"
+          "label": "Cour élémentaire",
+          "value": "Terrains de foot et jeux collectifs, terrain et panier de basket, préau couvert, espace en herbe et grand arbre"
         },
         {
-          "value": "Terrain et panier de basket"
-        },
-        {
-          "value": "Préau couvert"
-        },
-        {
-          "value": "Espace en herbe et grand arbre"
+          "label": "Cour maternelle",
+          "value": "Préau des maternelles, bac à sable, structure de jeu, draisiennes, tricycles et petits vélos"
         }
       ],
       "camera": {
