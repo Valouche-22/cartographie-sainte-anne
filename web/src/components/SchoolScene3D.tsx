@@ -914,7 +914,11 @@ export const SchoolScene3D: React.FC<Props> = ({
                 }))
             : [
                 ...data.buildings
-                  .filter((b) => !effectiveFocusIds || effectiveFocusIds.includes(b.id))
+                  .filter(
+                    (b) =>
+                      (!effectiveFocusIds || effectiveFocusIds.includes(b.id)) &&
+                      !(isMobileNow && b.id === 'Parc_Mediatheque')
+                  )
                   .map((b) => ({
                     id: b.id,
                     label: b.name,
