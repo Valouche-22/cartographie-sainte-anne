@@ -325,7 +325,7 @@ function adaptPoseForMobile(
     sceneKey === 'culture'
       ? [-190, 2, -194]
       : sceneKey === 'hero'
-      ? [2, 0, -1]
+      ? [14, 0, 12.5]
       : target;
 
   return {
