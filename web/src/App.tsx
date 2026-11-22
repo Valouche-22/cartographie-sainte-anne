@@ -65,10 +65,10 @@ export const App: React.FC = () => {
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Reveal the "Faire défiler vers le bas" hint 4 seconds after the page has finished loading
+  // Reveal the "Faire défiler vers le bas" hint 5.5 seconds after the page has finished loading
   useEffect(() => {
     if (!modelLoaded || !minLoadDone || loadError) return;
-    const timer = window.setTimeout(() => setShowScrollCue(true), 4000);
+    const timer = window.setTimeout(() => setShowScrollCue(true), 5500);
     return () => window.clearTimeout(timer);
   }, [modelLoaded, minLoadDone, loadError]);
 
