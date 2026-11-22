@@ -653,6 +653,64 @@ body {
   background: #ffffff !important;
 }
 
+.cour-tabs-top {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.cour-fact-list {
+  animation: courListSwitch 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes courListSwitch {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cour-fact-row {
+  flex-direction: row;
+  align-items: center;
+  gap: 11px;
+  padding: calc(13px * var(--fit)) 15px;
+}
+
+.cour-fact-row .fact-value {
+  font-size: calc(0.93rem * var(--fit));
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.cour-row-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cour-fact-list[data-cour='elementaire'] .cour-fact-row {
+  background: rgba(254, 242, 242, 0.58);
+  border-color: rgba(239, 68, 68, 0.28);
+}
+
+.cour-fact-list[data-cour='elementaire'] .cour-row-dot {
+  background: #ef4444;
+}
+
+.cour-fact-list[data-cour='maternelle'] .cour-fact-row {
+  background: rgba(239, 246, 255, 0.68);
+  border-color: rgba(37, 99, 235, 0.28);
+}
+
+.cour-fact-list[data-cour='maternelle'] .cour-row-dot {
+  background: #2563eb;
+}
+
 .col-sticky-bottom {
   position: sticky;
   bottom: 0;
@@ -1503,6 +1561,15 @@ body {
   .mobile-reel-body .building-focus-bar {
     gap: 6px;
     margin-top: calc(12px * var(--mfit));
+  }
+
+  .mobile-reel-body .cour-tabs-top {
+    margin-top: 0;
+    margin-bottom: calc(10px * var(--mfit));
+  }
+
+  .mobile-reel-body .cour-fact-row {
+    gap: 9px;
   }
 
   .mobile-reel-body .building-focus-btn {

@@ -11,6 +11,21 @@ gsap.registerPlugin(ScrollTrigger);
 const COUR_FOCUS_ORDER: ('elementaire' | 'maternelle')[] = ['elementaire', 'maternelle'];
 const CLASS_FOCUS_ORDER: ('all' | 'S1' | 'N1' | 'E2')[] = ['all', 'S1', 'N1', 'E2'];
 
+const COUR_ROWS: Record<'elementaire' | 'maternelle', string[]> = {
+  elementaire: [
+    'Terrains de foot et jeux collectifs',
+    'Terrain et panier de basket',
+    'Préau couvert',
+    'Espace en herbe et grand arbre',
+  ],
+  maternelle: [
+    'Préau couvert des maternelles',
+    'Bac à sable',
+    'Structure de jeu',
+    'Draisiennes, tricycles et petits vélos',
+  ],
+};
+
 export const App: React.FC = () => {
   const [data, setData] = useState<SchoolData | null>(null);
   const [minLoadDone, setMinLoadDone] = useState(false);
@@ -803,6 +818,35 @@ export const App: React.FC = () => {
                           </div>
                         );
                       })()
+                    ) : sc.id === 'cour' ? (
+                      <>
+                        <div className="building-focus-bar cour-tabs-top" role="group" aria-label="Vue des cours">
+                          <button
+                            type="button"
+                            className={`cour-focus-btn cour-elem ${courFocus === 'elementaire' ? 'active' : ''}`}
+                            onClick={() => setCourFocus('elementaire')}
+                          >
+                            <span className="cour-dot" style={{ background: '#ef4444' }} />
+                            Cour élémentaire
+                          </button>
+                          <button
+                            type="button"
+                            className={`cour-focus-btn cour-mat ${courFocus === 'maternelle' ? 'active' : ''}`}
+                            onClick={() => setCourFocus('maternelle')}
+                          >
+                            <span className="cour-dot" style={{ background: '#2563eb' }} />
+                            Cour maternelle
+                          </button>
+                        </div>
+                        <div className="fact-list cour-fact-list" key={courFocus} data-cour={courFocus}>
+                          {COUR_ROWS[courFocus].map((text, rIdx) => (
+                            <div className="fact-row cour-fact-row" key={rIdx}>
+                              <span className="cour-row-dot" aria-hidden="true" />
+                              <p className="fact-value">{text}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </>
                     ) : (
                       <div className="fact-list">
                         {sc.rows.map((row, rIdx) => (
@@ -811,27 +855,6 @@ export const App: React.FC = () => {
                             <p className="fact-value">{row.value}</p>
                           </div>
                         ))}
-                      </div>
-                    )}
-
-                    {sc.id === 'cour' && (
-                      <div className="building-focus-bar" role="group" aria-label="Vue des cours">
-                        <button
-                          type="button"
-                          className={`cour-focus-btn cour-elem ${courFocus === 'elementaire' ? 'active' : ''}`}
-                          onClick={() => setCourFocus('elementaire')}
-                        >
-                          <span className="cour-dot" style={{ background: '#ef4444' }} />
-                          Cour élémentaire
-                        </button>
-                        <button
-                          type="button"
-                          className={`cour-focus-btn cour-mat ${courFocus === 'maternelle' ? 'active' : ''}`}
-                          onClick={() => setCourFocus('maternelle')}
-                        >
-                          <span className="cour-dot" style={{ background: '#2563eb' }} />
-                          Cour maternelle
-                        </button>
                       </div>
                     )}
 
@@ -924,33 +947,43 @@ export const App: React.FC = () => {
                 <div className={`chapter-body ${!isHero && idx === activeSceneIndex ? 'is-active' : ''}`}>
                   <h2 className="chapter-title">{sc.title}</h2>
 
-                  <div className="fact-list">
-                    {sc.rows.map((row, rIdx) => (
-                      <div className="fact-row" key={rIdx}>
-                        {row.label && <span className="fact-label">{row.label}</span>}
-                        <p className="fact-value">{row.value}</p>
+                  {sc.id === 'cour' ? (
+                    <>
+                      <div className="building-focus-bar cour-tabs-top" role="group" aria-label="Vue des cours">
+                        <button
+                          type="button"
+                          className={`cour-focus-btn cour-elem ${courFocus === 'elementaire' ? 'active' : ''}`}
+                          onClick={() => setCourFocus('elementaire')}
+                        >
+                          <span className="cour-dot" style={{ background: '#ef4444' }} />
+                          Cour élémentaire
+                        </button>
+                        <button
+                          type="button"
+                          className={`cour-focus-btn cour-mat ${courFocus === 'maternelle' ? 'active' : ''}`}
+                          onClick={() => setCourFocus('maternelle')}
+                        >
+                          <span className="cour-dot" style={{ background: '#2563eb' }} />
+                          Cour maternelle
+                        </button>
                       </div>
-                    ))}
-                  </div>
-
-                  {sc.id === 'cour' && (
-                    <div className="building-focus-bar" role="group" aria-label="Vue des cours">
-                      <button
-                        type="button"
-                        className={`cour-focus-btn cour-elem ${courFocus === 'elementaire' ? 'active' : ''}`}
-                        onClick={() => setCourFocus('elementaire')}
-                      >
-                        <span className="cour-dot" style={{ background: '#ef4444' }} />
-                        Cour élémentaire
-                      </button>
-                      <button
-                        type="button"
-                        className={`cour-focus-btn cour-mat ${courFocus === 'maternelle' ? 'active' : ''}`}
-                        onClick={() => setCourFocus('maternelle')}
-                      >
-                        <span className="cour-dot" style={{ background: '#2563eb' }} />
-                        Cour maternelle
-                      </button>
+                      <div className="fact-list cour-fact-list" key={courFocus} data-cour={courFocus}>
+                        {COUR_ROWS[courFocus].map((text, rIdx) => (
+                          <div className="fact-row cour-fact-row" key={rIdx}>
+                            <span className="cour-row-dot" aria-hidden="true" />
+                            <p className="fact-value">{text}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="fact-list">
+                      {sc.rows.map((row, rIdx) => (
+                        <div className="fact-row" key={rIdx}>
+                          {row.label && <span className="fact-label">{row.label}</span>}
+                          <p className="fact-value">{row.value}</p>
+                        </div>
+                      ))}
                     </div>
                   )}
 
