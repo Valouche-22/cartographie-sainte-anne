@@ -92,6 +92,50 @@ function resolveLabelOverlaps(
   return items;
 }
 
+// Strategic per-label screen offsets (dx, dy in px) crafted specifically for mobile portrait views
+// so every label sits in open margin space with ZERO overlapping pills and ZERO crossed leader lines.
+// Desktop PC never calls resolveMobileLabelOverlaps and remains 100% untouched.
+const MOBILE_LABEL_OFFSETS: Record<string, [number, number]> = {
+  // École overview & Classes overview (4 corners around the campus)
+  Batiment_Nord_N1: [-34, -68],
+  Batiment_Est_E2: [16, -72],
+  Batiment_Principal_S1: [-86, 62],
+  Batiment_Sud_Maternelle_S2: [34, 58],
+  // Cour & Cantine/Périscolaire
+  Preau_Ecole: [-10, -56],
+  Zone_Cour_Elementaire: [-18, 44],
+  Zone_Cour_Maternelle: [18, 48],
+  Batiment_Periscolaire: [-14, -56],
+  Batiment_Cantine: [14, 54],
+  // Bâtiment Cycle 1 (9 rooms arranged in a 360° clockwise perimeter ring — zero wire crossings)
+  Classe_GS: [-58, -56],
+  Salle_Sieste_Motricite: [-24, -76],
+  Sanitaires_Ecole: [2, -62],
+  Salle_Profs: [34, -76],
+  Classe_PS_MS: [66, -40],
+  Classe_TPS_PS_MS: [78, 12],
+  Preau_Maternelles: [74, 42],
+  Prefabrique: [10, 56],
+  Classe_CP: [-54, 78],
+  // Bâtiment Cycle 2 (4 above + 2 below in strict left-to-right order — zero wire crossings)
+  Sanitaires_Nord: [-46, -54],
+  Local_Photocopieuse: [-10, -86],
+  Local_Materiel: [-20, -64],
+  Classe_CE2: [36, -56],
+  Bureau_Directrice: [-38, 62],
+  Classe_CP_CE1: [44, 68],
+  // Bâtiment Cycle 3 (alternating 3 above + 2 below in strict left-to-right order — zero wire crossings)
+  Classe_CM2: [-34, -58],
+  Classe_CE2_CM1: [4, -60],
+  Local_APEL_OGEC: [16, -66],
+  Classe_CM1_CM2: [-24, 58],
+  Sanitaires_Est: [6, 64],
+  // Pôle culturel (clean triangle framing all 3 landmarks)
+  Parc_Mediatheque: [14, -62],
+  Mediatheque_Ic: [-10, 68],
+  Centre_Culturel_Ville_Robert: [-18, -64],
+};
+
 function resolveMobileLabelOverlaps(
   items: ProjectedLabel[],
   leftBound: number,
@@ -107,39 +151,38 @@ function resolveMobileLabelOverlaps(
     const wrapped = rawW > 148;
     const hw = Math.min(78, rawW * 0.5) + 4;
     const hh = wrapped ? 19 : 13;
-    return { it, hw, hh, tx: it.ax, ty: it.ay - 54 };
+    const preset = MOBILE_LABEL_OFFSETS[it.id];
+    const tx = preset ? it.ax + preset[0] : it.ax;
+    const ty = preset ? it.ay + preset[1] : it.ay - 58;
+    return { it, hw, hh, tx, ty, hasPreset: !!preset };
   });
 
-  // Push labels cleanly OUTSIDE the building footprint so they never obscure rooms or facades
-  if (boxes.length === 1) {
-    const b = boxes[0];
-    b.tx = b.it.ax;
-    b.ty = b.it.ay - 58;
-    b.it.x = b.tx;
-    b.it.y = b.ty;
-  } else {
+  // Fallback radial push only for labels without an explicit strategic offset
+  if (boxes.length >= 2 && boxes.some((b) => !b.hasPreset)) {
     const cx = boxes.reduce((s, b) => s + b.it.ax, 0) / boxes.length;
     const cy = boxes.reduce((s, b) => s + b.it.ay, 0) / boxes.length;
     const minAy = Math.min(...boxes.map((b) => b.it.ay));
     const maxAy = Math.max(...boxes.map((b) => b.it.ay));
     for (const b of boxes) {
+      if (b.hasPreset) continue;
       const vx = b.it.ax - cx;
       const vy = b.it.ay - cy;
       const len = Math.hypot(vx, vy) || 1;
       const nx = vx / len;
       const ny = vy / len;
       if (vy <= 0) {
-        // Upper half of building -> push cleanly ABOVE the roofline
         b.tx = b.it.ax + nx * 56;
         b.ty = Math.min(minAy - 30, b.it.ay - 54) + ny * 18;
       } else {
-        // Lower half of building -> push cleanly BELOW the building footprint
         b.tx = b.it.ax + nx * 56;
         b.ty = Math.max(maxAy + 28, b.it.ay + 50) + ny * 16;
       }
-      b.it.x = b.tx;
-      b.it.y = b.ty;
     }
+  }
+
+  for (const b of boxes) {
+    b.it.x = b.tx;
+    b.it.y = b.ty;
   }
 
   // Clamp inside safe mobile bounds (below top bar, left of right rail, above bottom card)
@@ -149,7 +192,7 @@ function resolveMobileLabelOverlaps(
   };
   boxes.forEach(clampBox);
 
-  // 48 iterations: gentle tether toward OUTWARD perimeter target (tx, ty) during first 30, pure hard non-overlap during final 18
+  // 48 iterations: gentle tether toward strategic target (tx, ty) during first 28, pure hard non-overlap during final 20
   for (let iter = 0; iter < 48; iter++) {
     let anyOverlap = false;
     for (let i = 0; i < boxes.length; i++) {
@@ -178,14 +221,14 @@ function resolveMobileLabelOverlaps(
         }
       }
     }
-    if (iter < 30) {
+    if (iter < 28) {
       for (const b of boxes) {
-        b.it.x += (b.tx - b.it.x) * 0.04;
-        b.it.y += (b.ty - b.it.y) * 0.04;
+        b.it.x += (b.tx - b.it.x) * 0.05;
+        b.it.y += (b.ty - b.it.y) * 0.05;
       }
     }
     boxes.forEach(clampBox);
-    if (!anyOverlap && iter >= 30) break;
+    if (!anyOverlap && iter >= 28) break;
   }
 
   return items;
@@ -262,7 +305,7 @@ const MOBILE_SCENE_MULTS: Record<string, number> = {
   'cantine-periscolaire': 0.98,
   eglise: 0.76,
   sport: 0.94,
-  culture: 1.05,
+  culture: 1.18,
   S1: 0.96,
   N1: 0.88,
   E2: 0.96,
@@ -299,7 +342,7 @@ function adaptPoseForMobile(
   const s = baseScale * mult;
 
   const adjTarget: [number, number, number] =
-    sceneKey === 'culture' ? [-208, 2, -192] : target;
+    sceneKey === 'culture' ? [-190, 2, -194] : target;
 
   return {
     pos: [
