@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowDown, ArrowUp, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, X } from 'lucide-react';
+import { ArrowDown, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, X } from 'lucide-react';
 import { SchoolScene3D } from './components/SchoolScene3D';
+import { CreditsPage } from './components/CreditsPage';
 import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from './types';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -17,6 +18,7 @@ export const App: React.FC = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const [isHero, setIsHero] = useState(true);
+  const [isCredits, setIsCredits] = useState(false);
   const [activeSceneIndex, setActiveSceneIndex] = useState(0);
   const [freeExplore, setFreeExplore] = useState(false);
   const [hideRoofs, setHideRoofs] = useState(false);
@@ -129,11 +131,19 @@ export const App: React.FC = () => {
       }
       if (sectionIdx <= 0) {
         setIsHero(true);
+        setIsCredits(false);
+        setHideRoofs(false);
+        setShowLabels(false);
+      } else if (sectionIdx > data.scenes.length) {
+        setIsHero(false);
+        setIsCredits(true);
+        setActiveSceneIndex(data.scenes.length - 1);
         setHideRoofs(false);
         setShowLabels(false);
       } else {
         const sceneIdx = Math.min(sectionIdx - 1, data.scenes.length - 1);
         setIsHero(false);
+        setIsCredits(false);
         setActiveSceneIndex(sceneIdx);
         const sc = data.scenes[sceneIdx];
         if (sc) {
@@ -174,7 +184,7 @@ export const App: React.FC = () => {
   const goToSection = useCallback(
     (targetIdx: number, instant = false, fromBelow = false) => {
       if (!data) return;
-      const maxIdx = data.scenes.length;
+      const maxIdx = data.scenes.length + 1;
       const clamped = Math.max(0, Math.min(maxIdx, targetIdx));
 
       if (isMobile) {
@@ -206,7 +216,12 @@ export const App: React.FC = () => {
         return;
       }
 
-      const elId = clamped === 0 ? 'hero-cover' : `chapter-${data.scenes[clamped - 1].id}`;
+      const elId =
+        clamped === 0
+          ? 'hero-cover'
+          : clamped > data.scenes.length
+          ? 'credits-page'
+          : `chapter-${data.scenes[clamped - 1].id}`;
       const targetEl = document.getElementById(elId);
       if (!targetEl) return;
 
@@ -269,7 +284,7 @@ export const App: React.FC = () => {
           }
         }
       }
-      const nextPage = Math.max(0, Math.min(data.scenes.length, secIdx + dir));
+      const nextPage = Math.max(0, Math.min(data.scenes.length + 1, secIdx + dir));
       if (nextPage !== secIdx) {
         goToSection(nextPage, false, dir < 0);
         return true;
@@ -304,7 +319,7 @@ export const App: React.FC = () => {
         goToSection(0);
       } else if (e.key === 'End') {
         e.preventDefault();
-        goToSection(data.scenes.length);
+        goToSection(data.scenes.length + 1);
       }
     };
 
@@ -355,6 +370,22 @@ export const App: React.FC = () => {
       );
     });
 
+    const creditsEl = document.getElementById('credits-page');
+    if (creditsEl) {
+      const activateCredits = () => {
+        if (!isAutoScrollingRef.current) applySectionState(data.scenes.length + 1);
+      };
+      triggers.push(
+        ScrollTrigger.create({
+          trigger: creditsEl,
+          start: 'top 52%',
+          end: 'bottom 48%',
+          onEnter: activateCredits,
+          onEnterBack: activateCredits,
+        })
+      );
+    }
+
     ScrollTrigger.refresh();
     return () => {
       triggers.forEach((t) => t.kill());
@@ -368,7 +399,7 @@ export const App: React.FC = () => {
     const track = mobileTrackRef.current;
     if (!deck || !track) return;
 
-    const maxIdx = data.scenes.length;
+    const maxIdx = data.scenes.length + 1;
     const syncToCurrent = () => {
       const h = deck.clientHeight || window.innerHeight;
       const y = -sectionIdxRef.current * h;
@@ -411,6 +442,15 @@ export const App: React.FC = () => {
         if (inCarousel && Math.abs(dx) >= Math.abs(dy) * 0.9) {
           axis = 'h';
           return;
+        }
+        const creditsScroll = (e.target as HTMLElement | null)?.closest('.mobile-credits-scroll') as HTMLElement | null;
+        if (creditsScroll) {
+          // Allow native scroll inside mobile credits page; swipe down at top goes back to step 7
+          const atTop = creditsScroll.scrollTop <= 2;
+          if (!(atTop && dy > 0)) {
+            axis = 'h';
+            return;
+          }
         }
         axis = Math.abs(dy) >= Math.abs(dx) ? 'v' : 'h';
       }
@@ -569,7 +609,7 @@ export const App: React.FC = () => {
         {freeExplore ? 'Visite guidée' : 'Vue libre'}
       </button>
 
-      {data && !freeExplore && (isHero || activeSceneIndex < totalChapters - 1) && (
+      {data && !freeExplore && !isCredits && (
         <button
           type="button"
           className={`scroll-cue ${!isHero ? 'in-split' : ''}`}
@@ -585,7 +625,7 @@ export const App: React.FC = () => {
       {data && !freeExplore && isMobile && (
         <>
           {/* Mobile top rainbow progress bar + floating brand/step pill (visible on steps 1..7) */}
-          {!isHero && (
+          {!isHero && !isCredits && (
             <div className="mobile-reel-chrome" data-active-scene={activeSceneId}>
               <div className="mobile-top-progress-track" aria-hidden="true">
                 <div className="mobile-top-progress-fill" style={{ width: `${progressPct}%` }} />
@@ -604,7 +644,7 @@ export const App: React.FC = () => {
           )}
 
           {/* TikTok-style vertical rainbow navigation rail on the right edge */}
-          {!isHero && (
+          {!isHero && !isCredits && (
             <div className="mobile-reel-rail" role="tablist" aria-label="Étapes de la visite">
               {data.scenes.map((sc, idx) => (
                 <button
@@ -792,32 +832,29 @@ export const App: React.FC = () => {
                     )}
 
                     {sc.note && <p className="chapter-note">{sc.note}</p>}
-
-                    {idx === totalChapters - 1 && (
-                      <button
-                        type="button"
-                        className="back-home-btn"
-                        onClick={() => goToSection(0)}
-                      >
-                        <ArrowUp size={15} />
-                        <span>Retour à l'accueil</span>
-                      </button>
-                    )}
                   </div>
 
-                  {idx < totalChapters - 1 && (
-                    <button
-                      type="button"
-                      className="mobile-reel-next-hint"
-                      onClick={() => stepGuided(1)}
-                      aria-label="Étape suivante"
-                    >
-                      <ChevronDown size={18} className="scroll-cue-arrow" />
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    className="mobile-reel-next-hint"
+                    onClick={() => stepGuided(1)}
+                    aria-label="Étape suivante"
+                  >
+                    <ChevronDown size={18} className="scroll-cue-arrow" />
+                  </button>
                 </div>
               </section>
             ))}
+
+            <section
+              className="mobile-reel-slide mobile-reel-credits"
+              id="credits-page"
+              data-reel-index={totalChapters + 1}
+            >
+              <div className="mobile-credits-scroll">
+                <CreditsPage onBackHome={() => goToSection(0)} />
+              </div>
+            </section>
             </div>
           </main>
         </>
@@ -914,17 +951,6 @@ export const App: React.FC = () => {
                   )}
 
                   {sc.note && <p className="chapter-note">{sc.note}</p>}
-
-                  {idx === totalChapters - 1 && (
-                    <button
-                      type="button"
-                      className="back-home-btn"
-                      onClick={() => goToSection(0)}
-                    >
-                      <ArrowUp size={15} />
-                      <span>Retour à l'accueil</span>
-                    </button>
-                  )}
                 </div>
               </section>
             ))}
@@ -953,13 +979,17 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 className="step-nav-btn primary"
-                disabled={activeSceneIndex >= totalChapters - 1}
                 onClick={() => stepGuided(1)}
               >
                 Suivant <ChevronDown size={15} />
               </button>
             </div>
           </div>
+
+          {/* Dedicated full-width Credits & Legal Notice page at the end of the tour */}
+          <section className="credits-page" id="credits-page">
+            <CreditsPage onBackHome={() => goToSection(0)} />
+          </section>
         </main>
       )}
 
