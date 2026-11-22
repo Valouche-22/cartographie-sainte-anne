@@ -325,14 +325,14 @@ function adaptPoseForMobile(
     sceneKey === 'culture'
       ? [-190, 2, -194]
       : sceneKey === 'hero'
-      ? [6.5, 0, 4.2]
+      ? [2, 0, -1]
       : target;
 
   return {
     pos: [
-      adjTarget[0] + (pos[0] - adjTarget[0]) * s,
-      adjTarget[1] + (pos[1] - adjTarget[1]) * s,
-      adjTarget[2] + (pos[2] - adjTarget[2]) * s,
+      adjTarget[0] + (pos[0] - target[0]) * s,
+      adjTarget[1] + (pos[1] - target[1]) * s,
+      adjTarget[2] + (pos[2] - target[2]) * s,
     ],
     target: adjTarget,
   };
