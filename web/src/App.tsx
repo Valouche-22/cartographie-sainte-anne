@@ -820,31 +820,26 @@ export const App: React.FC = () => {
                       })()
                     ) : sc.id === 'cour' ? (
                       <>
-                        <div className="fact-list cour-groups-list">
+                        <div className="cour-sections">
                           {(
                             [
-                              { key: 'elementaire', label: 'Cour élémentaire', color: '#ef4444' },
-                              { key: 'maternelle', label: 'Cour maternelle', color: '#2563eb' },
+                              { key: 'elementaire', label: 'Cour élémentaire' },
+                              { key: 'maternelle', label: 'Cour maternelle' },
                             ] as const
                           ).map((grp) => (
                             <div
                               key={grp.key}
-                              className={`fact-row cour-group cour-group-${grp.key} ${
-                                courFocus === grp.key ? 'is-active' : 'is-inactive'
-                              }`}
+                              className={`cour-section ${courFocus === grp.key ? 'is-active' : 'is-inactive'}`}
                               onClick={() => setCourFocus(grp.key)}
                             >
-                              <span className="fact-label cour-group-title">
-                                <span className="cour-dot" style={{ background: grp.color }} />
-                                {grp.label}
-                              </span>
-                              <ul className="cour-items">
+                              <span className="fact-label cour-section-heading">{grp.label}</span>
+                              <div className="fact-list">
                                 {COUR_ROWS[grp.key].map((text, rIdx) => (
-                                  <li className="fact-value" key={rIdx}>
-                                    {text}
-                                  </li>
+                                  <div className="fact-row" key={rIdx}>
+                                    <p className="fact-value">{text}</p>
+                                  </div>
                                 ))}
-                              </ul>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -969,31 +964,26 @@ export const App: React.FC = () => {
 
                   {sc.id === 'cour' ? (
                     <>
-                      <div className="fact-list cour-groups-list">
+                      <div className="cour-sections">
                         {(
                           [
-                            { key: 'elementaire', label: 'Cour élémentaire', color: '#ef4444' },
-                            { key: 'maternelle', label: 'Cour maternelle', color: '#2563eb' },
+                            { key: 'elementaire', label: 'Cour élémentaire' },
+                            { key: 'maternelle', label: 'Cour maternelle' },
                           ] as const
                         ).map((grp) => (
                           <div
                             key={grp.key}
-                            className={`fact-row cour-group cour-group-${grp.key} ${
-                              courFocus === grp.key ? 'is-active' : 'is-inactive'
-                            }`}
+                            className={`cour-section ${courFocus === grp.key ? 'is-active' : 'is-inactive'}`}
                             onClick={() => setCourFocus(grp.key)}
                           >
-                            <span className="fact-label cour-group-title">
-                              <span className="cour-dot" style={{ background: grp.color }} />
-                              {grp.label}
-                            </span>
-                            <ul className="cour-items">
+                            <span className="fact-label cour-section-heading">{grp.label}</span>
+                            <div className="fact-list">
                               {COUR_ROWS[grp.key].map((text, rIdx) => (
-                                <li className="fact-value" key={rIdx}>
-                                  {text}
-                                </li>
+                                <div className="fact-row" key={rIdx}>
+                                  <p className="fact-value">{text}</p>
+                                </div>
                               ))}
-                            </ul>
+                            </div>
                           </div>
                         ))}
                       </div>
