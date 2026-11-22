@@ -6,10 +6,9 @@ interface CreditsPageProps {
 }
 
 const INSTITUTIONS = [
-  { name: 'École Sainte-Anne', sub: 'Pordic', src: './logos/ecole-sainte-anne.png' },
-  { name: 'ISFEC Bretagne', sub: 'Formation des enseignants', src: './logos/isfec-bretagne.jpg' },
-  { name: 'Enseignement catholique', sub: 'Réseau national', src: './logos/enseignement-catholique.png' },
-  { name: 'Ville de Pordic', sub: 'Commune', src: './logos/ville-de-pordic.jpg' },
+  { name: 'École Sainte-Anne', src: './logos/ecole-sainte-anne.png' },
+  { name: 'ISFEC Bretagne', src: './logos/isfec-bretagne.jpg' },
+  { name: 'Ville de Pordic', src: './logos/ville-de-pordic.jpg' },
 ];
 
 const TOOLS = [
@@ -28,7 +27,7 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
     <div className="credits-inner">
       <header className="credits-header">
         <div>
-          <h2 className="credits-title">Crédits &amp; Mentions légales</h2>
+          <h2 className="credits-title">Crédits et mentions légales</h2>
           <p className="credits-subtitle">Cartographie 3D — École Sainte-Anne de Pordic</p>
         </div>
         <button type="button" className="credits-home-btn" onClick={onBackHome}>
@@ -37,9 +36,9 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
         </button>
       </header>
 
-      {/* Row 1: Institutions & partenaires */}
+      {/* Row 1: Établissement et institutions */}
       <div className="credits-block">
-        <h3 className="credits-section-label">Établissement &amp; institutions</h3>
+        <h3 className="credits-section-label">Établissement et partenaires</h3>
         <div className="credits-institutions-grid">
           {INSTITUTIONS.map((inst) => (
             <div className="credits-inst-card" key={inst.name}>
@@ -52,9 +51,9 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
         </div>
       </div>
 
-      {/* Row 2: Outils & logiciels */}
+      {/* Row 2: Outils et logiciels */}
       <div className="credits-block">
-        <h3 className="credits-section-label">Outils &amp; logiciels utilisés</h3>
+        <h3 className="credits-section-label">Outils et logiciels utilisés</h3>
         <div className="credits-tools-grid">
           {TOOLS.map((tool) => (
             <div className="credits-tool-item" key={tool.name}>
@@ -67,20 +66,23 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
         </div>
       </div>
 
-      {/* Author, project context & legal notices */}
+      {/* Author, ownership & legal notices */}
       <div className="credits-legal-grid">
         <div className="credits-legal-col">
-          <h3 className="credits-section-label">À propos &amp; propriété intellectuelle</h3>
+          <h3 className="credits-section-label">À propos et propriété</h3>
           <p className="credits-text">
-            Ce site a été conçu et réalisé par <strong>Valentin Sonneville</strong> dans le cadre d'un projet
-            universitaire visant à présenter l'école Sainte-Anne de Pordic, l'organisation de ses bâtiments et de ses
-            salles de classe, ainsi que les structures communales et paroissiales qui l'entourent.
+            Ce site a été créé par <strong>Valentin Sonneville</strong> dans le cadre d'un projet universitaire pour
+            présenter l'école Sainte-Anne de Pordic, ses bâtiments, ses classes et les lieux qui l'entourent.
           </p>
           <p className="credits-text">
-            L'ensemble des éléments présents sur ce site (maquette 3D, textes, mise en page et code source) est la{' '}
-            <strong>stricte propriété de Valentin Sonneville et de ses ayants droit</strong>, à savoir{' '}
-            <strong>l'ISFEC Bretagne</strong> et <strong>l'école Sainte-Anne de Pordic</strong>. Toute reproduction,
-            diffusion ou réutilisation sans autorisation préalable est interdite.
+            La cartographie, les modélisations 3D, les textes et le code restent la propriété de{' '}
+            <strong>Valentin Sonneville</strong>. Le projet est mis à disposition de{' '}
+            <strong>l'école Sainte-Anne de Pordic</strong> et de <strong>l'ISFEC Bretagne</strong>, qui peuvent
+            l'utiliser, le modifier et le faire évoluer pour leurs activités. Pour toute autre personne ou structure,
+            toute copie ou réutilisation demande l'accord préalable de son auteur.
+          </p>
+          <p className="credits-text">
+            Les logos, marques et ressources de tiers restent la propriété de leurs titulaires respectifs.
           </p>
         </div>
 
@@ -88,20 +90,20 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
           <h3 className="credits-section-label">Mentions légales</h3>
           <ul className="credits-legal-list">
             <li>
-              <strong>Réalisation :</strong> Valentin Sonneville — projet pédagogique en lien avec l'ISFEC Bretagne et
-              l'école Sainte-Anne (7 rue des Écoles, 22590 Pordic).
+              <strong>Auteur :</strong> Valentin Sonneville, en lien avec l'ISFEC Bretagne et l'école Sainte-Anne (7 rue
+              des Écoles, 22590 Pordic).
             </li>
             <li>
-              <strong>Hébergement :</strong> GitHub Pages — GitHub, Inc., 88 Colin P Kelly Jr St, San Francisco, CA
-              94107, États-Unis.
+              <strong>Hébergement :</strong> GitHub Pages (GitHub, Inc., 88 Colin P Kelly Jr St, San Francisco, CA
+              94107, États-Unis).
             </li>
             <li>
-              <strong>Données cartographiques :</strong> emprises bâties et voiries issues de l'IGN (Géoportail / BD
-              TOPO®, Licence Ouverte Etalab 2.0) et d'OpenStreetMap (© contributeurs OpenStreetMap, licence ODbL).
+              <strong>Données cartographiques :</strong> IGN (Géoportail et BD TOPO®, Licence Ouverte Etalab 2.0) et
+              OpenStreetMap (contributeurs OpenStreetMap, licence ODbL).
             </li>
             <li>
-              <strong>Données personnelles &amp; cookies :</strong> ce site est purement informatif ; il ne collecte
-              aucune donnée personnelle et ne dépose aucun cookie publicitaire ou de suivi.
+              <strong>Vie privée et cookies :</strong> aucune donnée personnelle n'est collectée et aucun cookie de
+              suivi ou publicitaire n'est déposé.
             </li>
           </ul>
         </div>

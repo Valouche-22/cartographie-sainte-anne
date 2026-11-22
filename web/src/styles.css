@@ -1040,11 +1040,11 @@ body {
   flex-direction: column;
 }
 
-/* Row 1: 4 Institutional logos */
+/* Row 1: 3 Institutional logos */
 .credits-institutions-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .credits-inst-card {
@@ -1716,17 +1716,21 @@ body {
   }
 
   .mobile-credits-scroll .credits-institutions-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .mobile-credits-scroll .credits-inst-card {
-    padding: 12px 10px;
-    gap: 7px;
+    padding: 10px 8px;
+    gap: 6px;
   }
 
   .mobile-credits-scroll .credits-inst-logo-wrap {
-    height: 46px;
+    height: 42px;
+  }
+
+  .mobile-credits-scroll .credits-inst-name {
+    font-size: 0.68rem;
   }
 
   .mobile-credits-scroll .credits-tools-grid {
