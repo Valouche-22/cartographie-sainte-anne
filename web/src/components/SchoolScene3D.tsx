@@ -108,11 +108,12 @@ const MOBILE_LABEL_OFFSETS: Record<string, [number, number]> = {
   Classe_CM2: [-42, -52],
   Classe_CM1_CM2: [8, -56],
   Sanitaires_Est: [8, -54],
-  // Cantine : tige courte et étiquette au-dessus du bâtiment
+  // Cantine et Périscolaire : tiges courtes et étiquettes propres au-dessus des bâtiments
   Batiment_Cantine: [0, -34],
-  // Pôle culturel: clear facades cleanly below while keeping Parc de la Médiathèque untouched at top-left
-  Mediatheque_Ic: [-8, 52],
-  Centre_Culturel_Ville_Robert: [-10, 52],
+  Batiment_Periscolaire: [0, -34],
+  // Pôle culturel : Parc en haut à gauche, La Ville Robert au-dessus et Médiathèque bien en dessous du manoir
+  Mediatheque_Ic: [14, 86],
+  Centre_Culturel_Ville_Robert: [-12, -56],
 };
 
 function resolveMobileLabelOverlaps(
