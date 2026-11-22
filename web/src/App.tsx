@@ -16,6 +16,7 @@ export const App: React.FC = () => {
   const [minLoadDone, setMinLoadDone] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [showScrollCue, setShowScrollCue] = useState(false);
 
   const [isHero, setIsHero] = useState(true);
   const [isCredits, setIsCredits] = useState(false);
@@ -63,6 +64,13 @@ export const App: React.FC = () => {
     const timer = window.setTimeout(() => setMinLoadDone(true), 1500);
     return () => window.clearTimeout(timer);
   }, []);
+
+  // Reveal the "Faire défiler vers le bas" hint 4 seconds after the page has finished loading
+  useEffect(() => {
+    if (!modelLoaded || !minLoadDone || loadError) return;
+    const timer = window.setTimeout(() => setShowScrollCue(true), 4000);
+    return () => window.clearTimeout(timer);
+  }, [modelLoaded, minLoadDone, loadError]);
 
   useEffect(() => {
     fetch(`./data/school-data.json?v=${__BUILD_ID__}`)
@@ -610,7 +618,7 @@ export const App: React.FC = () => {
         {freeExplore ? 'Visite guidée' : 'Vue libre'}
       </button>
 
-      {data && !freeExplore && !isCredits && (
+      {data && !freeExplore && !isCredits && showScrollCue && (
         <button
           type="button"
           className={`scroll-cue ${!isHero ? 'in-split' : ''}`}

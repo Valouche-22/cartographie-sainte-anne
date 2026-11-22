@@ -290,6 +290,18 @@ body {
   pointer-events: auto;
   box-shadow: 0 8px 24px rgba(15, 33, 62, 0.28);
   transition: left 0.85s ease, background 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  animation: scrollCueFadeIn 0.55s ease forwards;
+}
+
+@keyframes scrollCueFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 .scroll-cue:hover {
