@@ -820,7 +820,35 @@ export const App: React.FC = () => {
                       })()
                     ) : sc.id === 'cour' ? (
                       <>
-                        <div className="building-focus-bar cour-tabs-top" role="group" aria-label="Vue des cours">
+                        <div className="fact-list cour-groups-list">
+                          {(
+                            [
+                              { key: 'elementaire', label: 'Cour élémentaire', color: '#ef4444' },
+                              { key: 'maternelle', label: 'Cour maternelle', color: '#2563eb' },
+                            ] as const
+                          ).map((grp) => (
+                            <div
+                              key={grp.key}
+                              className={`fact-row cour-group cour-group-${grp.key} ${
+                                courFocus === grp.key ? 'is-active' : 'is-inactive'
+                              }`}
+                              onClick={() => setCourFocus(grp.key)}
+                            >
+                              <span className="fact-label cour-group-title">
+                                <span className="cour-dot" style={{ background: grp.color }} />
+                                {grp.label}
+                              </span>
+                              <ul className="cour-items">
+                                {COUR_ROWS[grp.key].map((text, rIdx) => (
+                                  <li className="fact-value" key={rIdx}>
+                                    {text}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="building-focus-bar" role="group" aria-label="Vue des cours">
                           <button
                             type="button"
                             className={`cour-focus-btn cour-elem ${courFocus === 'elementaire' ? 'active' : ''}`}
@@ -837,14 +865,6 @@ export const App: React.FC = () => {
                             <span className="cour-dot" style={{ background: '#2563eb' }} />
                             Cour maternelle
                           </button>
-                        </div>
-                        <div className="fact-list cour-fact-list" key={courFocus} data-cour={courFocus}>
-                          {COUR_ROWS[courFocus].map((text, rIdx) => (
-                            <div className="fact-row cour-fact-row" key={rIdx}>
-                              <span className="cour-row-dot" aria-hidden="true" />
-                              <p className="fact-value">{text}</p>
-                            </div>
-                          ))}
                         </div>
                       </>
                     ) : (
@@ -949,7 +969,35 @@ export const App: React.FC = () => {
 
                   {sc.id === 'cour' ? (
                     <>
-                      <div className="building-focus-bar cour-tabs-top" role="group" aria-label="Vue des cours">
+                      <div className="fact-list cour-groups-list">
+                        {(
+                          [
+                            { key: 'elementaire', label: 'Cour élémentaire', color: '#ef4444' },
+                            { key: 'maternelle', label: 'Cour maternelle', color: '#2563eb' },
+                          ] as const
+                        ).map((grp) => (
+                          <div
+                            key={grp.key}
+                            className={`fact-row cour-group cour-group-${grp.key} ${
+                              courFocus === grp.key ? 'is-active' : 'is-inactive'
+                            }`}
+                            onClick={() => setCourFocus(grp.key)}
+                          >
+                            <span className="fact-label cour-group-title">
+                              <span className="cour-dot" style={{ background: grp.color }} />
+                              {grp.label}
+                            </span>
+                            <ul className="cour-items">
+                              {COUR_ROWS[grp.key].map((text, rIdx) => (
+                                <li className="fact-value" key={rIdx}>
+                                  {text}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="building-focus-bar" role="group" aria-label="Vue des cours">
                         <button
                           type="button"
                           className={`cour-focus-btn cour-elem ${courFocus === 'elementaire' ? 'active' : ''}`}
@@ -966,14 +1014,6 @@ export const App: React.FC = () => {
                           <span className="cour-dot" style={{ background: '#2563eb' }} />
                           Cour maternelle
                         </button>
-                      </div>
-                      <div className="fact-list cour-fact-list" key={courFocus} data-cour={courFocus}>
-                        {COUR_ROWS[courFocus].map((text, rIdx) => (
-                          <div className="fact-row cour-fact-row" key={rIdx}>
-                            <span className="cour-row-dot" aria-hidden="true" />
-                            <p className="fact-value">{text}</p>
-                          </div>
-                        ))}
                       </div>
                     </>
                   ) : (
