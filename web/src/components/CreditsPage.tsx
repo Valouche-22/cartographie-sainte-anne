@@ -79,14 +79,13 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
         <div className="credits-legal-col">
           <h3 className="credits-section-label">À propos et propriété</h3>
           <p className="credits-text">
-            Site créé par Valentin Sonneville dans le cadre d'un projet universitaire, pour présenter l'école
-            Sainte-Anne de Pordic, ses bâtiments, ses classes et les lieux qui l'entourent.
+            Site réalisé par Valentin Sonneville dans le cadre d'un travail universitaire, pour présenter l'école
+            Sainte-Anne de Pordic, ses bâtiments, ses classes et les lieux qui l'entourent. Ce projet n'a pas vocation
+            à être diffusé au-delà de ce cadre pédagogique.
           </p>
           <p className="credits-text">
-            Ce site, sa maquette 3D, ses textes, sa mise en page et son code restent la propriété de Valentin
-            Sonneville. Toute modification ou évolution du projet demande l'accord préalable de Valentin Sonneville, de
-            l'école Sainte-Anne de Pordic et de l'ISFEC Bretagne. Toute copie ou réutilisation par un tiers non
-            autorisé est également interdite sans leur accord.
+            Ce site, sa maquette 3D, ses textes, sa mise en page et son code sont la propriété exclusive de Valentin
+            Sonneville. Toute copie, modification ou réutilisation est interdite sans son accord préalable.
           </p>
           <p className="credits-text">
             Les logos, marques et données de tiers restent la propriété de leurs titulaires respectifs.
@@ -97,8 +96,8 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
           <h3 className="credits-section-label">Mentions légales</h3>
           <ul className="credits-legal-list">
             <li>
-              <strong>Auteur :</strong> Valentin Sonneville, en lien avec l'ISFEC Bretagne et l'école Sainte-Anne de
-              Pordic.
+              <strong>Auteur :</strong> Valentin Sonneville, dans le cadre d'un travail universitaire à l'ISFEC
+              Bretagne.
             </li>
             <li>
               <strong>Hébergement :</strong> GitHub Pages (GitHub, Inc., San Francisco, États-Unis).
