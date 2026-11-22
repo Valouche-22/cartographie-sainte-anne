@@ -71,13 +71,13 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
         <div className="credits-legal-col">
           <h3 className="credits-section-label">À propos et propriété</h3>
           <p className="credits-text">
-            Site créé par <strong>Valentin Sonneville</strong> dans le cadre d'un projet universitaire, pour présenter
-            l'école Sainte-Anne de Pordic, ses bâtiments, ses classes et les lieux qui l'entourent.
+            Site créé par Valentin Sonneville dans le cadre d'un projet universitaire, pour présenter l'école
+            Sainte-Anne de Pordic, ses bâtiments, ses classes et les lieux qui l'entourent.
           </p>
           <p className="credits-text">
-            Ce site (maquette 3D, textes, mise en page et code) est la stricte propriété de{' '}
-            <strong>Valentin Sonneville</strong> et de ses ayants droit, <strong>l'ISFEC Bretagne</strong> et{' '}
-            <strong>l'école Sainte-Anne de Pordic</strong>. Toute copie ou réutilisation sans autorisation est
+            Ce site (maquette 3D, textes, mise en page et code) reste la propriété de Valentin Sonneville. Il est mis à
+            disposition de l'école Sainte-Anne de Pordic et de l'ISFEC Bretagne, qui peuvent l'utiliser, le modifier et
+            le faire évoluer pour leurs activités. Toute copie ou réutilisation par un tiers sans accord préalable reste
             interdite.
           </p>
           <p className="credits-text">
