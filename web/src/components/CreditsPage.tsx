@@ -75,10 +75,10 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
             Sainte-Anne de Pordic, ses bâtiments, ses classes et les lieux qui l'entourent.
           </p>
           <p className="credits-text">
-            Ce site (maquette 3D, textes, mise en page et code) reste la propriété de Valentin Sonneville. Il est mis à
-            disposition de l'école Sainte-Anne de Pordic et de l'ISFEC Bretagne, qui peuvent l'utiliser, le modifier et
-            le faire évoluer pour leurs activités. Toute copie ou réutilisation par un tiers sans accord préalable reste
-            interdite.
+            Ce site, sa maquette 3D, ses textes, sa mise en page et son code restent la propriété de Valentin
+            Sonneville. Toute modification ou évolution du projet demande l'accord préalable de Valentin Sonneville, de
+            l'école Sainte-Anne de Pordic et de l'ISFEC Bretagne. Toute copie ou réutilisation par un tiers non
+            autorisé est également interdite sans leur accord.
           </p>
           <p className="credits-text">
             Les logos, marques et données de tiers restent la propriété de leurs titulaires respectifs.
