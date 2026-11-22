@@ -900,6 +900,139 @@ create_box("Jeu_Enfant_Base", (8.5, -31.8, 0.75), (1.5, 1.5, 1.35), MAT_PLAY_BLU
 create_box("Jeu_Enfant_Toit", (8.5, -31.8, 1.60), (1.8, 1.8, 0.32), MAT_PLAY_YELLOW, "MOBILIER", rot_z_deg=21.0)
 create_box("Jeu_Enfant_Toboggan", (9.6, -31.4, 0.52), (1.3, 0.52, 0.14), MAT_PLAY_RED, "MOBILIER", rot_z_deg=21.0)
 
+# Wooden Sandbox (Bac a sable) in maternal courtyard — flush against Periscolaire West facade, South of Cabanon!
+MAT_SAND = get_mat("Sable_Bac", (0.86, 0.75, 0.50), roughness=0.95)
+MAT_TIRE = get_mat("Pneu_Velo_Noir", (0.07, 0.07, 0.08), roughness=0.82)
+MAT_BIKE_RED = get_mat("Velo_Rouge", (0.82, 0.11, 0.11), roughness=0.35, metallic=0.25)
+MAT_BIKE_BLUE = get_mat("Velo_Bleu", (0.10, 0.36, 0.85), roughness=0.35, metallic=0.25)
+MAT_BIKE_YELLOW = get_mat("Velo_Jaune", (0.94, 0.72, 0.06), roughness=0.35, metallic=0.25)
+MAT_BIKE_GREEN = get_mat("Velo_Vert", (0.10, 0.62, 0.24), roughness=0.35, metallic=0.25)
+MAT_BIKE_ORANGE = get_mat("Velo_Orange", (0.92, 0.38, 0.06), roughness=0.35, metallic=0.25)
+MAT_BIKE_PURPLE = get_mat("Velo_Violet", (0.50, 0.16, 0.78), roughness=0.35, metallic=0.25)
+MAT_BIKE_CYAN = get_mat("Velo_Turquoise", (0.06, 0.62, 0.78), roughness=0.35, metallic=0.25)
+
+sb_cx, sb_cy = local_to_world(peri_cx, peri_cy, -peri_len / 2 - 1.65, 1.0, peri_deg)
+sb_w, sb_l, sb_h, sb_t = 2.75, 3.65, 0.38, 0.18
+# Golden sand interior
+create_box("Bac_Sable_Maternelle_Sable", (sb_cx, sb_cy, 0.05 + 0.14), (sb_w - sb_t * 1.8, sb_l - sb_t * 1.8, 0.28), MAT_SAND, "MOBILIER", rot_z_deg=peri_deg)
+# 4 timber plank sides
+for side_name, lx, ly, sx, sy in [
+    ("Nord", 0.0, sb_l / 2 - sb_t / 2, sb_w, sb_t),
+    ("Sud", 0.0, -sb_l / 2 + sb_t / 2, sb_w, sb_t),
+    ("Est", sb_w / 2 - sb_t / 2, 0.0, sb_t, sb_l - sb_t * 2),
+    ("Ouest", -sb_w / 2 + sb_t / 2, 0.0, sb_t, sb_l - sb_t * 2),
+]:
+    px_s, py_s = local_to_world(sb_cx, sb_cy, lx, ly, peri_deg)
+    create_box(f"Bac_Sable_Bord_{side_name}", (px_s, py_s, 0.05 + sb_h / 2), (sx, sy, sb_h), MAT_WOOD, "MOBILIER", rot_z_deg=peri_deg)
+# 4 wooden corner seat boards
+for idx_c, (cx_s, cy_s) in enumerate([
+    (sb_w / 2 - 0.24, sb_l / 2 - 0.24),
+    (-sb_w / 2 + 0.24, sb_l / 2 - 0.24),
+    (sb_w / 2 - 0.24, -sb_l / 2 + 0.24),
+    (-sb_w / 2 + 0.24, -sb_l / 2 + 0.24),
+], 1):
+    px_c, py_c = local_to_world(sb_cx, sb_cy, cx_s, cy_s, peri_deg)
+    create_box(f"Bac_Sable_Assise_{idx_c}", (px_c, py_c, 0.05 + sb_h + 0.03), (0.48, 0.48, 0.06), MAT_WOOD, "MOBILIER", rot_z_deg=peri_deg)
+# Two colorful sand buckets sitting in the sand
+for idx_bk, (bx_l, by_l, bmat) in enumerate([(-0.42, 0.55, MAT_BIKE_RED), (0.38, -0.45, MAT_BIKE_BLUE)], 1):
+    bx_w, by_w = local_to_world(sb_cx, sb_cy, bx_l, by_l, peri_deg)
+    bpy.ops.mesh.primitive_cone_add(vertices=12, radius1=0.11, radius2=0.15, depth=0.22, location=(bx_w, by_w, 0.05 + 0.28 + 0.11))
+    bk = bpy.context.active_object
+    bk.name = f"Bac_Sable_Seau_{idx_bk}"
+    bk.data.materials.append(bmat)
+    scene.collection.objects.unlink(bk)
+    link_obj(bk, "MOBILIER")
+
+# Kids' bikes, draisiennes (balance bikes) and tricycles in the maternal courtyard!
+def add_kids_vehicle(name, x, y, rot_deg, frame_mat, kind="draisienne", scale=1.0):
+    mesh = bpy.data.meshes.new(name)
+    obj = bpy.data.objects.new(name, mesh)
+    link_obj(obj, "MOBILIER")
+    bm = bmesh.new()
+
+    def add_wheel(lx, ly, lz, rad, thick, mat_idx=0):
+        res = bmesh.ops.create_cone(
+            bm, cap_ends=True, cap_tris=False, segments=14,
+            radius1=rad, radius2=rad, depth=thick
+        )
+        # Rotate cylinder so wheel rolls along local X (axle along local Y)
+        m_rot = Matrix.Rotation(math.radians(90.0), 4, 'X')
+        bmesh.ops.transform(bm, matrix=m_rot, verts=res["verts"])
+        bmesh.ops.translate(bm, verts=res["verts"], vec=(lx, ly, lz))
+        for v in res["verts"]:
+            for f in v.link_faces:
+                f.material_index = mat_idx
+
+    def add_part(lx, ly, lz, sx, sy, sz, rot_y=0.0, mat_idx=1):
+        res = bmesh.ops.create_cube(bm, size=1.0)
+        for v in res["verts"]:
+            v.co.x *= sx
+            v.co.y *= sy
+            v.co.z *= sz
+        if abs(rot_y) > 0.01:
+            bmesh.ops.transform(bm, matrix=Matrix.Rotation(math.radians(rot_y), 4, 'Y'), verts=res["verts"])
+        bmesh.ops.translate(bm, verts=res["verts"], vec=(lx, ly, lz))
+        for v in res["verts"]:
+            for f in v.link_faces:
+                f.material_index = mat_idx
+
+    z0 = 0.06
+    wr = 0.19 * scale
+    wt = 0.07 * scale
+    if kind == "tricycle":
+        # Front wheel + 2 rear wheels + rear axle + colorful frame + small rear tray
+        add_wheel(0.42 * scale, 0.0, z0 + wr, wr * 1.05, wt, mat_idx=0)
+        add_wheel(-0.34 * scale, -0.26 * scale, z0 + wr * 0.88, wr * 0.88, wt, mat_idx=0)
+        add_wheel(-0.34 * scale, 0.26 * scale, z0 + wr * 0.88, wr * 0.88, wt, mat_idx=0)
+        # Rear axle & little rear tray
+        add_part(-0.34 * scale, 0.0, z0 + wr * 0.88, 0.06 * scale, 0.54 * scale, 0.06 * scale, 0.0, mat_idx=2)
+        add_part(-0.32 * scale, 0.0, z0 + wr * 1.35, 0.24 * scale, 0.34 * scale, 0.12 * scale, 0.0, mat_idx=1)
+        # Main sloped frame + front fork + handlebars + seat
+        add_part(0.02 * scale, 0.0, z0 + 0.34 * scale, 0.72 * scale, 0.08 * scale, 0.08 * scale, -14.0, mat_idx=1)
+        add_part(0.36 * scale, 0.0, z0 + 0.42 * scale, 0.07 * scale, 0.08 * scale, 0.48 * scale, -18.0, mat_idx=1)
+        add_part(0.28 * scale, 0.0, z0 + 0.64 * scale, 0.06 * scale, 0.48 * scale, 0.06 * scale, 0.0, mat_idx=2)
+        add_part(-0.08 * scale, 0.0, z0 + 0.44 * scale, 0.24 * scale, 0.17 * scale, 0.08 * scale, 0.0, mat_idx=0)
+    else:
+        # Draisienne / kids' bike: 2 wheels, colored frame, fork, handlebars, saddle (+ pedals on velo)
+        add_wheel(0.38 * scale, 0.0, z0 + wr, wr, wt, mat_idx=0)
+        add_wheel(-0.38 * scale, 0.0, z0 + wr, wr, wt, mat_idx=0)
+        # Frame top & down tubes
+        add_part(0.0, 0.0, z0 + 0.36 * scale, 0.68 * scale, 0.07 * scale, 0.07 * scale, -12.0, mat_idx=1)
+        add_part(-0.08 * scale, 0.0, z0 + 0.25 * scale, 0.56 * scale, 0.06 * scale, 0.06 * scale, 18.0, mat_idx=1)
+        # Front fork + handlebars
+        add_part(0.33 * scale, 0.0, z0 + 0.41 * scale, 0.07 * scale, 0.07 * scale, 0.46 * scale, -18.0, mat_idx=1)
+        add_part(0.25 * scale, 0.0, z0 + 0.62 * scale, 0.06 * scale, 0.46 * scale, 0.06 * scale, 0.0, mat_idx=2)
+        # Seat post + dark saddle
+        add_part(-0.14 * scale, 0.0, z0 + 0.42 * scale, 0.06 * scale, 0.06 * scale, 0.22 * scale, 10.0, mat_idx=2)
+        add_part(-0.16 * scale, 0.0, z0 + 0.51 * scale, 0.22 * scale, 0.13 * scale, 0.07 * scale, 0.0, mat_idx=0)
+        if kind == "velo":
+            # Pedal crank + little front basket
+            add_part(-0.02 * scale, 0.0, z0 + 0.18 * scale, 0.05 * scale, 0.26 * scale, 0.05 * scale, 0.0, mat_idx=2)
+            add_part(0.37 * scale, 0.0, z0 + 0.53 * scale, 0.18 * scale, 0.24 * scale, 0.16 * scale, 0.0, mat_idx=1)
+
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(mesh)
+    bm.free()
+    obj.location = (x, y, 0.0)
+    obj.rotation_euler = (0.0, 0.0, math.radians(rot_deg))
+    obj.data.materials.append(MAT_TIRE)      # 0
+    obj.data.materials.append(frame_mat)     # 1
+    obj.data.materials.append(MAT_METAL_GOAL) # 2
+    return obj
+
+from mathutils import Matrix
+KIDS_VEHICLES = [
+    ("Tricycle_Mat_01", 17.8, -24.2, -52.0, MAT_BIKE_RED, "tricycle", 1.15),
+    ("Draisienne_Mat_02", 19.3, -23.6, -48.0, MAT_BIKE_BLUE, "draisienne", 1.15),
+    ("Velo_Mat_03", 20.8, -23.1, -55.0, MAT_BIKE_YELLOW, "velo", 1.15),
+    ("Draisienne_Mat_04", 24.4, -22.2, 138.0, MAT_BIKE_GREEN, "draisienne", 1.15),
+    ("Tricycle_Mat_05", 23.4, -27.8, 25.0, MAT_BIKE_ORANGE, "tricycle", 1.15),
+    ("Draisienne_Mat_06", 17.2, -31.8, -120.0, MAT_BIKE_PURPLE, "draisienne", 1.15),
+    ("Velo_Mat_07", 12.6, -36.2, 68.0, MAT_BIKE_CYAN, "velo", 1.15),
+]
+for v_name, vx, vy, vrot, vmat, vkind, vsc in KIDS_VEHICLES:
+    add_kids_vehicle(v_name, vx, vy, vrot, vmat, kind=vkind, scale=vsc)
+
 # Periscolaire courtyard games
 create_box("Table_PingPong_Plateau", (58.5, -24.5, 0.78), (2.7, 1.5, 0.08), MAT_PINGPONG, "MOBILIER", rot_z_deg=20.7)
 create_box("Table_PingPong_Pied", (58.5, -24.5, 0.40), (1.4, 0.9, 0.72), MAT_METAL_DARK, "MOBILIER", rot_z_deg=20.7)
