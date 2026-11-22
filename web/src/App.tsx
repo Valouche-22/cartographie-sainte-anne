@@ -65,12 +65,29 @@ export const App: React.FC = () => {
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Reveal the "Faire défiler vers le bas" hint 5.5 seconds after the page has finished loading
+  // Context-aware inactivity delay for the "Faire défiler vers le bas" hint:
+  // hides immediately on any page or sub-viewpoint change, then reappears only if the user hasn't scrolled:
+  // - Hero (page 1): 5.5s
+  // - École Sainte-Anne (page 2, longer reading): 10s
+  // - Multi-viewpoint pages (La cour, Les salles de classe): 3s per viewpoint
+  // - All other pages: 5s
   useEffect(() => {
-    if (!modelLoaded || !minLoadDone || loadError) return;
-    const timer = window.setTimeout(() => setShowScrollCue(true), 5500);
+    setShowScrollCue(false);
+    if (!data || !modelLoaded || !minLoadDone || loadError || freeExplore || isCredits) return;
+
+    const currentSceneId = data.scenes[activeSceneIndex]?.id;
+    let delayMs = 5000;
+    if (isHero) {
+      delayMs = 5500;
+    } else if (currentSceneId === 'ecole') {
+      delayMs = 10000;
+    } else if (currentSceneId === 'cour' || currentSceneId === 'classes') {
+      delayMs = 3000;
+    }
+
+    const timer = window.setTimeout(() => setShowScrollCue(true), delayMs);
     return () => window.clearTimeout(timer);
-  }, [modelLoaded, minLoadDone, loadError]);
+  }, [data, modelLoaded, minLoadDone, loadError, freeExplore, isHero, isCredits, activeSceneIndex, courFocus, classBuildingFocus]);
 
   useEffect(() => {
     fetch(`./data/school-data.json?v=${__BUILD_ID__}`)
