@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [selectedRoom, setSelectedRoom] = useState<RoomInfo | null>(null);
   const [cameraPresetTrigger, setCameraPresetTrigger] = useState<{ preset: CameraPreset; seq: number } | null>(null);
   const [classBuildingFocus, setClassBuildingFocus] = useState<'all' | 'S1' | 'N1' | 'E2'>('all');
+  const [courFocus, setCourFocus] = useState<'elementaire' | 'maternelle'>('elementaire');
   const [ecoleCarouselPage, setEcoleCarouselPage] = useState(0);
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' ? window.matchMedia('(max-width: 860px)').matches : false
@@ -140,6 +141,9 @@ export const App: React.FC = () => {
           }
           if (sc.id !== 'classes') {
             setClassBuildingFocus('all');
+          }
+          if (sc.id !== 'cour') {
+            setCourFocus('elementaire');
           }
         }
       }
@@ -478,6 +482,7 @@ export const App: React.FC = () => {
           selectedRoom={selectedRoom}
           cameraPresetTrigger={cameraPresetTrigger}
           classBuildingFocus={classBuildingFocus}
+          courFocus={courFocus}
           onSelectBuilding={handleSelectBuilding}
           onSelectRoom={handleSelectRoom}
           onLoadProgress={() => {}}
@@ -674,6 +679,27 @@ export const App: React.FC = () => {
                       </div>
                     )}
 
+                    {sc.id === 'cour' && (
+                      <div className="building-focus-bar" role="group" aria-label="Vue des cours">
+                        <button
+                          type="button"
+                          className={`cour-focus-btn cour-elem ${courFocus === 'elementaire' ? 'active' : ''}`}
+                          onClick={() => setCourFocus('elementaire')}
+                        >
+                          <span className="cour-dot" style={{ background: '#ef4444' }} />
+                          Cour élémentaire
+                        </button>
+                        <button
+                          type="button"
+                          className={`cour-focus-btn cour-mat ${courFocus === 'maternelle' ? 'active' : ''}`}
+                          onClick={() => setCourFocus('maternelle')}
+                        >
+                          <span className="cour-dot" style={{ background: '#2563eb' }} />
+                          Cour maternelle
+                        </button>
+                      </div>
+                    )}
+
                     {sc.id === 'classes' && (
                       <div className="building-focus-bar" role="group" aria-label="Zoom par bâtiment">
                         {(
@@ -774,6 +800,27 @@ export const App: React.FC = () => {
                       </div>
                     ))}
                   </div>
+
+                  {sc.id === 'cour' && (
+                    <div className="building-focus-bar" role="group" aria-label="Vue des cours">
+                      <button
+                        type="button"
+                        className={`cour-focus-btn cour-elem ${courFocus === 'elementaire' ? 'active' : ''}`}
+                        onClick={() => setCourFocus('elementaire')}
+                      >
+                        <span className="cour-dot" style={{ background: '#ef4444' }} />
+                        Cour élémentaire
+                      </button>
+                      <button
+                        type="button"
+                        className={`cour-focus-btn cour-mat ${courFocus === 'maternelle' ? 'active' : ''}`}
+                        onClick={() => setCourFocus('maternelle')}
+                      >
+                        <span className="cour-dot" style={{ background: '#2563eb' }} />
+                        Cour maternelle
+                      </button>
+                    </div>
+                  )}
 
                   {sc.id === 'classes' && (
                     <div className="building-focus-bar" role="group" aria-label="Zoom par bâtiment">

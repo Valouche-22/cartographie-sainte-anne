@@ -16,6 +16,7 @@ interface Props {
   selectedRoom: RoomInfo | null;
   cameraPresetTrigger: { preset: CameraPreset; seq: number } | null;
   classBuildingFocus?: 'all' | 'S1' | 'N1' | 'E2';
+  courFocus?: 'elementaire' | 'maternelle';
   onSelectBuilding: (b: BuildingInfo) => void;
   onSelectRoom: (r: RoomInfo) => void;
   onLoadProgress: (pct: number) => void;
@@ -256,6 +257,7 @@ const MOBILE_SCENE_MULTS: Record<string, number> = {
   hero: 1.0,
   ecole: 0.95,
   cour: 1.0,
+  'cour-maternelle': 0.95,
   classes: 0.96,
   'cantine-periscolaire': 0.98,
   eglise: 0.76,
@@ -335,6 +337,115 @@ const CLASS_FOCUS_VIEWS: Record<'S1' | 'N1' | 'E2', { pos: [number, number, numb
   },
 };
 
+const COUR_MATERNELLE_VIEW: { pos: [number, number, number]; target: [number, number, number] } = {
+  pos: [-12, 54, 68],
+  target: [16, 0, 28],
+};
+
+// Exact 3D ground polygons in Three.js (x, z) matching user's red (élémentaire) & blue (maternelle) courtyard zones
+const COUR_ELEMENTAIRE_POLY: [number, number][] = [
+  [-22.8, -27.5],
+  [5.2, -36.8],
+  [11.0, -23.5],
+  [17.8, -18.5],
+  [13.4, -12.4],
+  [1.7, -8.1],
+  [2.4, -6.5],
+  [-8.9, -2.3],
+  [-3.6, 12.4],
+  [-4.2, 13.2],
+  [-34.8, 28.5],
+  [-35.8, 31.0],
+  [-42.5, 24.5],
+  [-47.2, 20.0],
+  [-47.2, 16.5],
+  [-34.0, 5.0],
+  [-32.5, -11.5],
+  [-22.5, -16.5],
+];
+
+const COUR_MATERNELLE_POLY: [number, number][] = [
+  [23.3, 12.6],
+  [27.1, 11.2],
+  [28.1, 13.6],
+  [28.6, 15.9],
+  [31.8, 24.5],
+  [34.6, 32.0],
+  [-1.8, 44.6],
+  [-2.6, 40.2],
+  [0.6, 39.0],
+  [-0.5, 36.2],
+  [2.3, 35.1],
+  [1.2, 31.7],
+  [4.6, 30.4],
+  [10.7, 27.9],
+  [8.5, 22.4],
+  [13.3, 20.6],
+  [13.9, 22.3],
+  [21.4, 19.5],
+  [19.3, 13.8],
+  [22.7, 12.5],
+];
+
+function createCourZoneOverlay(pts: [number, number][], colorHex: string, ribbonWidth = 0.65) {
+  const group = new THREE.Group();
+  // Translucent ground fill on XZ plane (shape uses x, -z then rotateX(-PI/2) -> (x, 0, z))
+  const shape = new THREE.Shape();
+  pts.forEach(([x, z], idx) => {
+    if (idx === 0) shape.moveTo(x, -z);
+    else shape.lineTo(x, -z);
+  });
+  shape.closePath();
+
+  const fillGeo = new THREE.ShapeGeometry(shape);
+  fillGeo.rotateX(-Math.PI / 2);
+  const fillMat = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(colorHex),
+    transparent: true,
+    opacity: 0.16,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+  const fillMesh = new THREE.Mesh(fillGeo, fillMat);
+  fillMesh.position.y = 0.14;
+  fillMesh.renderOrder = 2;
+  group.add(fillMesh);
+
+  // Crisp flat perimeter ribbon (thick visible border on all WebGL drivers)
+  const positions: number[] = [];
+  const halfW = ribbonWidth * 0.5;
+  const n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const [x1, z1] = pts[i];
+    const [x2, z2] = pts[(i + 1) % n];
+    const dx = x2 - x1;
+    const dz = z2 - z1;
+    const len = Math.hypot(dx, dz) || 1;
+    const nx = (-dz / len) * halfW;
+    const nz = (dx / len) * halfW;
+    const ax = x1 + nx, az = z1 + nz;
+    const bx = x1 - nx, bz = z1 - nz;
+    const cx = x2 - nx, cz = z2 - nz;
+    const dxp = x2 + nx, dzp = z2 + nz;
+    positions.push(ax, 0.18, az, bx, 0.18, bz, cx, 0.18, cz);
+    positions.push(ax, 0.18, az, cx, 0.18, cz, dxp, 0.18, dzp);
+  }
+  const borderGeo = new THREE.BufferGeometry();
+  borderGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  const borderMat = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(colorHex),
+    transparent: true,
+    opacity: 0.9,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+  const borderMesh = new THREE.Mesh(borderGeo, borderMat);
+  borderMesh.renderOrder = 3;
+  group.add(borderMesh);
+
+  return { group, fillMat, borderMat };
+}
+
 export const SchoolScene3D: React.FC<Props> = ({
   data,
   isHero,
@@ -346,6 +457,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   selectedRoom,
   cameraPresetTrigger,
   classBuildingFocus = 'all',
+  courFocus = 'elementaire',
   onSelectBuilding,
   onSelectRoom,
   onLoadProgress,
@@ -357,6 +469,13 @@ export const SchoolScene3D: React.FC<Props> = ({
   const controlsRef = useRef<OrbitControls | null>(null);
   const classroomRoofsRef = useRef<THREE.Object3D[]>([]);
   const roomMeshesRef = useRef<Map<string, THREE.Mesh>>(new Map());
+  const courOverlaysRef = useRef<{
+    root: THREE.Group;
+    elemFill: THREE.MeshBasicMaterial;
+    elemBorder: THREE.MeshBasicMaterial;
+    matFill: THREE.MeshBasicMaterial;
+    matBorder: THREE.MeshBasicMaterial;
+  } | null>(null);
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
 
   // Animated base camera pose (separated from gentle orbital sway to prevent any stutter or jump)
@@ -372,12 +491,14 @@ export const SchoolScene3D: React.FC<Props> = ({
   const isHeroRef = useRef(isHero);
   const activeSceneIndexRef = useRef(activeSceneIndex);
   const classBuildingFocusRef = useRef(classBuildingFocus);
+  const courFocusRef = useRef(courFocus);
   showLabelsRef.current = showLabels;
   hideRoofsRef.current = hideRoofs;
   freeExploreRef.current = freeExplore;
   isHeroRef.current = isHero;
   activeSceneIndexRef.current = activeSceneIndex;
   classBuildingFocusRef.current = classBuildingFocus;
+  courFocusRef.current = courFocus;
 
   const animateGuidedCamera = (
     pos: [number, number, number],
@@ -510,6 +631,22 @@ export const SchoolScene3D: React.FC<Props> = ({
     sun.shadow.normalBias = 0.08;
     scene.add(sun);
 
+    // Courtyard zone overlays (red = élémentaire, blue = maternelle), visible only on the "La cour" step
+    const courRoot = new THREE.Group();
+    courRoot.visible = false;
+    const elemOv = createCourZoneOverlay(COUR_ELEMENTAIRE_POLY, '#ef4444', 0.65);
+    const matOv = createCourZoneOverlay(COUR_MATERNELLE_POLY, '#2563eb', 0.65);
+    courRoot.add(elemOv.group);
+    courRoot.add(matOv.group);
+    scene.add(courRoot);
+    courOverlaysRef.current = {
+      root: courRoot,
+      elemFill: elemOv.fillMat,
+      elemBorder: elemOv.borderMat,
+      matFill: matOv.fillMat,
+      matBorder: matOv.borderMat,
+    };
+
     const loader = new GLTFLoader();
     loader.load(
       `./models/ecole_sainte_anne.glb?v=${__BUILD_ID__}`,
@@ -635,9 +772,18 @@ export const SchoolScene3D: React.FC<Props> = ({
           const sc = data.scenes[activeSceneIndexRef.current];
           if (sc) {
             const fm = sc.id === 'classes' ? classBuildingFocusRef.current : 'all';
-            const rawPos = fm !== 'all' ? CLASS_FOCUS_VIEWS[fm].pos : sc.camera.pos;
-            const rawTgt = fm !== 'all' ? CLASS_FOCUS_VIEWS[fm].target : sc.camera.target;
-            const key = fm !== 'all' ? fm : sc.id;
+            const isMatCour = sc.id === 'cour' && courFocusRef.current === 'maternelle';
+            const rawPos = isMatCour
+              ? COUR_MATERNELLE_VIEW.pos
+              : fm !== 'all'
+              ? CLASS_FOCUS_VIEWS[fm].pos
+              : sc.camera.pos;
+            const rawTgt = isMatCour
+              ? COUR_MATERNELLE_VIEW.target
+              : fm !== 'all'
+              ? CLASS_FOCUS_VIEWS[fm].target
+              : sc.camera.target;
+            const key = isMatCour ? 'cour-maternelle' : fm !== 'all' ? fm : sc.id;
             const p = adaptPoseForMobile(rawPos, rawTgt, key, w, h);
             basePosRef.current = { x: p.pos[0], y: p.pos[1], z: p.pos[2] };
             baseTargetRef.current = { x: p.target[0], y: p.target[1], z: p.target[2] };
@@ -730,6 +876,7 @@ export const SchoolScene3D: React.FC<Props> = ({
             ? ['Batiment_Principal_S1', 'Batiment_Nord_N1', 'Batiment_Est_E2', 'Batiment_Sud_Maternelle_S2']
             : focusIds;
 
+          const isCourStep = !freeExploreRef.current && !isHeroRef.current && activeScene?.id === 'cour';
           const items = hideRoofsRef.current && !mobileClassesOverview
             ? data.rooms
                 .filter((r) => !allowedBuildings || allowedBuildings.includes(r.building))
@@ -742,17 +889,41 @@ export const SchoolScene3D: React.FC<Props> = ({
                   offsetOutside: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Nord_N1',
                   offsetAbove: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Est_E2',
                 }))
-            : data.buildings
-                .filter((b) => !effectiveFocusIds || effectiveFocusIds.includes(b.id))
-                .map((b) => ({
-                  id: b.id,
-                  label: b.name,
-                  color: b.color,
-                  pos: [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]] as [number, number, number],
-                  kind: 'building' as const,
-                  offsetOutside: false,
-                  offsetAbove: false,
-                }));
+            : [
+                ...data.buildings
+                  .filter((b) => !effectiveFocusIds || effectiveFocusIds.includes(b.id))
+                  .map((b) => ({
+                    id: b.id,
+                    label: b.name,
+                    color: b.color,
+                    pos: [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]] as [number, number, number],
+                    kind: 'building' as const,
+                    offsetOutside: false,
+                    offsetAbove: false,
+                  })),
+                ...(isCourStep
+                  ? [
+                      {
+                        id: 'Zone_Cour_Elementaire',
+                        label: 'Cour élémentaire',
+                        color: '#ef4444',
+                        pos: [-16.5, 1.8, 4.5] as [number, number, number],
+                        kind: 'building' as const,
+                        offsetOutside: false,
+                        offsetAbove: false,
+                      },
+                      {
+                        id: 'Zone_Cour_Maternelle',
+                        label: 'Cour maternelle',
+                        color: '#2563eb',
+                        pos: [16.5, 1.8, 29.0] as [number, number, number],
+                        kind: 'building' as const,
+                        offsetOutside: false,
+                        offsetAbove: false,
+                      },
+                    ]
+                  : []),
+              ];
 
           const next: ProjectedLabel[] = [];
           for (const it of items) {
@@ -862,12 +1033,30 @@ export const SchoolScene3D: React.FC<Props> = ({
         const sub = CLASS_FOCUS_VIEWS[classBuildingFocus];
         const p = adaptPoseForMobile(sub.pos, sub.target, classBuildingFocus, w, h);
         animateGuidedCamera(p.pos, p.target, 1.05);
+      } else if (sc.id === 'cour' && courFocus === 'maternelle') {
+        const p = adaptPoseForMobile(COUR_MATERNELLE_VIEW.pos, COUR_MATERNELLE_VIEW.target, 'cour-maternelle', w, h);
+        animateGuidedCamera(p.pos, p.target, 1.15);
       } else {
         const p = adaptPoseForMobile(sc.camera.pos, sc.camera.target, sc.id, w, h);
         animateGuidedCamera(p.pos, p.target, 1.35);
       }
     }
-  }, [isHero, activeSceneIndex, freeExplore, classBuildingFocus, data]);
+  }, [isHero, activeSceneIndex, freeExplore, classBuildingFocus, courFocus, data]);
+
+  // Toggle & highlight red (élémentaire) and blue (maternelle) courtyard overlays on the "La cour" step
+  useEffect(() => {
+    const ov = courOverlaysRef.current;
+    if (!ov) return;
+    const sc = data.scenes[activeSceneIndex];
+    const show = !freeExplore && !isHero && sc?.id === 'cour';
+    ov.root.visible = show;
+    if (!show) return;
+    const isMat = courFocus === 'maternelle';
+    ov.elemFill.opacity = isMat ? 0.08 : 0.2;
+    ov.elemBorder.opacity = isMat ? 0.45 : 0.92;
+    ov.matFill.opacity = isMat ? 0.22 : 0.08;
+    ov.matBorder.opacity = isMat ? 0.94 : 0.48;
+  }, [isHero, activeSceneIndex, freeExplore, courFocus, data]);
 
   useEffect(() => {
     for (const r of classroomRoofsRef.current) {
