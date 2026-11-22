@@ -1568,28 +1568,53 @@ body {
     margin-top: calc(12px * var(--mfit));
   }
 
-  .mobile-reel-body .cour-sections {
-    --cour-gap: calc(6px * var(--mfit));
-  }
-
-  .mobile-reel-body .cour-section {
-    padding: calc(9px * var(--mfit)) calc(12px * var(--mfit));
-    gap: calc(4px * var(--mfit));
-  }
-
-  .mobile-reel-body .cour-section-heading {
-    font-size: calc(0.78rem * var(--mfit));
-  }
-
-  .mobile-reel-body .cour-plain-list {
+  .mobile-cour-switch {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: calc(3px * var(--mfit)) calc(10px * var(--mfit));
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 3px;
+    margin-bottom: calc(10px * var(--mfit));
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.05);
+    border: 1px solid rgba(226, 232, 240, 0.9);
   }
 
-  .mobile-reel-body .cour-plain-list li {
-    font-size: calc(0.76rem * var(--mfit));
-    line-height: 1.24;
+  .mobile-cour-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: var(--ink-muted);
+    font-family: inherit;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .mobile-cour-tab.active {
+    background: #ffffff;
+    color: var(--ink);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  }
+
+  .mobile-cour-list {
+    animation: mobileCourFade 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes mobileCourFade {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .mobile-reel-body .building-focus-btn {
