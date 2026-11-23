@@ -216,6 +216,14 @@ function resolveMobileLabelOverlaps(
   return items;
 }
 
+const BUILDING_VIEW_ROOM_STAFF: Record<string, string> = {
+  Classe_TPS_PS_MS: 'PE + ASEM',
+  Classe_PS_MS: 'PE + ASEM',
+  Classe_GS: 'PE + ASEM',
+  Classe_CM2: 'PE + AESH',
+  Classe_CE2_CM1: 'PE + AESH',
+};
+
 const CLASSROOM_ROOF_PREFIXES = [
   'Toit_Batiment_Principal_S1',
   'Toit_Batiment_Sud_Maternelle_S2',
@@ -918,15 +926,18 @@ export const SchoolScene3D: React.FC<Props> = ({
           const items = hideRoofsRef.current && !mobileClassesOverview
             ? data.rooms
                 .filter((r) => !allowedBuildings || allowedBuildings.includes(r.building))
-                .map((r) => ({
-                  id: r.id,
-                  label: r.name,
-                  color: r.color,
-                  pos: r.position,
-                  kind: 'room' as const,
-                  offsetOutside: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Nord_N1',
-                  offsetAbove: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Est_E2',
-                }))
+                .map((r) => {
+                  const staff = focusMode !== 'all' ? BUILDING_VIEW_ROOM_STAFF[r.id] : undefined;
+                  return {
+                    id: r.id,
+                    label: staff ? `${r.name} (${staff})` : r.name,
+                    color: r.color,
+                    pos: r.position,
+                    kind: 'room' as const,
+                    offsetOutside: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Nord_N1',
+                    offsetAbove: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Est_E2',
+                  };
+                })
             : [
                 ...data.buildings
                   .filter(
