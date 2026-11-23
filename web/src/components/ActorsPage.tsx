@@ -12,7 +12,7 @@ const ACTORS = [
   {
     title: 'La directrice',
     description:
-      "La directrice partage son temps entre la direction de l'école et une classe de CE2-CM1. Elle enseigne à mi-temps et consacre l'autre moitié de son temps à la direction : organisation de l'école, suivi des élèves, échanges avec les familles et coordination avec l'équipe enseignante.",
+      "La directrice partage son temps entre la direction de l'école et une classe de CE2-CM1. Elle enseigne à mi-temps et consacre l'autre moitié de son temps à la direction : organisation de l'école, suivi des élèves, échanges avec les familles et coordination avec l'équipe enseignante. Elle est également directrice de l'OGEC.",
   },
   {
     title: 'Les enseignants',
@@ -27,7 +27,7 @@ const ACTORS = [
   {
     title: 'Les ASEM',
     description:
-      "Les ASEM travaillent auprès des plus petits, principalement en maternelle. Elles aident les enfants à s'habiller, à aller aux toilettes et à gagner en autonomie dans les gestes du quotidien. Elles participent aussi aux activités en classe, préparent le matériel et accompagnent les enseignants tout au long de la journée.",
+      "Les ASEM travaillent auprès des plus petits, principalement en maternelle. Elles aident les enfants à s'habiller, à aller aux toilettes et à gagner en autonomie dans les gestes du quotidien. Elles participent aussi aux activités en classe, préparent le matériel et accompagnent les enseignants tout au long de la journée. Elles sont toutes salariées de l'OGEC.",
   },
   {
     title: "L'APEL",
