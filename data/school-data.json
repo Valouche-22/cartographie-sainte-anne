@@ -685,16 +685,16 @@
       "title": "Église Saint-Pierre",
       "rows": [
         {
-          "value": "Lien avec la paroisse de Pordic : 3 intervenants extérieurs (catéchèse) et le curé"
+          "label": "Culture religieuse (obligatoire)",
+          "value": "1 h le lundi matin pour l'ensemble des élèves"
         },
         {
-          "value": "1 h d'enseignement religieux le lundi matin"
+          "label": "Chœur d'école (obligatoire)",
+          "value": "Chansons en tout genre apprises au cours de l'année et chantées dans l'église en fin d'année"
         },
         {
-          "value": "Messes de Noël et de Pâques"
-        },
-        {
-          "value": "Uniquement pour les élèves volontaires"
+          "label": "Catéchèse et messes (facultatif)",
+          "value": "Lien avec la paroisse de Pordic (3 intervenants extérieurs et le curé) et messes de Noël et de Pâques, uniquement pour les élèves volontaires"
         }
       ],
       "camera": {
