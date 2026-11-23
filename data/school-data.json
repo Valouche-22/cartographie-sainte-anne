@@ -565,6 +565,26 @@
       "swayAmp": 0.105
     },
     {
+      "id": "acteurs",
+      "title": "Les acteurs de l'école",
+      "rows": [],
+      "camera": {
+        "pos": [
+          -82,
+          46,
+          76
+        ],
+        "target": [
+          10,
+          2,
+          4
+        ]
+      },
+      "hideRoofs": false,
+      "showLabels": false,
+      "swayAmp": 0.06
+    },
+    {
       "id": "cour",
       "title": "La cour",
       "rows": [
