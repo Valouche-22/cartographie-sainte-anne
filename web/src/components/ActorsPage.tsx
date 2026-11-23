@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Baby,
-  BookOpen,
-  Briefcase,
-  Building2,
-  ChevronDown,
-  ChevronUp,
-  HeartHandshake,
-  Users,
-} from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ActorsPageProps {
   stepNumber: number;
@@ -20,45 +11,33 @@ interface ActorsPageProps {
 const ACTORS = [
   {
     title: 'La directrice',
-    role: 'Direction et organisation',
-    icon: Briefcase,
     description:
-      "Elle dirige l'établissement, veille au bon fonctionnement de l'école et coordonne l'équipe au quotidien. À l'école Sainte-Anne, elle est également enseignante à mi-temps et assure le lien avec les familles, la tutelle et la commune.",
+      "La directrice partage son temps entre la direction de l'école et une classe de CE2-CM1. Elle enseigne à mi-temps et consacre l'autre moitié de son temps à la direction : organisation de l'école, suivi des élèves, échanges avec les familles et coordination avec l'équipe enseignante.",
   },
   {
     title: 'Les enseignants',
-    role: '11 professeurs des écoles',
-    icon: BookOpen,
     description:
-      'Ils préparent et conduisent les apprentissages de la toute petite section au CM2 selon les programmes officiels. Ils suivent les progrès de chaque élève, adaptent leurs séances et échangent régulièrement avec les parents.',
+      "Les 11 enseignants se répartissent entre les classes, de la maternelle au CM2. Ils font découvrir de nouvelles notions, préparent les activités et accompagnent les élèves tout au long de l'année. Ils suivent les progrès de chacun et échangent régulièrement avec les familles.",
   },
   {
     title: 'Les AESH',
-    role: 'Accompagnement individuel',
-    icon: HeartHandshake,
     description:
-      "Les accompagnants d'élèves en situation de handicap interviennent en classe auprès d'élèves à besoins particuliers. Ils les aident à suivre les activités et à gagner en autonomie, en lien avec l'enseignant (2 AESH pour 3 élèves).",
+      "Les AESH accompagnent les élèves qui ont besoin d'une aide particulière pour suivre leur scolarité. Elles les aident à comprendre les consignes, à participer aux activités de la classe et à gagner en autonomie, tout en s'adaptant à leurs besoins.",
   },
   {
     title: 'Les ASEM',
-    role: 'Agents spécialisés en maternelle',
-    icon: Baby,
     description:
-      "Dans l'enseignement privé, les ASEM travaillent en binôme avec les enseignants de maternelle. Elles accompagnent les plus jeunes dans les gestes du quotidien (habillage, toilettes, sieste), préparent le matériel des ateliers et entretiennent les salles.",
+      "Les ASEM travaillent auprès des plus petits, principalement en maternelle. Elles aident les enfants à s'habiller, à aller aux toilettes et à gagner en autonomie dans les gestes du quotidien. Elles participent aussi aux activités en classe, préparent le matériel et accompagnent les enseignants tout au long de la journée.",
   },
   {
     title: "L'APEL",
-    role: "Association des parents d'élèves",
-    icon: Users,
     description:
-      "Association de parents bénévoles qui représente les familles et anime la vie de l'école. Elle organise des événements et des actions au fil de l'année pour financer les sorties scolaires, les spectacles et du matériel pédagogique.",
+      "L'APEL rassemble les parents qui souhaitent s'investir dans la vie de l'école. Ils organisent des événements, des ventes, comme la vente de sapins de Noël, et des moments conviviaux tout au long de l'année. L'argent récolté permet de financer des sorties, des activités et du matériel pour les élèves.",
   },
   {
     title: "L'OGEC",
-    role: 'Organisme de gestion',
-    icon: Building2,
     description:
-      "Association bénévole chargée de la gestion financière, matérielle et immobilière de l'établissement. Elle gère le budget, veille à l'entretien des bâtiments et emploie les personnels non enseignants, notamment les ASEM.",
+      "L'OGEC s'occupe de tout ce qui permet à l'école de fonctionner en dehors de la classe. Il gère le budget, les bâtiments, leur entretien et le personnel non enseignant. C'est notamment grâce à lui que les locaux sont entretenus et que l'école dispose des moyens matériels nécessaires à son fonctionnement.",
   },
 ];
 
@@ -68,7 +47,7 @@ export const ActorsPage: React.FC<ActorsPageProps> = ({ stepNumber, totalSteps, 
       <header className="actors-header">
         <div>
           <h2 className="actors-title">Les acteurs de l'école</h2>
-          <p className="actors-subtitle">Les différents rôles au sein de l'école Sainte-Anne de Pordic</p>
+          <p className="actors-subtitle">École Sainte-Anne de Pordic</p>
         </div>
         <span className="col-step-badge actors-step-badge">
           {stepNumber} / {totalSteps}
@@ -76,23 +55,12 @@ export const ActorsPage: React.FC<ActorsPageProps> = ({ stepNumber, totalSteps, 
       </header>
 
       <div className="actors-grid">
-        {ACTORS.map((actor) => {
-          const Icon = actor.icon;
-          return (
-            <article className="actor-card" key={actor.title}>
-              <div className="actor-card-top">
-                <div className="actor-icon-wrap" aria-hidden="true">
-                  <Icon size={18} strokeWidth={1.75} />
-                </div>
-                <div className="actor-heading">
-                  <h3 className="actor-name">{actor.title}</h3>
-                  <span className="actor-role">{actor.role}</span>
-                </div>
-              </div>
-              <p className="actor-desc">{actor.description}</p>
-            </article>
-          );
-        })}
+        {ACTORS.map((actor) => (
+          <article className="actor-entry" key={actor.title}>
+            <h3 className="actor-name">{actor.title}</h3>
+            <p className="actor-desc">{actor.description}</p>
+          </article>
+        ))}
       </div>
 
       <footer className="actors-footer">
