@@ -365,7 +365,7 @@ interface HeroReelShot {
   mobileKey: string;
 }
 
-// Forza Horizon-style showcase reel for the Hero opening screen ONLY (varied pacing, smooth continuous travellings)
+// Forza Horizon-style showcase reel for the Hero opening screen ONLY (calm continuous travellings + direct cross-dissolve)
 const HERO_REEL_SHOTS: HeroReelShot[] = [
   // 1. Plan iconique d'ouverture — École Sainte-Anne
   {
@@ -373,7 +373,7 @@ const HERO_REEL_SHOTS: HeroReelShot[] = [
     toPos: [-44, 42, 96],
     fromTarget: [10, 0, 8],
     toTarget: [14, 0, 10],
-    duration: 7.5,
+    duration: 10.5,
     mobileKey: 'hero',
   },
   // 2. Survol bas de la cour et des bâtiments de l'école
@@ -382,7 +382,7 @@ const HERO_REEL_SHOTS: HeroReelShot[] = [
     toPos: [-30, 34, -22],
     fromTarget: [12, 2, 10],
     toTarget: [16, 2, 2],
-    duration: 6.0,
+    duration: 8.8,
     mobileKey: 'cour',
   },
   // 3. Église Saint-Pierre de Pordic — travelling autour du clocher
@@ -391,7 +391,7 @@ const HERO_REEL_SHOTS: HeroReelShot[] = [
     toPos: [-224, 52, -32],
     fromTarget: [-144, 18, -64],
     toTarget: [-144, 22, -64],
-    duration: 5.5,
+    duration: 8.0,
     mobileKey: 'eglise',
   },
   // 4. École Sainte-Anne côté Cantine, Périscolaire et Cour maternelle
@@ -400,7 +400,7 @@ const HERO_REEL_SHOTS: HeroReelShot[] = [
     toPos: [76, 42, 26],
     fromTarget: [22, 2, 16],
     toTarget: [14, 2, 8],
-    duration: 6.2,
+    duration: 9.2,
     mobileKey: 'cantine-periscolaire',
   },
   // 5. Médiathèque de l'Ic, parc et centre culturel La Ville Robert
@@ -409,7 +409,7 @@ const HERO_REEL_SHOTS: HeroReelShot[] = [
     toPos: [-176, 54, -92],
     fromTarget: [-198, 2, -192],
     toTarget: [-190, 2, -196],
-    duration: 5.8,
+    duration: 8.5,
     mobileKey: 'culture',
   },
   // 6. Complexe sportif Louis Auffray — vue panoramique
@@ -418,7 +418,7 @@ const HERO_REEL_SHOTS: HeroReelShot[] = [
     toPos: [178, 78, 144],
     fromTarget: [358, 0, 122],
     toTarget: [356, 0, 114],
-    duration: 5.2,
+    duration: 7.8,
     mobileKey: 'sport',
   },
   // 7. Vue aérienne sur l'ensemble de l'école et le bourg de Pordic
@@ -427,7 +427,7 @@ const HERO_REEL_SHOTS: HeroReelShot[] = [
     toPos: [-92, 58, -8],
     fromTarget: [14, 0, 6],
     toTarget: [12, 0, 8],
-    duration: 6.6,
+    duration: 9.6,
     mobileKey: 'ecole',
   },
 ];
@@ -583,11 +583,11 @@ export const SchoolScene3D: React.FC<Props> = ({
   const classroomRoofsRef = useRef<THREE.Object3D[]>([]);
   const roomMeshesRef = useRef<Map<string, THREE.Mesh>>(new Map());
   const churchCrossTopRef = useRef<[number, number, number] | null>(null);
-  const heroFadeRef = useRef<HTMLDivElement | null>(null);
+  const heroDissolveRef = useRef<HTMLCanvasElement | null>(null);
   const heroReelRef = useRef({
     shotIdx: 0,
     elapsed: 0,
-    firstShot: true,
+    dissolve: 0,
     returnDelay: 0,
     wasHero: true,
   });
@@ -939,14 +939,30 @@ export const SchoolScene3D: React.FC<Props> = ({
 
       if (!freeExploreRef.current) {
         if (isHeroRef.current && heroReelRef.current.returnDelay <= 0) {
-          // Forza Horizon-style showcase reel on the Hero opening screen ONLY
+          // Forza Horizon-style showcase reel on the Hero opening screen ONLY (direct frame cross-dissolve, zero white flash)
           const reel = heroReelRef.current;
           reel.elapsed += dt;
           let shot = HERO_REEL_SHOTS[reel.shotIdx];
           if (reel.elapsed >= shot.duration) {
+            // Snapshot the outgoing 3D frame synchronously right before switching shots
+            const disCanvas = heroDissolveRef.current;
+            if (disCanvas && renderer.domElement.width > 0 && renderer.domElement.height > 0) {
+              renderer.render(scene, camera);
+              if (
+                disCanvas.width !== renderer.domElement.width ||
+                disCanvas.height !== renderer.domElement.height
+              ) {
+                disCanvas.width = renderer.domElement.width;
+                disCanvas.height = renderer.domElement.height;
+              }
+              const ctx = disCanvas.getContext('2d');
+              if (ctx) {
+                ctx.drawImage(renderer.domElement, 0, 0);
+                reel.dissolve = 1;
+              }
+            }
             reel.elapsed = 0;
             reel.shotIdx = (reel.shotIdx + 1) % HERO_REEL_SHOTS.length;
-            reel.firstShot = false;
             shot = HERO_REEL_SHOTS[reel.shotIdx];
           }
 
@@ -978,25 +994,24 @@ export const SchoolScene3D: React.FC<Props> = ({
           }
           camera.lookAt(tx, ty, tz);
 
-          // Soft daylight cross-dissolve veil between shots (zero flash on initial entry)
-          if (heroFadeRef.current) {
-            const fadeOutDur = 0.44;
-            const fadeInDur = 0.56;
-            const fadeOut =
-              reel.elapsed > shot.duration - fadeOutDur
-                ? (reel.elapsed - (shot.duration - fadeOutDur)) / fadeOutDur
-                : 0;
-            const fadeIn = !reel.firstShot && reel.elapsed < fadeInDur ? 1 - reel.elapsed / fadeInDur : 0;
-            const rawAlpha = Math.max(0, Math.min(1, Math.max(fadeOut, fadeIn)));
-            const easedAlpha = rawAlpha * rawAlpha * (3 - 2 * rawAlpha) * 0.92;
-            heroFadeRef.current.style.opacity = easedAlpha > 0.004 ? easedAlpha.toFixed(3) : '0';
+          // Smooth direct cross-dissolve from previous shot straight into the new shot
+          if (heroDissolveRef.current) {
+            if (reel.dissolve > 0) {
+              reel.dissolve = Math.max(0, reel.dissolve - dt / 0.95);
+              const d = reel.dissolve;
+              const eased = d * d * (3 - 2 * d);
+              heroDissolveRef.current.style.opacity = eased > 0.004 ? eased.toFixed(3) : '0';
+            } else if (heroDissolveRef.current.style.opacity !== '0') {
+              heroDissolveRef.current.style.opacity = '0';
+            }
           }
         } else {
           if (heroReelRef.current.returnDelay > 0) {
             heroReelRef.current.returnDelay = Math.max(0, heroReelRef.current.returnDelay - dt);
           }
-          if (heroFadeRef.current && heroFadeRef.current.style.opacity !== '0') {
-            heroFadeRef.current.style.opacity = '0';
+          if (heroDissolveRef.current && heroDissolveRef.current.style.opacity !== '0') {
+            heroReelRef.current.dissolve = 0;
+            heroDissolveRef.current.style.opacity = '0';
           }
 
           swayPhase += dt * 0.28;
@@ -1031,8 +1046,9 @@ export const SchoolScene3D: React.FC<Props> = ({
           camera.lookAt(tx, ty, tz);
         }
       } else {
-        if (heroFadeRef.current && heroFadeRef.current.style.opacity !== '0') {
-          heroFadeRef.current.style.opacity = '0';
+        if (heroDissolveRef.current && heroDissolveRef.current.style.opacity !== '0') {
+          heroReelRef.current.dissolve = 0;
+          heroDissolveRef.current.style.opacity = '0';
         }
         if (camera.view && camera.view.enabled) {
           camera.clearViewOffset();
@@ -1276,7 +1292,7 @@ export const SchoolScene3D: React.FC<Props> = ({
       if (!heroReelRef.current.wasHero) {
         heroReelRef.current.shotIdx = 0;
         heroReelRef.current.elapsed = 0;
-        heroReelRef.current.firstShot = true;
+        heroReelRef.current.dissolve = 0;
         heroReelRef.current.returnDelay = 1.25;
         animateGuidedCamera(p.pos, p.target, 1.25);
       }
@@ -1359,7 +1375,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   return (
     <div className="viewport-frame">
       <div className={`canvas-container ${freeExplore ? 'interactive' : 'scroll-locked'}`} ref={mountRef} />
-      <div className="hero-reel-fade" ref={heroFadeRef} aria-hidden="true" />
+      <canvas className="hero-reel-dissolve" ref={heroDissolveRef} aria-hidden="true" />
       {showLabels && !(isHero && !freeExplore) && (
         <div className="labels-layer">
           <svg className="labels-lines" aria-hidden="true">
