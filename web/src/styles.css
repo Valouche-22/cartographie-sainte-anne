@@ -28,6 +28,16 @@
   --accent-glow: rgba(239, 68, 68, 0.22);
 }
 
+[data-active-scene='acteurs'],
+[data-scene='acteurs'] {
+  --accent: #f95b3c;
+  --accent-text: #ea580c;
+  --accent-hover: #ea580c;
+  --accent-soft: #fff5f2;
+  --accent-border: #fed7ca;
+  --accent-glow: rgba(249, 91, 60, 0.22);
+}
+
 [data-active-scene='cour'],
 [data-scene='cour'] {
   --accent: #f97316;
@@ -1049,6 +1059,172 @@ body {
   }
 }
 
+/* Dedicated Actors of the School Page (minimalist editorial DA matching CreditsPage) */
+.actors-page {
+  position: relative;
+  z-index: 30;
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 44px 40px 36px;
+}
+
+.actors-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--rainbow);
+}
+
+.actors-inner {
+  width: 100%;
+  max-width: 1060px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.actors-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.actors-title {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  line-height: 1.15;
+}
+
+.actors-subtitle {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+
+.actors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.actor-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 20px 18px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.actor-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.actor-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.actor-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.actor-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.actor-name {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.actor-role {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  line-height: 1.25;
+}
+
+.actor-desc {
+  font-size: 0.84rem;
+  line-height: 1.56;
+  color: var(--ink-soft);
+}
+
+.actors-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 6px;
+}
+
+@media (min-width: 861px) and (max-height: 860px) {
+  .actors-page {
+    padding: 24px 32px 20px;
+  }
+
+  .actors-inner {
+    gap: 16px;
+  }
+
+  .actors-header {
+    padding-bottom: 10px;
+  }
+
+  .actors-grid {
+    gap: 12px;
+  }
+
+  .actor-card {
+    padding: 14px 16px;
+    gap: 9px;
+  }
+
+  .actor-icon-wrap {
+    width: 32px;
+    height: 32px;
+  }
+
+  .actor-desc {
+    font-size: 0.8rem;
+    line-height: 1.46;
+  }
+}
+
 /* Dedicated Credits & Mentions légales Page (clean editorial DA, zero AI clichés) */
 .credits-page {
   position: relative;
@@ -1815,6 +1991,60 @@ body {
     max-height: 36dvh;
     overflow-y: auto;
     padding: 13px 15px;
+  }
+
+  /* Mobile Actors slide */
+  .mobile-reel-actors {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .mobile-actors-scroll {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    padding: calc(58px + env(safe-area-inset-top)) 16px calc(26px + env(safe-area-inset-bottom));
+  }
+
+  .mobile-actors-scroll .actors-inner {
+    gap: 14px;
+  }
+
+  .mobile-actors-scroll .actors-header {
+    padding-bottom: 10px;
+  }
+
+  .mobile-actors-scroll .actors-step-badge {
+    display: none;
+  }
+
+  .mobile-actors-scroll .actors-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .mobile-actors-scroll .actor-card {
+    padding: 13px 14px;
+    gap: 8px;
+  }
+
+  .mobile-actors-scroll .actor-icon-wrap {
+    width: 32px;
+    height: 32px;
+  }
+
+  .mobile-actors-scroll .actor-name {
+    font-size: 0.9rem;
+  }
+
+  .mobile-actors-scroll .actor-desc {
+    font-size: 0.8rem;
+    line-height: 1.48;
+  }
+
+  .mobile-actors-scroll .actors-footer {
+    padding-top: 4px;
   }
 
   /* Mobile Credits & Legal Notice slide */

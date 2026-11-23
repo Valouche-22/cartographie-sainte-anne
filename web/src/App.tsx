@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowDown, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, X } from 'lucide-react';
 import { SchoolScene3D } from './components/SchoolScene3D';
+import { ActorsPage } from './components/ActorsPage';
 import { CreditsPage } from './components/CreditsPage';
 import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from './types';
 
@@ -393,8 +394,9 @@ export const App: React.FC = () => {
       );
     }
 
-    const chapterEls = document.querySelectorAll('.chapter-panel');
-    chapterEls.forEach((el, idx) => {
+    data.scenes.forEach((sc, idx) => {
+      const el = document.getElementById(`chapter-${sc.id}`);
+      if (!el) return;
       const activate = () => {
         if (!isAutoScrollingRef.current) applySectionState(idx + 1);
       };
@@ -484,9 +486,19 @@ export const App: React.FC = () => {
         }
         const creditsScroll = (e.target as HTMLElement | null)?.closest('.mobile-credits-scroll') as HTMLElement | null;
         if (creditsScroll) {
-          // Allow native scroll inside mobile credits page; swipe down at top goes back to step 7
+          // Allow native scroll inside mobile credits page; swipe down at top goes back
           const atTop = creditsScroll.scrollTop <= 2;
           if (!(atTop && dy > 0)) {
+            axis = 'h';
+            return;
+          }
+        }
+        const actorsScroll = (e.target as HTMLElement | null)?.closest('.mobile-actors-scroll') as HTMLElement | null;
+        if (actorsScroll) {
+          // Allow native scroll inside mobile actors page; swipe down at top or swipe up at bottom changes slide
+          const atTop = actorsScroll.scrollTop <= 2;
+          const atBottom = actorsScroll.scrollTop + actorsScroll.clientHeight >= actorsScroll.scrollHeight - 2;
+          if (!((atTop && dy > 0) || (atBottom && dy < 0))) {
             axis = 'h';
             return;
           }
@@ -650,7 +662,7 @@ export const App: React.FC = () => {
         {freeExplore ? 'Visite guidée' : 'Vue libre'}
       </button>
 
-      {data && !freeExplore && !isCredits && showScrollCue && (
+      {data && !freeExplore && !isCredits && (isHero || activeSceneId !== 'acteurs') && showScrollCue && (
         <button
           type="button"
           className={`scroll-cue ${!isHero ? 'in-split' : ''}`}
@@ -695,7 +707,7 @@ export const App: React.FC = () => {
           )}
 
           {/* TikTok-style vertical rainbow navigation rail on the right edge */}
-          {!isHero && !isCredits && (
+          {!isHero && !isCredits && activeSceneId !== 'acteurs' && (
             <div className="mobile-reel-rail" role="tablist" aria-label="Étapes de la visite">
               {data.scenes.map((sc, idx) => (
                 <button
@@ -730,14 +742,32 @@ export const App: React.FC = () => {
               </div>
             </section>
 
-            {data.scenes.map((sc, idx) => (
-              <section
-                className="mobile-reel-slide mobile-reel-chapter"
-                key={sc.id}
-                id={`chapter-${sc.id}`}
-                data-reel-index={idx + 1}
-                data-scene={sc.id}
-              >
+            {data.scenes.map((sc, idx) =>
+              sc.id === 'acteurs' ? (
+                <section
+                  className="mobile-reel-slide mobile-reel-actors"
+                  key={sc.id}
+                  id={`chapter-${sc.id}`}
+                  data-reel-index={idx + 1}
+                  data-scene={sc.id}
+                >
+                  <div className="mobile-actors-scroll">
+                    <ActorsPage
+                      stepNumber={idx + 1}
+                      totalSteps={totalChapters}
+                      onPrev={() => stepGuided(-1)}
+                      onNext={() => stepGuided(1)}
+                    />
+                  </div>
+                </section>
+              ) : (
+                <section
+                  className="mobile-reel-slide mobile-reel-chapter"
+                  key={sc.id}
+                  id={`chapter-${sc.id}`}
+                  data-reel-index={idx + 1}
+                  data-scene={sc.id}
+                >
                 {/* Top 45% intentionally transparent so live 3D scene & labels shine through */}
                 <div className="mobile-reel-window" aria-hidden="true" />
 
@@ -902,7 +932,8 @@ export const App: React.FC = () => {
                   </button>
                 </div>
               </section>
-            ))}
+              )
+            )}
 
             <section
               className="mobile-reel-slide mobile-reel-credits"
@@ -937,21 +968,51 @@ export const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Desktop left column (strictly untouched) */}
-          <div className="editorial-column" data-active-scene={activeSceneId}>
-            <div className="col-sticky-top">
-              <span className="col-brand" onClick={() => goToSection(0)}>
-                {data.school.name}
-              </span>
-              <span className="col-step-badge">
-                {activeSceneIndex + 1} / {totalChapters}
-              </span>
-              <div className="col-progress-track" aria-hidden="true">
-                <div className="col-progress-fill" style={{ width: `${progressPct}%` }} />
-              </div>
-            </div>
+          {/* Desktop left column + full-width Actors page */}
+          {(() => {
+            const actorsIdx = data.scenes.findIndex((s) => s.id === 'acteurs');
+            const beforeActors = actorsIdx >= 0 ? data.scenes.slice(0, actorsIdx) : data.scenes;
+            const afterActors = actorsIdx >= 0 ? data.scenes.slice(actorsIdx + 1) : [];
 
-            {data.scenes.map((sc, idx) => (
+            const renderStickyTop = () => (
+              <div className="col-sticky-top">
+                <span className="col-brand" onClick={() => goToSection(0)}>
+                  {data.school.name}
+                </span>
+                <span className="col-step-badge">
+                  {activeSceneIndex + 1} / {totalChapters}
+                </span>
+                <div className="col-progress-track" aria-hidden="true">
+                  <div className="col-progress-fill" style={{ width: `${progressPct}%` }} />
+                </div>
+              </div>
+            );
+
+            const renderStickyBottom = () => (
+              <div className="col-sticky-bottom">
+                <button type="button" className="step-nav-btn" onClick={() => stepGuided(-1)}>
+                  <ChevronUp size={15} /> Précédent
+                </button>
+                <div className="step-dots" role="tablist" aria-label="Étapes de la visite">
+                  {data.scenes.map((sc, idx) => (
+                    <button
+                      key={sc.id}
+                      type="button"
+                      data-scene={sc.id}
+                      className={`step-dot ${idx === activeSceneIndex ? 'active' : ''}`}
+                      onClick={() => goToSection(idx + 1)}
+                      title={sc.title}
+                      aria-label={`Aller à ${sc.title}`}
+                    />
+                  ))}
+                </div>
+                <button type="button" className="step-nav-btn primary" onClick={() => stepGuided(1)}>
+                  Suivant <ChevronDown size={15} />
+                </button>
+              </div>
+            );
+
+            const renderDesktopScene = (sc: (typeof data.scenes)[number], idx: number) => (
               <section className="chapter-panel" key={sc.id} id={`chapter-${sc.id}`} data-scene={sc.id}>
                 <div className={`chapter-body ${!isHero && idx === activeSceneIndex ? 'is-active' : ''}`}>
                   <h2 className="chapter-title">{sc.title}</h2>
@@ -1037,38 +1098,37 @@ export const App: React.FC = () => {
                   {sc.note && <p className="chapter-note">{sc.note}</p>}
                 </div>
               </section>
-            ))}
+            );
 
-            <div className="col-sticky-bottom">
-              <button
-                type="button"
-                className="step-nav-btn"
-                onClick={() => stepGuided(-1)}
-              >
-                <ChevronUp size={15} /> Précédent
-              </button>
-              <div className="step-dots" role="tablist" aria-label="Étapes de la visite">
-                {data.scenes.map((sc, idx) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    data-scene={sc.id}
-                    className={`step-dot ${idx === activeSceneIndex ? 'active' : ''}`}
-                    onClick={() => goToSection(idx + 1)}
-                    title={sc.title}
-                    aria-label={`Aller à ${sc.title}`}
-                  />
-                ))}
-              </div>
-              <button
-                type="button"
-                className="step-nav-btn primary"
-                onClick={() => stepGuided(1)}
-              >
-                Suivant <ChevronDown size={15} />
-              </button>
-            </div>
-          </div>
+            return (
+              <>
+                <div className="editorial-column" data-active-scene={activeSceneId}>
+                  {renderStickyTop()}
+                  {beforeActors.map((sc, i) => renderDesktopScene(sc, i))}
+                  {renderStickyBottom()}
+                </div>
+
+                {actorsIdx >= 0 && (
+                  <section className="actors-page" id="chapter-acteurs" data-scene="acteurs">
+                    <ActorsPage
+                      stepNumber={actorsIdx + 1}
+                      totalSteps={totalChapters}
+                      onPrev={() => stepGuided(-1)}
+                      onNext={() => stepGuided(1)}
+                    />
+                  </section>
+                )}
+
+                {afterActors.length > 0 && (
+                  <div className="editorial-column" data-active-scene={activeSceneId}>
+                    {renderStickyTop()}
+                    {afterActors.map((sc, i) => renderDesktopScene(sc, actorsIdx + 1 + i))}
+                    {renderStickyBottom()}
+                  </div>
+                )}
+              </>
+            );
+          })()}
 
           {/* Dedicated full-width Credits & Legal Notice page at the end of the tour */}
           <section className="credits-page" id="credits-page">
