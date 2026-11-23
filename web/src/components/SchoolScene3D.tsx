@@ -356,6 +356,82 @@ const PRESET_VIEWS: Record<CameraPreset, { pos: [number, number, number]; target
   stadium: { pos: [126, 100, 192], target: [372, 0, 113] },
 };
 
+interface HeroReelShot {
+  fromPos: [number, number, number];
+  toPos: [number, number, number];
+  fromTarget: [number, number, number];
+  toTarget: [number, number, number];
+  duration: number;
+  mobileKey: string;
+}
+
+// Forza Horizon-style showcase reel for the Hero opening screen ONLY (varied pacing, smooth continuous travellings)
+const HERO_REEL_SHOTS: HeroReelShot[] = [
+  // 1. Plan iconique d'ouverture — École Sainte-Anne
+  {
+    fromPos: [-78, 46, 78],
+    toPos: [-44, 42, 96],
+    fromTarget: [10, 0, 8],
+    toTarget: [14, 0, 10],
+    duration: 7.5,
+    mobileKey: 'hero',
+  },
+  // 2. Survol bas de la cour et des bâtiments de l'école
+  {
+    fromPos: [-56, 30, 32],
+    toPos: [-30, 34, -22],
+    fromTarget: [12, 2, 10],
+    toTarget: [16, 2, 2],
+    duration: 6.0,
+    mobileKey: 'cour',
+  },
+  // 3. Église Saint-Pierre de Pordic — travelling autour du clocher
+  {
+    fromPos: [-242, 36, 12],
+    toPos: [-224, 52, -32],
+    fromTarget: [-144, 18, -64],
+    toTarget: [-144, 22, -64],
+    duration: 5.5,
+    mobileKey: 'eglise',
+  },
+  // 4. École Sainte-Anne côté Cantine, Périscolaire et Cour maternelle
+  {
+    fromPos: [92, 36, 74],
+    toPos: [76, 42, 26],
+    fromTarget: [22, 2, 16],
+    toTarget: [14, 2, 8],
+    duration: 6.2,
+    mobileKey: 'cantine-periscolaire',
+  },
+  // 5. Médiathèque de l'Ic, parc et centre culturel La Ville Robert
+  {
+    fromPos: [-134, 58, -98],
+    toPos: [-176, 54, -92],
+    fromTarget: [-198, 2, -192],
+    toTarget: [-190, 2, -196],
+    duration: 5.8,
+    mobileKey: 'culture',
+  },
+  // 6. Complexe sportif Louis Auffray — vue panoramique
+  {
+    fromPos: [142, 88, 198],
+    toPos: [178, 78, 144],
+    fromTarget: [358, 0, 122],
+    toTarget: [356, 0, 114],
+    duration: 5.2,
+    mobileKey: 'sport',
+  },
+  // 7. Vue aérienne sur l'ensemble de l'école et le bourg de Pordic
+  {
+    fromPos: [-64, 72, -68],
+    toPos: [-92, 58, -8],
+    fromTarget: [14, 0, 6],
+    toTarget: [12, 0, 8],
+    duration: 6.6,
+    mobileKey: 'ecole',
+  },
+];
+
 const CLASS_FOCUS_VIEWS: Record<'S1' | 'N1' | 'E2', { pos: [number, number, number]; target: [number, number, number]; buildings: string[] }> = {
   S1: {
     pos: [-19, 75, 50],
@@ -507,6 +583,14 @@ export const SchoolScene3D: React.FC<Props> = ({
   const classroomRoofsRef = useRef<THREE.Object3D[]>([]);
   const roomMeshesRef = useRef<Map<string, THREE.Mesh>>(new Map());
   const churchCrossTopRef = useRef<[number, number, number] | null>(null);
+  const heroFadeRef = useRef<HTMLDivElement | null>(null);
+  const heroReelRef = useRef({
+    shotIdx: 0,
+    elapsed: 0,
+    firstShot: true,
+    returnDelay: 0,
+    wasHero: true,
+  });
   const courOverlaysRef = useRef<{
     root: THREE.Group;
     elemFill: THREE.MeshBasicMaterial;
@@ -854,37 +938,102 @@ export const SchoolScene3D: React.FC<Props> = ({
       const h = container.clientHeight;
 
       if (!freeExploreRef.current) {
-        swayPhase += dt * 0.28;
-        const angle = Math.sin(swayPhase) * swayStateRef.current.amp;
-        const zoomScale = 1 - Math.sin(swayPhase * 0.5) * swayStateRef.current.zoom;
-        const cosA = Math.cos(angle);
-        const sinA = Math.sin(angle);
+        if (isHeroRef.current && heroReelRef.current.returnDelay <= 0) {
+          // Forza Horizon-style showcase reel on the Hero opening screen ONLY
+          const reel = heroReelRef.current;
+          reel.elapsed += dt;
+          let shot = HERO_REEL_SHOTS[reel.shotIdx];
+          if (reel.elapsed >= shot.duration) {
+            reel.elapsed = 0;
+            reel.shotIdx = (reel.shotIdx + 1) % HERO_REEL_SHOTS.length;
+            reel.firstShot = false;
+            shot = HERO_REEL_SHOTS[reel.shotIdx];
+          }
 
-        const tx = baseTargetRef.current.x;
-        const ty = baseTargetRef.current.y;
-        const tz = baseTargetRef.current.z;
-        const dx = (basePosRef.current.x - tx) * zoomScale;
-        const dy = (basePosRef.current.y - ty) * zoomScale;
-        const dz = (basePosRef.current.z - tz) * zoomScale;
+          const rawU = Math.min(1, reel.elapsed / shot.duration);
+          const smoothU = rawU * rawU * (3 - 2 * rawU);
+          const u = rawU * 0.85 + smoothU * 0.15;
 
-        const rx = dx * cosA - dz * sinA;
-        const rz = dx * sinA + dz * cosA;
-        const ry = dy + Math.sin(swayPhase * 0.7) * swayStateRef.current.vert;
+          const pFrom = adaptPoseForMobile(shot.fromPos, shot.fromTarget, shot.mobileKey, w, h);
+          const pTo = adaptPoseForMobile(shot.toPos, shot.toTarget, shot.mobileKey, w, h);
 
-        camera.position.set(tx + rx, ty + ry, tz + rz);
-        controls.target.set(tx, ty, tz);
+          const cx = pFrom.pos[0] + (pTo.pos[0] - pFrom.pos[0]) * u;
+          const cy = pFrom.pos[1] + (pTo.pos[1] - pFrom.pos[1]) * u;
+          const cz = pFrom.pos[2] + (pTo.pos[2] - pFrom.pos[2]) * u;
+          const tx = pFrom.target[0] + (pTo.target[0] - pFrom.target[0]) * u;
+          const ty = pFrom.target[1] + (pTo.target[1] - pFrom.target[1]) * u;
+          const tz = pFrom.target[2] + (pTo.target[2] - pFrom.target[2]) * u;
 
-        if (w > 0 && h > 0) {
-          const ox = viewOffsetRef.current.x;
-          const oy = viewOffsetRef.current.y;
-          if (Math.abs(ox) > 0.2 || Math.abs(oy) > 0.2) {
-            camera.setViewOffset(w, h, ox, oy, w, h);
-          } else if (camera.view && camera.view.enabled) {
+          basePosRef.current.x = cx;
+          basePosRef.current.y = cy;
+          basePosRef.current.z = cz;
+          baseTargetRef.current.x = tx;
+          baseTargetRef.current.y = ty;
+          baseTargetRef.current.z = tz;
+
+          camera.position.set(cx, cy, cz);
+          controls.target.set(tx, ty, tz);
+          if (camera.view && camera.view.enabled) {
             camera.clearViewOffset();
           }
+          camera.lookAt(tx, ty, tz);
+
+          // Soft daylight cross-dissolve veil between shots (zero flash on initial entry)
+          if (heroFadeRef.current) {
+            const fadeOutDur = 0.44;
+            const fadeInDur = 0.56;
+            const fadeOut =
+              reel.elapsed > shot.duration - fadeOutDur
+                ? (reel.elapsed - (shot.duration - fadeOutDur)) / fadeOutDur
+                : 0;
+            const fadeIn = !reel.firstShot && reel.elapsed < fadeInDur ? 1 - reel.elapsed / fadeInDur : 0;
+            const rawAlpha = Math.max(0, Math.min(1, Math.max(fadeOut, fadeIn)));
+            const easedAlpha = rawAlpha * rawAlpha * (3 - 2 * rawAlpha) * 0.92;
+            heroFadeRef.current.style.opacity = easedAlpha > 0.004 ? easedAlpha.toFixed(3) : '0';
+          }
+        } else {
+          if (heroReelRef.current.returnDelay > 0) {
+            heroReelRef.current.returnDelay = Math.max(0, heroReelRef.current.returnDelay - dt);
+          }
+          if (heroFadeRef.current && heroFadeRef.current.style.opacity !== '0') {
+            heroFadeRef.current.style.opacity = '0';
+          }
+
+          swayPhase += dt * 0.28;
+          const angle = Math.sin(swayPhase) * swayStateRef.current.amp;
+          const zoomScale = 1 - Math.sin(swayPhase * 0.5) * swayStateRef.current.zoom;
+          const cosA = Math.cos(angle);
+          const sinA = Math.sin(angle);
+
+          const tx = baseTargetRef.current.x;
+          const ty = baseTargetRef.current.y;
+          const tz = baseTargetRef.current.z;
+          const dx = (basePosRef.current.x - tx) * zoomScale;
+          const dy = (basePosRef.current.y - ty) * zoomScale;
+          const dz = (basePosRef.current.z - tz) * zoomScale;
+
+          const rx = dx * cosA - dz * sinA;
+          const rz = dx * sinA + dz * cosA;
+          const ry = dy + Math.sin(swayPhase * 0.7) * swayStateRef.current.vert;
+
+          camera.position.set(tx + rx, ty + ry, tz + rz);
+          controls.target.set(tx, ty, tz);
+
+          if (w > 0 && h > 0) {
+            const ox = viewOffsetRef.current.x;
+            const oy = viewOffsetRef.current.y;
+            if (Math.abs(ox) > 0.2 || Math.abs(oy) > 0.2) {
+              camera.setViewOffset(w, h, ox, oy, w, h);
+            } else if (camera.view && camera.view.enabled) {
+              camera.clearViewOffset();
+            }
+          }
+          camera.lookAt(tx, ty, tz);
         }
-        camera.lookAt(tx, ty, tz);
       } else {
+        if (heroFadeRef.current && heroFadeRef.current.style.opacity !== '0') {
+          heroFadeRef.current.style.opacity = '0';
+        }
         if (camera.view && camera.view.enabled) {
           camera.clearViewOffset();
         }
@@ -1122,10 +1271,20 @@ export const SchoolScene3D: React.FC<Props> = ({
     });
 
     if (isHero) {
-      const p = adaptPoseForMobile(data.heroCamera.pos, data.heroCamera.target, 'hero', w, h);
-      animateGuidedCamera(p.pos, p.target, 1.25);
+      const first = HERO_REEL_SHOTS[0];
+      const p = adaptPoseForMobile(first.fromPos, first.fromTarget, first.mobileKey, w, h);
+      if (!heroReelRef.current.wasHero) {
+        heroReelRef.current.shotIdx = 0;
+        heroReelRef.current.elapsed = 0;
+        heroReelRef.current.firstShot = true;
+        heroReelRef.current.returnDelay = 1.25;
+        animateGuidedCamera(p.pos, p.target, 1.25);
+      }
+      heroReelRef.current.wasHero = true;
       return;
     }
+    heroReelRef.current.wasHero = false;
+    heroReelRef.current.returnDelay = 0;
     if (sc) {
       if (sc.id === 'classes' && classBuildingFocus !== 'all') {
         const sub = CLASS_FOCUS_VIEWS[classBuildingFocus];
@@ -1200,6 +1359,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   return (
     <div className="viewport-frame">
       <div className={`canvas-container ${freeExplore ? 'interactive' : 'scroll-locked'}`} ref={mountRef} />
+      <div className="hero-reel-fade" ref={heroFadeRef} aria-hidden="true" />
       {showLabels && !(isHero && !freeExplore) && (
         <div className="labels-layer">
           <svg className="labels-lines" aria-hidden="true">
