@@ -655,11 +655,21 @@ export const App: React.FC = () => {
           type="button"
           className={`scroll-cue ${!isHero ? 'in-split' : ''}`}
           onClick={() => stepGuided(1)}
-          aria-label="Faire défiler vers le bas pour continuer"
+          aria-label={isMobile ? 'Glisser vers le haut pour continuer' : 'Faire défiler vers le bas pour continuer'}
         >
-          <ChevronDown size={15} className="scroll-cue-arrow" />
-          <span className="scroll-cue-text">Faire défiler vers le bas</span>
-          <ChevronDown size={15} className="scroll-cue-arrow" />
+          {isMobile ? (
+            <>
+              <ChevronUp size={15} className="scroll-cue-arrow scroll-cue-arrow-up" />
+              <span className="scroll-cue-text">Glisser vers le haut</span>
+              <ChevronUp size={15} className="scroll-cue-arrow scroll-cue-arrow-up" />
+            </>
+          ) : (
+            <>
+              <ChevronDown size={15} className="scroll-cue-arrow" />
+              <span className="scroll-cue-text">Faire défiler vers le bas</span>
+              <ChevronDown size={15} className="scroll-cue-arrow" />
+            </>
+          )}
         </button>
       )}
 
