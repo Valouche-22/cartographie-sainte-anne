@@ -927,9 +927,17 @@ body {
   -webkit-backdrop-filter: blur(14px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.85);
   box-shadow: 0 10px 30px rgba(15, 37, 68, 0.16);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  max-width: 94vw;
+  width: max-content;
+  max-width: 96vw;
+}
+
+@media (min-width: 861px) and (max-width: 980px) {
+  .toolbar {
+    flex-wrap: wrap;
+    width: auto;
+  }
 }
 
 .tool-btn {
