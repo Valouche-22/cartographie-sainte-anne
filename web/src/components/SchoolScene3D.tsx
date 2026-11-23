@@ -365,68 +365,59 @@ interface HeroReelShot {
   mobileKey: string;
 }
 
-// Forza Horizon-style showcase reel for the Hero opening screen ONLY (calm continuous travellings + direct cross-dissolve)
+// Forza Horizon-style showcase reel for the Hero opening screen ONLY — focused exclusively on École Sainte-Anne
 const HERO_REEL_SHOTS: HeroReelShot[] = [
-  // 1. Plan iconique d'ouverture — École Sainte-Anne
+  // 1. Plan iconique d'ouverture — vue d'ensemble sud-ouest -> sud
   {
     fromPos: [-78, 46, 78],
-    toPos: [-44, 42, 96],
+    toPos: [-46, 42, 94],
     fromTarget: [10, 0, 8],
     toTarget: [14, 0, 10],
     duration: 10.5,
     mobileKey: 'hero',
   },
-  // 2. Survol bas de la cour et des bâtiments de l'école
+  // 2. Survol bas de la cour élémentaire, des terrains et du Bâtiment Cycle 2
   {
-    fromPos: [-56, 30, 32],
-    toPos: [-30, 34, -22],
-    fromTarget: [12, 2, 10],
-    toTarget: [16, 2, 2],
+    fromPos: [-62, 24, 24],
+    toPos: [-42, 28, -28],
+    fromTarget: [4, 2, 4],
+    toTarget: [12, 2, -6],
     duration: 8.8,
     mobileKey: 'cour',
   },
-  // 3. Église Saint-Pierre de Pordic — travelling autour du clocher
+  // 3. Cour maternelle, bac à sable, draisiennes et préau des maternelles
   {
-    fromPos: [-242, 36, 12],
-    toPos: [-224, 52, -32],
-    fromTarget: [-144, 18, -64],
-    toTarget: [-144, 22, -64],
-    duration: 8.0,
-    mobileKey: 'eglise',
+    fromPos: [-6, 22, 66],
+    toPos: [34, 25, 62],
+    fromTarget: [16, 2, 22],
+    toTarget: [14, 2, 14],
+    duration: 8.4,
+    mobileKey: 'cour-maternelle',
   },
-  // 4. École Sainte-Anne côté Cantine, Périscolaire et Cour maternelle
+  // 4. Perspective est : Cantine, Périscolaire, Bâtiment Cycle 3 et Préau
   {
-    fromPos: [92, 36, 74],
-    toPos: [76, 42, 26],
-    fromTarget: [22, 2, 16],
-    toTarget: [14, 2, 8],
+    fromPos: [92, 34, 64],
+    toPos: [84, 38, 8],
+    fromTarget: [20, 2, 10],
+    toTarget: [16, 2, -6],
     duration: 9.2,
     mobileKey: 'cantine-periscolaire',
   },
-  // 5. Médiathèque de l'Ic, parc et centre culturel La Ville Robert
+  // 5. Travelling nord au-dessus des bâtiments Cycle 2, Cycle 3 et du cœur de l'école
   {
-    fromPos: [-134, 58, -98],
-    toPos: [-176, 54, -92],
-    fromTarget: [-198, 2, -192],
-    toTarget: [-190, 2, -196],
-    duration: 8.5,
-    mobileKey: 'culture',
+    fromPos: [28, 44, -76],
+    toPos: [-32, 42, -66],
+    fromTarget: [14, 2, 2],
+    toTarget: [10, 2, 8],
+    duration: 8.6,
+    mobileKey: 'ecole',
   },
-  // 6. Complexe sportif Louis Auffray — vue panoramique
+  // 6. Vue aérienne plongeante sur l'ensemble de l'école et le bourg de Pordic
   {
-    fromPos: [142, 88, 198],
-    toPos: [178, 78, 144],
-    fromTarget: [358, 0, 122],
-    toTarget: [356, 0, 114],
-    duration: 7.8,
-    mobileKey: 'sport',
-  },
-  // 7. Vue aérienne sur l'ensemble de l'école et le bourg de Pordic
-  {
-    fromPos: [-64, 72, -68],
-    toPos: [-92, 58, -8],
+    fromPos: [-68, 72, -52],
+    toPos: [-92, 56, 18],
     fromTarget: [14, 0, 6],
-    toTarget: [12, 0, 8],
+    toTarget: [10, 0, 8],
     duration: 9.6,
     mobileKey: 'ecole',
   },
