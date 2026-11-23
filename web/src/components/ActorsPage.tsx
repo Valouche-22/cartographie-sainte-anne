@@ -32,7 +32,7 @@ const ACTORS = [
   {
     title: "L'APEL",
     description:
-      "L'APEL rassemble les parents qui souhaitent s'investir dans la vie de l'école. Ils organisent des événements, des ventes, comme la vente de sapins de Noël, et des moments conviviaux tout au long de l'année. L'argent récolté permet de financer des sorties, des activités et du matériel pour les élèves.",
+      "L'APEL rassemble les parents qui souhaitent s'investir dans la vie de l'école. Ils organisent des événements et des ventes, comme la vente de sapins de Noël, tout au long de l'année. L'argent récolté permet de financer des sorties, des activités et du matériel pour les élèves.",
   },
   {
     title: "L'OGEC",
