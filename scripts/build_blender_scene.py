@@ -610,11 +610,11 @@ create_poly_mesh("Espace_Herbe_Periscolaire", GRASS_PERI, 0.055, 0.095, MAT_GRAS
 GRASS_SW = [(-35.2, -29.8), (-25.2, -39.2), (-21.8, -33.2), (-29.8, -26.5)]
 create_poly_mesh("Espace_Herbe_SudOuest", GRASS_SW, 0.055, 0.095, MAT_GRASS, "VEGETATION")
 
-# Gravel rectangle under big NW tree
-GRAVEL_OUTER = rot_rect(-13.5, 20.5, 5.2, 4.4, 18.1)
-create_poly_mesh("Bordure_Gravillons_Arbre_NO", GRAVEL_OUTER, 0.05, 0.095, MAT_CURB, "COURS")
-GRAVEL_INNER = rot_rect(-13.5, 20.5, 4.8, 4.0, 18.1)
-create_poly_mesh("Gravillons_Arbre_NO", GRAVEL_INNER, 0.05, 0.105, MAT_GRAVEL, "COURS")
+# Gravel rectangle under big NW tree (shifted slightly onto SW edge of green lawn per user arrow)
+GRAVEL_OUTER = rot_rect(-9.5, 25.5, 4.6, 4.0, 18.1)
+create_poly_mesh("Bordure_Gravillons_Arbre_NO", GRAVEL_OUTER, 0.05, 0.100, MAT_CURB, "COURS")
+GRAVEL_INNER = rot_rect(-9.5, 25.5, 4.2, 3.6, 18.1)
+create_poly_mesh("Gravillons_Arbre_NO", GRAVEL_INNER, 0.05, 0.108, MAT_GRAVEL, "COURS")
 
 # ==========================================================
 # 3. PREAU DE L'ECOLE + SEAMLESS JOIN TO PERISCOLAIRE + BIKE SHED!
@@ -1038,6 +1038,176 @@ create_box("Table_PingPong_Plateau", (58.5, -24.5, 0.78), (2.7, 1.5, 0.08), MAT_
 create_box("Table_PingPong_Pied", (58.5, -24.5, 0.40), (1.4, 0.9, 0.72), MAT_METAL_DARK, "MOBILIER", rot_z_deg=20.7)
 create_box("Table_PingPong_Filet", (58.5, -24.5, 0.90), (0.04, 1.55, 0.16), MAT_LINE_WHITE, "MOBILIER", rot_z_deg=20.7)
 
+# ==========================================================
+# 5B. COUR ELEMENTAIRE DETAILS: WALL BASKETBALL HOOP + BALL, HOPSCOTCH & 4 WOODEN HEDGE PLANTERS
+# ==========================================================
+# 1. Wall-mounted basketball hoop on North facade of Batiment Principal S1 pavilion (edge [1.732, 8.136] -> [13.418, 12.410])
+_hp_a = Vector((1.732, 8.136))
+_hp_b = Vector((13.418, 12.410))
+_hp_edge = _hp_b - _hp_a
+_hp_len = _hp_edge.length
+_hp_u = _hp_edge / _hp_len                        # Along wall (East-Northeast)
+_hp_n = Vector((-_hp_u.y, _hp_u.x))               # Outward normal into courtyard (North-Northwest)
+_hp_deg = math.degrees(math.atan2(_hp_u.y, _hp_u.x))
+_hp_wall = _hp_a + _hp_edge * 0.44                # Exact red circle position on North wall of S1
+
+# Wall mounting plate + twin steel arms extending 0.52m proud of the facade
+_hp_plate = _hp_wall + _hp_n * 0.04
+create_box("Panier_Basket_PlaqueMur", (_hp_plate.x, _hp_plate.y, 3.12), (0.72, 0.06, 0.52), MAT_METAL_DARK, "MOBILIER", _hp_deg)
+for _bs in (-0.24, 0.24):
+    _arm_p = _hp_wall + _hp_u * _bs + _hp_n * 0.28
+    create_box(f"Panier_Basket_Bras_{'G' if _bs < 0 else 'D'}", (_arm_p.x, _arm_p.y, 3.06), (0.07, 0.52, 0.07), MAT_METAL_DARK, "MOBILIER", _hp_deg)
+
+# Crisp white backboard + orange-red target rectangle
+_hp_board = _hp_wall + _hp_n * 0.54
+create_box("Panier_Basket_Panneau", (_hp_board.x, _hp_board.y, 3.22), (1.30, 0.06, 0.92), MAT_LINE_WHITE, "MOBILIER", _hp_deg)
+_hp_sq = _hp_wall + _hp_n * 0.575
+create_box("Panier_Basket_Cadre_Bas", (_hp_sq.x, _hp_sq.y, 2.90), (0.56, 0.02, 0.045), MAT_BIKE_ORANGE, "MOBILIER", _hp_deg)
+create_box("Panier_Basket_Cadre_Haut", (_hp_sq.x, _hp_sq.y, 3.30), (0.56, 0.02, 0.045), MAT_BIKE_ORANGE, "MOBILIER", _hp_deg)
+for _ss in (-0.26, 0.26):
+    _sp = _hp_sq + _hp_u * _ss
+    create_box(f"Panier_Basket_Cadre_{'G' if _ss < 0 else 'D'}", (_sp.x, _sp.y, 3.10), (0.045, 0.02, 0.42), MAT_BIKE_ORANGE, "MOBILIER", _hp_deg)
+
+# Orange metal rim + tapered white net
+_hp_rim = _hp_wall + _hp_n * 0.84
+bpy.ops.mesh.primitive_torus_add(
+    major_segments=20, minor_segments=8,
+    major_radius=0.25, minor_radius=0.026,
+    location=(_hp_rim.x, _hp_rim.y, 2.86),
+)
+_rim_obj = bpy.context.active_object
+_rim_obj.name = "Panier_Basket_Cercle"
+_rim_obj.data.materials.append(MAT_BIKE_ORANGE)
+scene.collection.objects.unlink(_rim_obj)
+link_obj(_rim_obj, "MOBILIER")
+
+bpy.ops.mesh.primitive_cone_add(
+    vertices=14, radius1=0.14, radius2=0.23, depth=0.42,
+    location=(_hp_rim.x, _hp_rim.y, 2.64),
+)
+_net_obj = bpy.context.active_object
+_net_obj.name = "Panier_Basket_Filet"
+_net_obj.data.materials.append(MAT_LINE_WHITE)
+scene.collection.objects.unlink(_net_obj)
+link_obj(_net_obj, "MOBILIER")
+
+# Decorative basketball resting on the courtyard asphalt just in front of the hoop (red circle on ground)
+_ball_p = _hp_wall + _hp_n * 4.8 - _hp_u * 1.4
+_ball_r = 0.24
+bpy.ops.mesh.primitive_uv_sphere_add(
+    segments=16, ring_count=10, radius=_ball_r,
+    location=(_ball_p.x, _ball_p.y, 0.05 + _ball_r),
+)
+_ball_obj = bpy.context.active_object
+_ball_obj.name = "Ballon_Basket_Cour"
+_ball_obj.data.materials.append(MAT_BIKE_ORANGE)
+scene.collection.objects.unlink(_ball_obj)
+link_obj(_ball_obj, "MOBILIER")
+for _rot_seam in ((0.0, 0.0, 0.0), (math.pi / 2, 0.0, 0.35), (math.pi / 2, 0.0, 0.35 + math.pi / 2)):
+    bpy.ops.mesh.primitive_torus_add(
+        major_segments=20, minor_segments=6,
+        major_radius=_ball_r + 0.004, minor_radius=0.011,
+        location=(_ball_p.x, _ball_p.y, 0.05 + _ball_r),
+        rotation=_rot_seam,
+    )
+    _sm = bpy.context.active_object
+    _sm.name = f"Ballon_Basket_Rainure_{int(_rot_seam[0]*10)}_{int(_rot_seam[2]*10)}"
+    _sm.data.materials.append(MAT_TIRE)
+    scene.collection.objects.unlink(_sm)
+    link_obj(_sm, "MOBILIER")
+
+# 2. Painted Hopscotch (Marelle) on the courtyard asphalt at the blue cross (-17.8, 13.8)
+_mar_cx, _mar_cy = -17.8, 13.8
+_mar_deg = 20.0
+_mar_s = 0.78          # Square cell size (m)
+_mar_lw = 0.055        # White border line thickness
+_mar_z_fill = 0.060
+_mar_z_line = 0.065
+MAT_MAR_BLUE = get_mat("Marelle_Bleu", (0.58, 0.77, 0.94), roughness=0.90)
+MAT_MAR_YELLOW = get_mat("Marelle_Jaune", (0.96, 0.88, 0.54), roughness=0.90)
+MAT_MAR_CORAL = get_mat("Marelle_Corail", (0.94, 0.62, 0.56), roughness=0.90)
+MAT_MAR_GREEN = get_mat("Marelle_Vert", (0.60, 0.85, 0.66), roughness=0.90)
+
+# Layout: 1, 2, 3 (singles), 4-5 (pair), 6 (single), 7-8 (pair) + semicircle Ciel
+_mar_cells = [
+    (-2.4, 0.0, MAT_MAR_BLUE),
+    (-1.6, 0.0, MAT_MAR_YELLOW),
+    (-0.8, 0.0, MAT_MAR_CORAL),
+    (0.0, -0.4, MAT_MAR_GREEN),
+    (0.0, 0.4, MAT_MAR_BLUE),
+    (0.8, 0.0, MAT_MAR_YELLOW),
+    (1.6, -0.4, MAT_MAR_CORAL),
+    (1.6, 0.4, MAT_MAR_GREEN),
+]
+for _mi, (_mu, _mv, _mmat) in enumerate(_mar_cells, 1):
+    _wx, _wy = local_to_world(_mar_cx, _mar_cy, _mu, _mv, _mar_deg)
+    # White outer square border + inner colored chalk square (zero Z-fighting via clean Z offset)
+    create_box(f"Jeu_Sol_Marelle_Bord_{_mi}", (_wx, _wy, _mar_z_fill), (_mar_s + _mar_lw, _mar_s + _mar_lw, 0.012), MAT_LINE_WHITE, "COURS", _mar_deg)
+    create_box(f"Jeu_Sol_Marelle_Case_{_mi}", (_wx, _wy, _mar_z_line), (_mar_s - _mar_lw, _mar_s - _mar_lw, 0.012), _mmat, "COURS", _mar_deg)
+
+# Semicircle "Ciel" at the top end of the hopscotch
+_ciel_x, _ciel_y = local_to_world(_mar_cx, _mar_cy, 2.02, 0.0, _mar_deg)
+for _c_name, _c_rad, _c_z, _c_mat in [
+    ("Jeu_Sol_Marelle_Ciel_Bord", 0.82, _mar_z_fill, MAT_LINE_WHITE),
+    ("Jeu_Sol_Marelle_Ciel_Fond", 0.75, _mar_z_line, MAT_MAR_BLUE),
+]:
+    _c_pts = []
+    for _ci in range(13):
+        _ca = -math.pi / 2 + (_ci / 12) * math.pi
+        _c_pts.append(local_to_world(_ciel_x, _ciel_y, _c_rad * math.cos(_ca), _c_rad * math.sin(_ca), _mar_deg))
+    create_poly_mesh(_c_name, _c_pts, _c_z - 0.006, _c_z + 0.006, _c_mat, "COURS")
+
+# 3. Four rectangular wooden planters with trimmed hedge shrubs along the West courtyard wall (4 green marks)
+_planter_specs = [
+    # Segment 21 -> 22: (-32.5, 11.5) -> (-34.0, -5.0)
+    (BLACK_OUTLINE_POLY[21], BLACK_OUTLINE_POLY[22], 0.52),
+    (BLACK_OUTLINE_POLY[21], BLACK_OUTLINE_POLY[22], 0.80),
+    # Segment 22 -> 23: (-34.0, -5.0) -> (-47.5, -16.5)
+    (BLACK_OUTLINE_POLY[22], BLACK_OUTLINE_POLY[23], 0.22),
+    (BLACK_OUTLINE_POLY[22], BLACK_OUTLINE_POLY[23], 0.56),
+]
+for _pi, (_pa_t, _pb_t, _pt) in enumerate(_planter_specs, 1):
+    _pa = Vector(_pa_t)
+    _pb = Vector(_pb_t)
+    _pdir = _pb - _pa
+    _plen = _pdir.length
+    _pu = _pdir / _plen
+    # Inward normal toward courtyard (+X East interior)
+    _pn = Vector((-_pu.y, _pu.x))
+    if _pn.x < 0:
+        _pn = -_pn
+    _pang = math.degrees(math.atan2(_pu.y, _pu.x))
+    _pc = _pa + _pdir * _pt + _pn * 0.58
+
+    _bw, _bd, _bh = 2.35, 0.80, 0.56
+    # Rectangular timber planter box + subtle overhanging wood top rim + dark soil bed
+    create_box(f"Bac_Haie_{_pi:02d}_Caisse", (_pc.x, _pc.y, 0.05 + _bh / 2), (_bw, _bd, _bh), MAT_WOOD, "MOBILIER", _pang)
+    create_box(f"Bac_Haie_{_pi:02d}_Rebord", (_pc.x, _pc.y, 0.05 + _bh + 0.03), (_bw + 0.08, _bd + 0.08, 0.06), MAT_WOOD, "MOBILIER", _pang)
+    create_box(f"Bac_Haie_{_pi:02d}_Terre", (_pc.x, _pc.y, 0.05 + _bh + 0.01), (_bw - 0.14, _bd - 0.14, 0.08), MAT_TRUNK, "MOBILIER", _pang)
+
+    # Dense trimmed hedge shrub inside the wooden planter (cluster of varied low-poly foliage crowns)
+    _hedge_nodes = [
+        (-0.74, 0.00, 0.42, 0.36, MAT_FOLIAGE_DARK),
+        (-0.36, 0.06, 0.48, 0.39, MAT_FOLIAGE_MID),
+        (0.02, -0.04, 0.52, 0.41, MAT_FOLIAGE_LIGHT),
+        (0.40, 0.05, 0.47, 0.38, MAT_FOLIAGE_MID),
+        (0.75, -0.02, 0.41, 0.35, MAT_FOLIAGE_DARK),
+    ]
+    for _hi, (_hu, _hv, _hz, _hrad, _hmat) in enumerate(_hedge_nodes, 1):
+        _hx, _hy = local_to_world(_pc.x, _pc.y, _hu, _hv, _pang)
+        bpy.ops.mesh.primitive_ico_sphere_add(
+            subdivisions=2,
+            radius=_hrad,
+            location=(_hx, _hy, 0.05 + _bh + _hz * 0.72),
+        )
+        _hobj = bpy.context.active_object
+        _hobj.name = f"Bac_Haie_{_pi:02d}_Arbuste_{_hi}"
+        _hobj.scale = (1.05, 0.82, 1.05)
+        _hobj.rotation_euler = (0.0, 0.0, math.radians(_pang))
+        _hobj.data.materials.append(_hmat)
+        scene.collection.objects.unlink(_hobj)
+        link_obj(_hobj, "VEGETATION")
+
 bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=2.1, depth=0.02, location=(56.5, -34.0, 0.066))
 t1 = bpy.context.active_object; t1.name = "Jeu_Sol_Cible_Ext"; t1.data.materials.append(MAT_LINE_WHITE); scene.collection.objects.unlink(t1); link_obj(t1, "PERISCOLAIRE")
 bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=1.4, depth=0.024, location=(56.5, -34.0, 0.068))
@@ -1196,7 +1366,7 @@ def add_realistic_tree(name, x, y, scale=1.0):
         link_obj(c, "VEGETATION")
 
 REAL_TREES = [
-    (-13.5, 20.5, 1.60),
+    (-9.5, 25.5, 1.60),   # Shifted slightly toward SW edge of green lawn (green arrow on user screenshot)
     (15.2, 14.5, 0.82),
     (17.4, 11.8, 0.72),
     (-29.2, -33.2, 1.22),  # Moved into SW grass patch (green arrow on user photo!)
@@ -3023,3 +3193,11 @@ direction = Vector((-198, 204, 4)) - cam.location
 cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
 bpy.ops.render.render(write_still=True)
 print("Rendered vue_pole_culturel.png")
+
+# Render 4: Elementary courtyard detail verification (hoop, ball, shifted tree, hopscotch, 4 wooden hedge planters)
+scene.render.filepath = os.path.join(RENDER_DIR, "vue_cour_details.png")
+cam.location = Vector((-64, 12, 54))
+direction = Vector((-8, 8, 1)) - cam.location
+cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
+bpy.ops.render.render(write_still=True)
+print("Rendered vue_cour_details.png")
