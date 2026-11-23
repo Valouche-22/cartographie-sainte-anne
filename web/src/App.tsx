@@ -83,7 +83,7 @@ export const App: React.FC = () => {
 
   // Context-aware inactivity delay for the "Faire défiler vers le bas" hint:
   // hides immediately on any page or sub-viewpoint change, then reappears only if the user hasn't scrolled:
-  // - Hero (page 1): 5.5s
+  // - Hero (page 1): 10s
   // - École Sainte-Anne (page 2, longer reading): 20s
   // - Multi-viewpoint pages (La cour, Les salles de classe): 6s per viewpoint
   // - All other pages: 10s
@@ -94,7 +94,7 @@ export const App: React.FC = () => {
     const currentSceneId = data.scenes[activeSceneIndex]?.id;
     let delayMs = 10000;
     if (isHero) {
-      delayMs = 5500;
+      delayMs = 10000;
     } else if (currentSceneId === 'ecole') {
       delayMs = 20000;
     } else if (currentSceneId === 'cour' || currentSceneId === 'classes') {

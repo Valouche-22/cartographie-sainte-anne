@@ -370,10 +370,10 @@ const HERO_REEL_SHOTS: HeroReelShot[] = [
   // 1. Plan iconique d'ouverture — vue d'ensemble sud-ouest -> sud
   {
     fromPos: [-78, 46, 78],
-    toPos: [-46, 42, 94],
+    toPos: [-58, 43, 88],
     fromTarget: [10, 0, 8],
-    toTarget: [14, 0, 10],
-    duration: 10.5,
+    toTarget: [12, 0, 9],
+    duration: 5.8,
     mobileKey: 'hero',
   },
   // 2. Survol bas de la cour élémentaire, des terrains et du Bâtiment Cycle 2
