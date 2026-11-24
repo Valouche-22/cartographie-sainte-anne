@@ -79,9 +79,9 @@ export const App: React.FC = () => {
     return () => mq.removeEventListener('change', update);
   }, []);
 
-  // 3-second total choreographed loading transition (~2.2s intro + 0.82s split-curtain reveal)
+  // 1.5-second choreographed loading screen before the split-curtain reveal
   useEffect(() => {
-    const timer = window.setTimeout(() => setMinLoadDone(true), 2200);
+    const timer = window.setTimeout(() => setMinLoadDone(true), 1500);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -89,7 +89,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (!modelLoaded || !minLoadDone || loadError) return;
     setLoaderExiting(true);
-    const unmountTimer = window.setTimeout(() => setLoaderMounted(false), 880);
+    const unmountTimer = window.setTimeout(() => setLoaderMounted(false), 780);
     return () => window.clearTimeout(unmountTimer);
   }, [modelLoaded, minLoadDone, loadError]);
 

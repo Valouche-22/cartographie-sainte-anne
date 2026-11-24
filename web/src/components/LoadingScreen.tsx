@@ -12,7 +12,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, exiting }) 
 
   useEffect(() => {
     const start = performance.now();
-    const duration = 2120;
+    const duration = 1450;
     let rafId = 0;
 
     const tick = (now: number) => {
@@ -66,11 +66,9 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, exiting }) 
         </span>
       </div>
 
-      {/* Center living prism beam that draws across the equator before cleaving in two */}
+      {/* Center rainbow equator beam that draws across before cleaving in two */}
       <div className="loader-seam-wrap" aria-hidden="true">
-        <div className="loader-seam-line">
-          <span className="loader-seam-pulse" />
-        </div>
+        <div className="loader-seam-line" />
         <div className="loader-seam-halo" />
       </div>
     </div>

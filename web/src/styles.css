@@ -1078,7 +1078,7 @@ body {
   align-items: center;
   overflow: hidden;
   will-change: transform;
-  transition: transform 0.82s cubic-bezier(0.76, 0, 0.24, 1), box-shadow 0.45s ease;
+  transition: transform 0.72s cubic-bezier(0.76, 0, 0.24, 1), box-shadow 0.4s ease;
 }
 
 .loader-curtain-top {
@@ -1181,17 +1181,7 @@ body {
   transform-origin: center center;
   overflow: hidden;
   will-change: transform;
-  animation: loaderSeamExpand 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.06s forwards;
-}
-
-.loader-seam-pulse {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -26%;
-  width: 26%;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.88) 50%, rgba(255, 255, 255, 0) 100%);
-  animation: loaderSeamPulse 1.45s cubic-bezier(0.35, 0.1, 0.25, 1) 0.9s infinite;
+  animation: loaderSeamExpand 0.62s cubic-bezier(0.22, 1, 0.36, 1) 0.04s forwards;
 }
 
 .loader-seam-halo {
@@ -1205,7 +1195,7 @@ body {
   opacity: 0;
   transform: scaleX(0);
   transform-origin: center center;
-  animation: loaderHaloExpand 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.14s forwards;
+  animation: loaderHaloExpand 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
 }
 
 /* Refined split display typography emerging directly out of the rainbow horizon */
@@ -1250,7 +1240,7 @@ body {
 .loader-word-top {
   transform: translate3d(0, 118%, 0);
   opacity: 0;
-  animation: loaderWordRise 0.86s cubic-bezier(0.16, 1, 0.3, 1) 0.38s forwards;
+  animation: loaderWordRise 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.24s forwards;
 }
 
 .loader-word-bottom {
@@ -1258,7 +1248,7 @@ body {
   letter-spacing: -0.015em;
   transform: translate3d(0, -118%, 0);
   opacity: 0;
-  animation: loaderWordDrop 0.86s cubic-bezier(0.16, 1, 0.3, 1) 0.48s forwards;
+  animation: loaderWordDrop 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.32s forwards;
 }
 
 .loader-city-clip {
@@ -1284,7 +1274,7 @@ body {
   color: #64748b;
   opacity: 0;
   transform: translate3d(0, -100%, 0);
-  animation: loaderCityReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.92s forwards;
+  animation: loaderCityReveal 0.58s cubic-bezier(0.16, 1, 0.3, 1) 0.64s forwards;
 }
 
 /* Discreet tabular counter in bottom-right corner */
