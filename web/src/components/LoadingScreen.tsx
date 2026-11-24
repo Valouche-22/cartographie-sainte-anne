@@ -61,9 +61,11 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, exiting }) 
         <div className="loader-city-clip">
           <span className="loader-city">Pordic</span>
         </div>
-        <span className="loader-counter" aria-hidden="true">
-          {formatted} %
-        </span>
+        <div className="loader-status">
+          <span className="loader-status-label">Chargement en cours</span>
+          <span className="loader-status-sep" aria-hidden="true">·</span>
+          <span className="loader-status-pct">{formatted} %</span>
+        </div>
       </div>
 
       {/* Center rainbow equator beam that draws across before cleaving in two */}

@@ -1277,21 +1277,44 @@ body {
   animation: loaderCityReveal 0.58s cubic-bezier(0.16, 1, 0.3, 1) 0.64s forwards;
 }
 
-/* Discreet tabular counter in bottom-right corner */
-.loader-counter {
-  position: absolute;
-  right: clamp(20px, 3.4vw, 36px);
-  bottom: clamp(16px, 3vh, 28px);
+/* Clear, sober loading status + percentage directly below Pordic */
+.loader-status {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 26px;
   font-family: 'Inter', sans-serif;
-  font-size: clamp(0.84rem, 1.25vw, 0.96rem);
-  font-weight: 500;
+  font-size: clamp(0.82rem, 1.15vw, 0.92rem);
   line-height: 1;
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
-  color: rgba(15, 37, 68, 0.32);
   user-select: none;
   opacity: 0;
-  animation: loaderCounterFade 0.6s ease-out 0.22s forwards;
+  animation: loaderCounterFade 0.55s ease-out 0.35s forwards;
+  transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.loader-screen.is-exiting .loader-status {
+  animation: none;
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+}
+
+.loader-status-label {
+  font-weight: 500;
+  color: #475569;
+}
+
+.loader-status-sep {
+  color: #94a3b8;
+}
+
+.loader-status-pct {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #0f2544;
+  min-width: 3.1em;
+  text-align: left;
 }
 
 @keyframes loaderGlowBloom {
@@ -1389,7 +1412,7 @@ body {
   .loader-seam-halo,
   .loader-word,
   .loader-city,
-  .loader-counter,
+  .loader-status,
   .loader-curtain-glow {
     animation: none;
     opacity: 1;
