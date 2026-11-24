@@ -46,7 +46,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, exiting }) 
       <div className="loader-curtain loader-curtain-top">
         <div className="loader-curtain-glow loader-curtain-glow-top" aria-hidden="true" />
         <div className="loader-word-clip loader-word-clip-top">
-          <span className="loader-word loader-word-top">ÉCOLE</span>
+          <span className="loader-word loader-word-top">École</span>
         </div>
         <div className="loader-lip loader-lip-top" aria-hidden="true" />
       </div>
@@ -56,13 +56,13 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, exiting }) 
         <div className="loader-lip loader-lip-bottom" aria-hidden="true" />
         <div className="loader-curtain-glow loader-curtain-glow-bottom" aria-hidden="true" />
         <div className="loader-word-clip loader-word-clip-bottom">
-          <span className="loader-word loader-word-bottom">SAINTE-ANNE</span>
+          <span className="loader-word loader-word-bottom">Sainte-Anne</span>
         </div>
         <div className="loader-city-clip">
-          <span className="loader-city">PORDIC</span>
+          <span className="loader-city">Pordic</span>
         </div>
         <span className="loader-counter" aria-hidden="true">
-          {formatted}
+          {formatted} %
         </span>
       </div>
 
