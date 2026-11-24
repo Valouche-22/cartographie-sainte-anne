@@ -613,7 +613,21 @@ export const App: React.FC = () => {
 
   const totalChapters = data?.scenes.length || 0;
   const activeSceneId = data?.scenes[activeSceneIndex]?.id || 'ecole';
-  const progressPct = totalChapters > 0 ? ((activeSceneIndex + 1) / totalChapters) * 100 : 0;
+  const subStepFraction =
+    activeSceneId === 'cour'
+      ? courFocus === 'maternelle'
+        ? 1
+        : 0.5
+      : activeSceneId === 'classes'
+        ? classBuildingFocus === 'all'
+          ? 0.25
+          : classBuildingFocus === 'S1'
+            ? 0.5
+            : classBuildingFocus === 'N1'
+              ? 0.75
+              : 1
+        : 1;
+  const progressPct = totalChapters > 0 ? ((activeSceneIndex + subStepFraction) / totalChapters) * 100 : 0;
 
   const showLoader = (!modelLoaded || !minLoadDone) && !loadError;
 
@@ -1136,40 +1150,36 @@ export const App: React.FC = () => {
                   {renderStickyBottom()}
                 </div>
 
-                {sysIdx >= 0 && (
-                  <section className="systemic-page" id="chapter-systeme" data-scene="systeme">
+                {(sysIdx >= 0 || actorsIdx >= 0) && (
+                  <div className="fullpage-band">
                     <div className="fullpage-progress-track" aria-hidden="true">
-                      <div
-                        className="fullpage-progress-fill"
-                        style={{ width: `${((sysIdx + 1) / totalChapters) * 100}%` }}
-                      />
+                      <div className="fullpage-progress-fill" style={{ width: `${progressPct}%` }} />
                     </div>
-                    <SystemicMapPage
-                      stepNumber={sysIdx + 1}
-                      totalSteps={totalChapters}
-                      onPrev={() => stepGuided(-1)}
-                      onNext={() => stepGuided(1)}
-                      stepDots={renderStepDots(sysIdx)}
-                    />
-                  </section>
-                )}
 
-                {actorsIdx >= 0 && (
-                  <section className="actors-page" id="chapter-acteurs" data-scene="acteurs">
-                    <div className="fullpage-progress-track" aria-hidden="true">
-                      <div
-                        className="fullpage-progress-fill"
-                        style={{ width: `${((actorsIdx + 1) / totalChapters) * 100}%` }}
-                      />
-                    </div>
-                    <ActorsPage
-                      stepNumber={actorsIdx + 1}
-                      totalSteps={totalChapters}
-                      onPrev={() => stepGuided(-1)}
-                      onNext={() => stepGuided(1)}
-                      stepDots={renderStepDots(actorsIdx)}
-                    />
-                  </section>
+                    {sysIdx >= 0 && (
+                      <section className="systemic-page" id="chapter-systeme" data-scene="systeme">
+                        <SystemicMapPage
+                          stepNumber={sysIdx + 1}
+                          totalSteps={totalChapters}
+                          onPrev={() => stepGuided(-1)}
+                          onNext={() => stepGuided(1)}
+                          stepDots={renderStepDots(sysIdx)}
+                        />
+                      </section>
+                    )}
+
+                    {actorsIdx >= 0 && (
+                      <section className="actors-page" id="chapter-acteurs" data-scene="acteurs">
+                        <ActorsPage
+                          stepNumber={actorsIdx + 1}
+                          totalSteps={totalChapters}
+                          onPrev={() => stepGuided(-1)}
+                          onNext={() => stepGuided(1)}
+                          stepDots={renderStepDots(actorsIdx)}
+                        />
+                      </section>
+                    )}
+                  </div>
                 )}
 
                 {afterFull.length > 0 && (

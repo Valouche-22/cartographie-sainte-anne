@@ -292,9 +292,7 @@ body {
   right: 0;
   bottom: 0;
   height: 2.5px;
-  background: var(--rainbow-loop);
-  background-size: 200% 100%;
-  animation: argbFlow 4.2s linear infinite;
+  background: var(--rainbow);
 }
 
 @keyframes argbFlow {
@@ -1118,15 +1116,23 @@ body {
   padding: 36px 40px 30px;
 }
 
+.fullpage-band {
+  position: relative;
+  z-index: 30;
+  width: 100%;
+}
+
 .fullpage-progress-track {
-  position: absolute;
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
   height: 3px;
+  margin-bottom: -3px;
   background: rgba(226, 232, 240, 0.72);
   overflow: hidden;
-  z-index: 5;
+  z-index: 35;
+  pointer-events: none;
 }
 
 .fullpage-progress-fill {
