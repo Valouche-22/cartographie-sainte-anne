@@ -220,7 +220,7 @@ const LINKS: MapLink[] = [
     to: 'aesh',
     kind: 'tutelle',
     d: 'M 424 66 L 424 241',
-    label: { text: 'employeur', x: 414, y: 204, anchor: 'end' },
+    label: { text: 'employeur', x: 414, y: 152, anchor: 'end' },
   },
   {
     from: 'etat',
@@ -303,6 +303,14 @@ const LINKS: MapLink[] = [
     kind: 'lien',
     d: 'M 102 173 L 102 241',
     bidirectional: true,
+  },
+  {
+    from: 'cheffe',
+    to: 'enseignants',
+    kind: 'lien',
+    d: 'M 476 173 L 352 241',
+    bidirectional: true,
+    label: { text: 'coordination', x: 392, y: 212, anchor: 'end' },
   },
   {
     from: 'cheffe',
@@ -479,6 +487,9 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
             const sw = activeId && isRelated ? 1.85 : 1.45;
             return (
               <g key={idx} className="sys-link-group" style={{ opacity }}>
+                {lk.from === 'cheffe' && lk.to === 'enseignants' && (
+                  <path d={lk.d} fill="none" stroke="#fcfcfd" strokeWidth={5.5} strokeLinecap="round" />
+                )}
                 <path
                   d={lk.d}
                   fill="none"
