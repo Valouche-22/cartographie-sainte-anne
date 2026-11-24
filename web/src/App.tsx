@@ -6,6 +6,7 @@ import { SchoolScene3D } from './components/SchoolScene3D';
 import { SystemicMapPage } from './components/SystemicMapPage';
 import { ActorsPage } from './components/ActorsPage';
 import { CreditsPage } from './components/CreditsPage';
+import { LoadingScreen } from './components/LoadingScreen';
 import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from './types';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -32,6 +33,8 @@ export const App: React.FC = () => {
   const [data, setData] = useState<SchoolData | null>(null);
   const [minLoadDone, setMinLoadDone] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
+  const [loaderExiting, setLoaderExiting] = useState(false);
+  const [loaderMounted, setLoaderMounted] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showScrollCue, setShowScrollCue] = useState(false);
 
@@ -76,11 +79,19 @@ export const App: React.FC = () => {
     return () => mq.removeEventListener('change', update);
   }, []);
 
-  // Enforce a 1.5-second minimum loading screen duration (bar animates smoothly via GPU CSS keyframes)
+  // Enforce a 3-second choreographed loading screen duration
   useEffect(() => {
-    const timer = window.setTimeout(() => setMinLoadDone(true), 1500);
+    const timer = window.setTimeout(() => setMinLoadDone(true), 3000);
     return () => window.clearTimeout(timer);
   }, []);
+
+  // Smooth dissolve exit once both the 3s sequence and 3D model load are complete
+  useEffect(() => {
+    if (!modelLoaded || !minLoadDone || loadError) return;
+    setLoaderExiting(true);
+    const unmountTimer = window.setTimeout(() => setLoaderMounted(false), 640);
+    return () => window.clearTimeout(unmountTimer);
+  }, [modelLoaded, minLoadDone, loadError]);
 
   // Context-aware inactivity delay for the "Faire défiler vers le bas" hint:
   // hides immediately on any page or sub-viewpoint change, then reappears only if the user hasn't scrolled:
@@ -629,18 +640,11 @@ export const App: React.FC = () => {
         : 1;
   const progressPct = totalChapters > 0 ? ((activeSceneIndex + subStepFraction) / totalChapters) * 100 : 0;
 
-  const showLoader = (!modelLoaded || !minLoadDone) && !loadError;
+  const loaderReady = modelLoaded && minLoadDone;
 
   return (
     <>
-      {showLoader && (
-        <div className="loader-screen">
-          <p className="loader-title">École Sainte-Anne</p>
-          <div className="loader-bar-wrap">
-            <div className="loader-bar" />
-          </div>
-        </div>
-      )}
+      {loaderMounted && !loadError && <LoadingScreen ready={loaderReady} exiting={loaderExiting} />}
 
       {loadError && (
         <div className="loader-screen">
