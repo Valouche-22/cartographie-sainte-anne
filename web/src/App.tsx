@@ -68,8 +68,10 @@ export const App: React.FC = () => {
   const ecoleCarouselRef = useRef<HTMLDivElement | null>(null);
   const classFocusRef = useRef<'all' | 'S1' | 'N1' | 'E2'>('all');
   const courFocusRef = useRef<'elementaire' | 'maternelle'>('elementaire');
+  const loaderLockedRef = useRef(true);
   classFocusRef.current = classBuildingFocus;
   courFocusRef.current = courFocus;
+  loaderLockedRef.current = loaderMounted && !loadError;
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 860px)');
@@ -92,6 +94,25 @@ export const App: React.FC = () => {
     const unmountTimer = window.setTimeout(() => setLoaderMounted(false), 780);
     return () => window.clearTimeout(unmountTimer);
   }, [modelLoaded, minLoadDone, loadError]);
+
+  // Lock page scrolling while the loading screen is active so the user always lands on the Hero cover
+  useEffect(() => {
+    const locked = loaderMounted && !loadError;
+    if (!locked) return;
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      window.scrollTo(0, 0);
+    };
+  }, [loaderMounted, loadError]);
 
   // Context-aware inactivity delay for the "Faire défiler vers le bas" hint:
   // hides immediately on any page or sub-viewpoint change, then reappears only if the user hasn't scrolled:
@@ -352,6 +373,7 @@ export const App: React.FC = () => {
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
+      if (loaderLockedRef.current) return;
       if (Math.abs(e.deltaY) < 8) return;
       const now = performance.now();
       if (now < wheelLockUntilRef.current) return;
@@ -360,6 +382,12 @@ export const App: React.FC = () => {
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
+      if (loaderLockedRef.current) {
+        if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(e.key)) {
+          e.preventDefault();
+        }
+        return;
+      }
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
         e.preventDefault();
         stepGuided(1);
@@ -470,6 +498,7 @@ export const App: React.FC = () => {
     let lastDy = 0;
 
     const onTouchStart = (e: TouchEvent) => {
+      if (loaderLockedRef.current) return;
       if (e.touches.length !== 1) return;
       mobileTweenRef.current?.kill();
       const t = e.touches[0];
