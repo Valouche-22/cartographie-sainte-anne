@@ -10,16 +10,18 @@ Site réalisé par Valentin Sonneville dans le cadre d'un travail universitaire 
 
 ## Parcours de la visite
 
-La visite guidée s'articule en 7 étapes synchronisées avec la caméra 3D, suivies d'une page de crédits et mentions légales :
+La visite guidée s'articule en 9 étapes synchronisées avec la caméra 3D, suivies d'une page de crédits et mentions légales :
 
-1. **École Sainte-Anne** — Présentation générale (effectifs, équipe, bâtiments, horaires, organisation, associations APEL et OGEC, lien avec les familles et transports).
-2. **La cour** — Distinction entre la cour élémentaire (terrains de foot, basket, préau, espace en herbe) et la cour maternelle (préau des maternelles, bac à sable, structure de jeu, draisiennes, tricycles et petits vélos).
-3. **Les salles de classe** — Vue globale puis exploration détaillée par bâtiment (Cycle 1, Cycle 2 et Cycle 3) avec toits escamotables et repérage des 9 classes, de la salle de sieste et de motricité, des sanitaires, du bureau de la directrice, de la salle des profs, des locaux matériels, du local APEL et OGEC et du préfabriqué.
-4. **Cantine et périscolaire** — Restauration scolaire et garderie situées à proximité immédiate de l'école.
-5. **Église Saint-Pierre** — Paroisse de Pordic et lien avec l'école.
-6. **Complexe sportif Louis Auffray** — Salles et terrains municipaux accessibles à pied.
-7. **Médiathèque de l'Ic et La Ville Robert** — Médiathèque municipale, parc attenant et centre culturel communal.
-8. **Crédits et mentions légales** — Institutions, outils utilisés et informations légales.
+1. **École Sainte-Anne** — Présentation générale (statut et tutelles, effectifs, équipe éducative, bâtiments, horaires des cours et APC, liaison école-collège, associations, familles et transports).
+2. **Cartographie systémique** — Schéma interactif avec légende présentant l'établissement comme un système (cadre institutionnel et tutelles, système interne, familles et partenaires locaux ; relations hiérarchiques, collaborations pédagogiques, gestion et partenariats).
+3. **Acteurs et instances** — Rôle de la cheffe d'établissement, des enseignants, des AESH, des ASEM, de l'APEL, de l'OGEC et des instances de concertation (conseil des maîtres, conseils de cycle, conseil d'établissement, équipes éducatives et ESS).
+4. **La cour** — Distinction entre la cour élémentaire (terrains de foot, panier de basket, marelle, préau, bacs végétalisés, espace en herbe) et la cour maternelle (préau des maternelles, bac à sable, structure de jeu, draisiennes, tricycles et petits vélos).
+5. **Les salles de classe** — Vue globale puis exploration détaillée par bâtiment (Cycle 1, Cycle 2 et Cycle 3) avec toits escamotables et repérage des 9 classes (avec répartition PE + ASEM et PE + AESH), de la salle de sieste et de motricité, des sanitaires, du bureau de la cheffe d'établissement, de la salle des enseignants, des locaux matériels, du local APEL et OGEC et du préfabriqué.
+6. **Cantine et périscolaire** — Restauration scolaire et garderie municipales situées à proximité immédiate de l'école.
+7. **Église Saint-Pierre** — Culture religieuse, chœur d'école, catéchèse et messes en lien avec la paroisse de Pordic.
+8. **Complexe sportif Louis Auffray** — Salles et terrains municipaux mis à disposition par la commune pour l'EPS.
+9. **Médiathèque de l'Ic et La Ville Robert** — Médiathèque municipale, parc attenant et centre culturel communal.
+10. **Crédits et mentions légales** — Institutions, outils utilisés et informations légales.
 
 ## Fonctionnalités
 

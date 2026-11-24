@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowDown, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, X } from 'lucide-react';
 import { SchoolScene3D } from './components/SchoolScene3D';
+import { SystemicMapPage } from './components/SystemicMapPage';
 import { ActorsPage } from './components/ActorsPage';
 import { CreditsPage } from './components/CreditsPage';
 import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from './types';
@@ -493,11 +494,14 @@ export const App: React.FC = () => {
             return;
           }
         }
-        const actorsScroll = (e.target as HTMLElement | null)?.closest('.mobile-actors-scroll') as HTMLElement | null;
-        if (actorsScroll) {
-          // Allow native scroll inside mobile actors page; swipe down at top or swipe up at bottom changes slide
-          const atTop = actorsScroll.scrollTop <= 2;
-          const atBottom = actorsScroll.scrollTop + actorsScroll.clientHeight >= actorsScroll.scrollHeight - 2;
+        const fullPageScroll = (e.target as HTMLElement | null)?.closest(
+          '.mobile-actors-scroll, .mobile-sys-scroll'
+        ) as HTMLElement | null;
+        if (fullPageScroll) {
+          // Allow native scroll inside mobile full-page slides; swipe down at top or swipe up at bottom changes slide
+          const atTop = fullPageScroll.scrollTop <= 2;
+          const atBottom =
+            fullPageScroll.scrollTop + fullPageScroll.clientHeight >= fullPageScroll.scrollHeight - 2;
           if (!((atTop && dy > 0) || (atBottom && dy < 0))) {
             axis = 'h';
             return;
@@ -662,7 +666,7 @@ export const App: React.FC = () => {
         {freeExplore ? 'Visite guidée' : 'Vue libre'}
       </button>
 
-      {data && !freeExplore && !isCredits && (isHero || activeSceneId !== 'acteurs') && showScrollCue && (
+      {data && !freeExplore && !isCredits && (isHero || (activeSceneId !== 'acteurs' && activeSceneId !== 'systeme')) && showScrollCue && (
         <button
           type="button"
           className={`scroll-cue ${!isHero ? 'in-split' : ''}`}
@@ -707,7 +711,7 @@ export const App: React.FC = () => {
           )}
 
           {/* TikTok-style vertical rainbow navigation rail on the right edge */}
-          {!isHero && !isCredits && activeSceneId !== 'acteurs' && (
+          {!isHero && !isCredits && activeSceneId !== 'acteurs' && activeSceneId !== 'systeme' && (
             <div className="mobile-reel-rail" role="tablist" aria-label="Étapes de la visite">
               {data.scenes.map((sc, idx) => (
                 <button
@@ -729,6 +733,7 @@ export const App: React.FC = () => {
               <section className="mobile-reel-slide mobile-reel-hero" data-reel-index={0} id="hero-cover">
               <div className="hero-backdrop" />
               <div className="hero-inner">
+                <p className="hero-eyebrow">Cartographie systémique</p>
                 <h1 className="hero-h1">{data.school.name}</h1>
                 <p className="hero-sub">{data.school.city}</p>
                 <button
@@ -743,7 +748,24 @@ export const App: React.FC = () => {
             </section>
 
             {data.scenes.map((sc, idx) =>
-              sc.id === 'acteurs' ? (
+              sc.id === 'systeme' ? (
+                <section
+                  className="mobile-reel-slide mobile-reel-systeme"
+                  key={sc.id}
+                  id={`chapter-${sc.id}`}
+                  data-reel-index={idx + 1}
+                  data-scene={sc.id}
+                >
+                  <div className="mobile-sys-scroll">
+                    <SystemicMapPage
+                      stepNumber={idx + 1}
+                      totalSteps={totalChapters}
+                      onPrev={() => stepGuided(-1)}
+                      onNext={() => stepGuided(1)}
+                    />
+                  </div>
+                </section>
+              ) : sc.id === 'acteurs' ? (
                 <section
                   className="mobile-reel-slide mobile-reel-actors"
                   key={sc.id}
@@ -955,6 +977,7 @@ export const App: React.FC = () => {
           <section className="hero-cover" id="hero-cover">
             <div className="hero-backdrop" />
             <div className="hero-inner">
+              <p className="hero-eyebrow">Cartographie systémique</p>
               <h1 className="hero-h1">{data.school.name}</h1>
               <p className="hero-sub">{data.school.city}</p>
               <button
@@ -968,11 +991,14 @@ export const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Desktop left column + full-width Actors page */}
+          {/* Desktop left column + full-width Systemic Map & Actors pages */}
           {(() => {
+            const sysIdx = data.scenes.findIndex((s) => s.id === 'systeme');
             const actorsIdx = data.scenes.findIndex((s) => s.id === 'acteurs');
-            const beforeActors = actorsIdx >= 0 ? data.scenes.slice(0, actorsIdx) : data.scenes;
-            const afterActors = actorsIdx >= 0 ? data.scenes.slice(actorsIdx + 1) : [];
+            const firstFullIdx = sysIdx >= 0 ? sysIdx : actorsIdx;
+            const lastFullIdx = Math.max(sysIdx, actorsIdx);
+            const beforeFull = firstFullIdx >= 0 ? data.scenes.slice(0, firstFullIdx) : data.scenes;
+            const afterFull = lastFullIdx >= 0 ? data.scenes.slice(lastFullIdx + 1) : [];
 
             const renderStickyTop = () => (
               <div className="col-sticky-top">
@@ -1104,9 +1130,20 @@ export const App: React.FC = () => {
               <>
                 <div className="editorial-column" data-active-scene={activeSceneId}>
                   {renderStickyTop()}
-                  {beforeActors.map((sc, i) => renderDesktopScene(sc, i))}
+                  {beforeFull.map((sc, i) => renderDesktopScene(sc, i))}
                   {renderStickyBottom()}
                 </div>
+
+                {sysIdx >= 0 && (
+                  <section className="systemic-page" id="chapter-systeme" data-scene="systeme">
+                    <SystemicMapPage
+                      stepNumber={sysIdx + 1}
+                      totalSteps={totalChapters}
+                      onPrev={() => stepGuided(-1)}
+                      onNext={() => stepGuided(1)}
+                    />
+                  </section>
+                )}
 
                 {actorsIdx >= 0 && (
                   <section className="actors-page" id="chapter-acteurs" data-scene="acteurs">
@@ -1119,10 +1156,10 @@ export const App: React.FC = () => {
                   </section>
                 )}
 
-                {afterActors.length > 0 && (
+                {afterFull.length > 0 && (
                   <div className="editorial-column" data-active-scene={activeSceneId}>
                     {renderStickyTop()}
-                    {afterActors.map((sc, i) => renderDesktopScene(sc, actorsIdx + 1 + i))}
+                    {afterFull.map((sc, i) => renderDesktopScene(sc, lastFullIdx + 1 + i))}
                     {renderStickyBottom()}
                   </div>
                 )}
