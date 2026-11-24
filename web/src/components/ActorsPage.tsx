@@ -35,13 +35,13 @@ const ACTORS = [
   },
   {
     title: "L'APEL",
-    statut: 'Association de parents bénévoles',
+    statut: "Association de parents d'élèves",
     description:
       "L'APEL rassemble les parents qui souhaitent s'investir dans la vie de l'école. Ils organisent des événements et des ventes, comme la vente de sapins de Noël, tout au long de l'année. L'argent récolté permet de financer des sorties, des activités et du matériel pour les élèves.",
   },
   {
     title: "L'OGEC",
-    statut: 'Association bénévole de gestion',
+    statut: 'Association de gestion financière et matérielle',
     description:
       "L'OGEC s'occupe de tout ce qui permet à l'école de fonctionner en dehors de la classe. Il gère le budget, les bâtiments, leur entretien et le personnel non enseignant. C'est notamment grâce à lui que les locaux sont entretenus et que l'école dispose des moyens matériels nécessaires à son fonctionnement.",
   },

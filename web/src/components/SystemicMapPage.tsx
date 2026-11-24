@@ -41,7 +41,7 @@ const NODES: MapNode[] = [
     y: 42,
     w: 248,
     h: 48,
-    note: "Fixe les programmes et paie les enseignants, les AESH et le mi-temps d'enseignement de la cheffe d'établissement.",
+    note: "Fixe les programmes et paie les enseignants, les AESH ainsi que la part d'enseignement de la cheffe d'établissement.",
   },
   {
     id: 'ddec',
@@ -51,7 +51,7 @@ const NODES: MapNode[] = [
     y: 42,
     w: 210,
     h: 48,
-    note: "Confie sa mission à la cheffe d'établissement et accompagne l'école au sein de l'enseignement catholique.",
+    note: "Confie sa mission à la cheffe d'établissement et suit l'école dans l'enseignement catholique.",
   },
   {
     id: 'commune',
@@ -61,7 +61,7 @@ const NODES: MapNode[] = [
     y: 42,
     w: 240,
     h: 48,
-    note: "Verse une participation financière à l'OGEC et gère les services et équipements utilisés par les élèves.",
+    note: "Aide financièrement l'OGEC grâce au forfait communal et gère les services et équipements utilisés par les élèves.",
   },
 
   // Ligne 2 : Familles, Direction, Gestion, Cantine
@@ -73,7 +73,7 @@ const NODES: MapNode[] = [
     y: 148,
     w: 176,
     h: 50,
-    note: "Échangent régulièrement avec les enseignants et la cheffe d'établissement, et peuvent participer à l'APEL.",
+    note: "Échangent régulièrement avec les enseignants et la cheffe d'établissement (Educartable, mails, rendez-vous) et peuvent s'investir dans l'APEL.",
   },
   {
     id: 'cheffe',
@@ -84,7 +84,7 @@ const NODES: MapNode[] = [
     w: 230,
     h: 50,
     emphasis: 'pilot',
-    note: "Enseigne à mi-temps en CE2-CM1 (payée par l'État) et dirige l'école et l'OGEC (payée en partie par l'OGEC).",
+    note: "Enseigne à mi-temps en CE2-CM1 (payée par l'État) et assure la direction de l'école et de l'OGEC (payée en partie par l'OGEC).",
   },
   {
     id: 'ogec',
@@ -94,7 +94,7 @@ const NODES: MapNode[] = [
     y: 148,
     w: 164,
     h: 50,
-    note: "Gère le budget (avec l'aide de la commune), l'entretien des bâtiments et paie les ASEM ainsi que la part direction.",
+    note: "Gère le budget, l'entretien des bâtiments et paie les ASEM ainsi que la part direction de la cheffe d'établissement.",
   },
   {
     id: 'perisco',
@@ -104,19 +104,19 @@ const NODES: MapNode[] = [
     y: 148,
     w: 194,
     h: 50,
-    note: "Gérés par la commune juste à côté de l'école : les animateurs viennent chercher les élèves dans les classes.",
+    note: "Gérés par la commune juste à côté de l'école : les animateurs viennent chercher les élèves dans les classes pour le midi et la garderie.",
   },
 
   // Ligne 3 : APEL, Équipes en classe, Équipements
   {
     id: 'apel',
     title: 'APEL',
-    sub: 'parents bénévoles · sorties, matériel',
+    sub: "parents d'élèves · sorties, matériel",
     x: 102,
     y: 266,
     w: 176,
     h: 50,
-    note: "Organise des ventes (comme les sapins de Noël) et des événements pour financer des sorties et du matériel.",
+    note: "Organise des événements et des ventes (comme les sapins de Noël) pour financer des sorties et du matériel pour les élèves.",
   },
   {
     id: 'enseignants',
@@ -126,7 +126,7 @@ const NODES: MapNode[] = [
     y: 266,
     w: 172,
     h: 50,
-    note: "11 enseignants payés par l'État qui assurent les cours de la TPS au CM2 et les activités pédagogiques complémentaires.",
+    note: "11 enseignants (dont 4 à mi-temps) payés par l'État. Ils font classe de la TPS au CM2 et assurent les activités pédagogiques complémentaires.",
   },
   {
     id: 'aesh',
@@ -136,7 +136,7 @@ const NODES: MapNode[] = [
     y: 266,
     w: 172,
     h: 50,
-    note: "2 AESH payées par l'État qui aident 3 élèves en classe (CM2 et CE2-CM1) avec les enseignants.",
+    note: "2 AESH payées par l'État qui accompagnent 3 élèves en classe (CM2 et CE2-CM1) avec les enseignants.",
   },
   {
     id: 'asem',
@@ -146,7 +146,7 @@ const NODES: MapNode[] = [
     y: 266,
     w: 164,
     h: 50,
-    note: "Salariées de l'OGEC, elles travaillent avec les enseignants en maternelle (TPS/PS/MS, PS/MS et GS).",
+    note: "Salariées de l'OGEC, elles travaillent avec les enseignants en maternelle (TPS/PS/MS, PS/MS et GS) pour les gestes du quotidien et les activités.",
   },
   {
     id: 'equipements',
@@ -156,7 +156,7 @@ const NODES: MapNode[] = [
     y: 266,
     w: 194,
     h: 50,
-    note: "Mis à disposition par la commune pour le sport, le prêt de livres et les spectacles.",
+    note: "Mis à disposition par la commune de Pordic : le complexe sportif pour le sport, la médiathèque pour les livres et La Ville Robert pour les spectacles.",
   },
 
   // Ligne 4 : Les élèves (au cœur, bien dégagés)
@@ -181,7 +181,7 @@ const NODES: MapNode[] = [
     y: 468,
     w: 204,
     h: 48,
-    note: "Collège en lien avec l'école pour préparer le passage des CM2 en 6e.",
+    note: "Collège catholique de Plérin en lien avec l'école pour préparer l'entrée en 6e des élèves de CM2.",
   },
   {
     id: 'instances',
@@ -191,7 +191,7 @@ const NODES: MapNode[] = [
     y: 468,
     w: 396,
     h: 48,
-    note: "Réunions qui permettent de décider de l'organisation de l'année et de suivre la scolarité des élèves.",
+    note: "Les réunions de l'école où l'on prépare l'organisation de l'année et où l'on suit la scolarité des élèves.",
   },
   {
     id: 'paroisse',
@@ -201,7 +201,7 @@ const NODES: MapNode[] = [
     y: 468,
     w: 216,
     h: 48,
-    note: "3 intervenants et le curé pour la catéchèse et les messes (volontaires), et accueil du chœur d'école en fin d'année.",
+    note: "3 intervenants et le curé pour la catéchèse et les messes (pour les élèves volontaires), et l'église accueille aussi le chœur d'école en fin d'année.",
   },
 ];
 
@@ -540,8 +540,8 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
           <p className="sys-note-placeholder">
             L'État paie les enseignants et les AESH, tandis que l'OGEC gère le budget, les bâtiments et paie les ASEM.
             La cheffe d'établissement enseigne à mi-temps (payée par l'État) et dirige l'école et l'OGEC (payée en
-            partie par l'OGEC). À côté, la commune de Pordic aide à financer l'école et met à disposition la cantine,
-            le périscolaire, le complexe sportif, la médiathèque et La Ville Robert.
+            partie par l'OGEC). La commune de Pordic aide aussi à financer l'école et met à disposition la cantine, le
+            périscolaire, le complexe sportif, la médiathèque et La Ville Robert.
           </p>
         )}
       </div>
@@ -556,7 +556,7 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
           partie par l'OGEC).
         </p>
         <p>
-          À côté, la commune de Pordic aide à financer l'école et met à disposition la cantine, le périscolaire, le
+          La commune de Pordic aide aussi à financer l'école et met à disposition la cantine, le périscolaire, le
           complexe sportif, la médiathèque et La Ville Robert.
         </p>
       </div>

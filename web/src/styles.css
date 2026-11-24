@@ -756,7 +756,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 22px;
+  gap: 10px;
+  padding: 12px 16px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -767,15 +768,16 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 7px 12px;
+  padding: 7px 11px;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--white);
   color: var(--ink-soft);
   font-family: inherit;
-  font-size: 0.78rem;
+  font-size: 0.77rem;
   font-weight: 600;
   cursor: pointer;
+  flex-shrink: 0;
   transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -806,28 +808,30 @@ body {
 .step-dots {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 5px;
 }
 
 .step-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   padding: 0;
   border-radius: 999px;
   border: none;
   background: var(--accent);
   opacity: 0.82;
   cursor: pointer;
+  flex-shrink: 0;
   transition: width 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .step-dot:hover {
   opacity: 1;
-  transform: scale(1.18);
+  transform: scale(1.22);
 }
 
 .step-dot.active {
-  width: 22px;
+  width: 16px;
   opacity: 1;
 }
 
