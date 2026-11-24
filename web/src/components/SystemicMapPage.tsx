@@ -337,7 +337,7 @@ const LINKS: MapLink[] = [
     from: 'enseignants',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 342 291 L 458 348',
+    d: 'M 316 291 L 450 348',
   },
   {
     from: 'aesh',
@@ -349,7 +349,15 @@ const LINKS: MapLink[] = [
     from: 'asem',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 758 291 L 670 348',
+    d: 'M 786 291 L 674 348',
+  },
+  {
+    from: 'enseignants',
+    to: 'asem',
+    kind: 'lien',
+    d: 'M 368 291 L 368 312 L 736 312 L 736 291',
+    bidirectional: true,
+    label: { text: 'maternelle', x: 575, y: 305, anchor: 'middle' },
   },
   {
     from: 'perisco',
@@ -487,8 +495,9 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
             const sw = activeId && isRelated ? 1.85 : 1.45;
             return (
               <g key={idx} className="sys-link-group" style={{ opacity }}>
-                {lk.from === 'cheffe' && lk.to === 'enseignants' && (
-                  <path d={lk.d} fill="none" stroke="#fcfcfd" strokeWidth={5.5} strokeLinecap="round" />
+                {((lk.from === 'cheffe' && lk.to === 'enseignants') ||
+                  (lk.from === 'enseignants' && lk.to === 'asem')) && (
+                  <path d={lk.d} fill="none" stroke="#fcfcfd" strokeWidth={5.5} strokeLinecap="round" strokeLinejoin="round" />
                 )}
                 <path
                   d={lk.d}
