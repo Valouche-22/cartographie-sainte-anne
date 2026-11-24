@@ -8,7 +8,8 @@
   --line: #e2e8f0;
 
   /* Rainbow spectrum + default primary accent */
-  --rainbow: linear-gradient(90deg, #ef4444 0%, #f97316 18%, #eab308 36%, #22c55e 55%, #0ea5e9 76%, #8b5cf6 100%);
+  --rainbow: linear-gradient(90deg, #ef4444 0%, #f97316 12.5%, #eab308 25%, #84cc16 37.5%, #10b981 50%, #06b6d4 62.5%, #3b82f6 75%, #6366f1 87.5%, #a855f7 100%);
+  --rainbow-loop: linear-gradient(90deg, #ef4444 0%, #f97316 10%, #eab308 20%, #84cc16 30%, #10b981 40%, #06b6d4 50%, #3b82f6 60%, #6366f1 70%, #a855f7 82%, #ec4899 91%, #ef4444 100%);
   --accent: #ef4444;
   --accent-text: #dc2626;
   --accent-hover: #dc2626;
@@ -17,7 +18,7 @@
   --accent-glow: rgba(239, 68, 68, 0.22);
 }
 
-/* Per-chapter rainbow spectrum accents (red -> orange -> yellow -> green -> sky -> indigo -> violet) */
+/* Per-chapter 9-step rainbow spectrum accents (distinct hues from red to violet) */
 [data-active-scene='ecole'],
 [data-scene='ecole'] {
   --accent: #ef4444;
@@ -30,26 +31,6 @@
 
 [data-active-scene='systeme'],
 [data-scene='systeme'] {
-  --accent: #f43f5e;
-  --accent-text: #e11d48;
-  --accent-hover: #e11d48;
-  --accent-soft: #fff1f2;
-  --accent-border: #fecdd3;
-  --accent-glow: rgba(244, 63, 94, 0.22);
-}
-
-[data-active-scene='acteurs'],
-[data-scene='acteurs'] {
-  --accent: #f95b3c;
-  --accent-text: #ea580c;
-  --accent-hover: #ea580c;
-  --accent-soft: #fff5f2;
-  --accent-border: #fed7ca;
-  --accent-glow: rgba(249, 91, 60, 0.22);
-}
-
-[data-active-scene='cour'],
-[data-scene='cour'] {
   --accent: #f97316;
   --accent-text: #ea580c;
   --accent-hover: #ea580c;
@@ -58,8 +39,8 @@
   --accent-glow: rgba(249, 115, 22, 0.22);
 }
 
-[data-active-scene='classes'],
-[data-scene='classes'] {
+[data-active-scene='acteurs'],
+[data-scene='acteurs'] {
   --accent: #eab308;
   --accent-text: #ca8a04;
   --accent-hover: #ca8a04;
@@ -68,44 +49,64 @@
   --accent-glow: rgba(234, 179, 8, 0.22);
 }
 
+[data-active-scene='cour'],
+[data-scene='cour'] {
+  --accent: #84cc16;
+  --accent-text: #65a30d;
+  --accent-hover: #65a30d;
+  --accent-soft: #f7fee7;
+  --accent-border: #d9f99d;
+  --accent-glow: rgba(132, 204, 22, 0.22);
+}
+
+[data-active-scene='classes'],
+[data-scene='classes'] {
+  --accent: #10b981;
+  --accent-text: #059669;
+  --accent-hover: #059669;
+  --accent-soft: #ecfdf5;
+  --accent-border: #a7f3d0;
+  --accent-glow: rgba(16, 185, 129, 0.22);
+}
+
 [data-active-scene='cantine-periscolaire'],
 [data-scene='cantine-periscolaire'] {
-  --accent: #22c55e;
-  --accent-text: #16a34a;
-  --accent-hover: #16a34a;
-  --accent-soft: #f0fdf4;
-  --accent-border: #bbf7d0;
-  --accent-glow: rgba(34, 197, 94, 0.22);
+  --accent: #06b6d4;
+  --accent-text: #0891b2;
+  --accent-hover: #0891b2;
+  --accent-soft: #ecfeff;
+  --accent-border: #a5f3fc;
+  --accent-glow: rgba(6, 182, 212, 0.22);
 }
 
 [data-active-scene='eglise'],
 [data-scene='eglise'] {
-  --accent: #0ea5e9;
-  --accent-text: #0284c7;
-  --accent-hover: #0284c7;
-  --accent-soft: #f0f9ff;
-  --accent-border: #bae6fd;
-  --accent-glow: rgba(14, 165, 233, 0.22);
+  --accent: #3b82f6;
+  --accent-text: #2563eb;
+  --accent-hover: #2563eb;
+  --accent-soft: #eff6ff;
+  --accent-border: #bfdbfe;
+  --accent-glow: rgba(59, 130, 246, 0.22);
 }
 
 [data-active-scene='sport'],
 [data-scene='sport'] {
-  --accent: #4f46e5;
-  --accent-text: #4338ca;
-  --accent-hover: #4338ca;
+  --accent: #6366f1;
+  --accent-text: #4f46e5;
+  --accent-hover: #4f46e5;
   --accent-soft: #eef2ff;
   --accent-border: #c7d2fe;
-  --accent-glow: rgba(79, 70, 229, 0.22);
+  --accent-glow: rgba(99, 102, 241, 0.22);
 }
 
 [data-active-scene='culture'],
 [data-scene='culture'] {
-  --accent: #9333ea;
-  --accent-text: #7e22ce;
-  --accent-hover: #7e22ce;
+  --accent: #a855f7;
+  --accent-text: #9333ea;
+  --accent-hover: #9333ea;
   --accent-soft: #faf5ff;
   --accent-border: #e9d5ff;
-  --accent-glow: rgba(147, 51, 234, 0.22);
+  --accent-glow: rgba(168, 85, 247, 0.22);
 }
 
 * {
@@ -291,7 +292,18 @@ body {
   right: 0;
   bottom: 0;
   height: 2.5px;
-  background: var(--rainbow);
+  background: var(--rainbow-loop);
+  background-size: 200% 100%;
+  animation: argbFlow 4.2s linear infinite;
+}
+
+@keyframes argbFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
 }
 
 .hero-start-btn:hover {
@@ -1106,14 +1118,22 @@ body {
   padding: 36px 40px 30px;
 }
 
-.systemic-page::before {
-  content: '';
+.fullpage-progress-track {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 3px;
+  background: rgba(226, 232, 240, 0.72);
+  overflow: hidden;
+  z-index: 5;
+}
+
+.fullpage-progress-fill {
+  height: 100%;
   background: var(--rainbow);
+  background-size: 100vw 100%;
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sys-inner {
@@ -1328,16 +1348,6 @@ body {
   align-items: center;
   justify-content: center;
   padding: 44px 40px 36px;
-}
-
-.actors-page::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--rainbow);
 }
 
 .actors-inner {
@@ -1681,7 +1691,9 @@ body {
   right: 0;
   bottom: 0;
   height: 2.5px;
-  background: var(--rainbow);
+  background: var(--rainbow-loop);
+  background-size: 200% 100%;
+  animation: argbFlow 4.2s linear infinite;
 }
 
 .credits-home-btn:hover {
@@ -2342,6 +2354,11 @@ body {
   .mobile-actors-scroll .actor-desc {
     font-size: 0.82rem;
     line-height: 1.52;
+  }
+
+  .mobile-sys-scroll .sys-footer .step-dots,
+  .mobile-actors-scroll .actors-footer .step-dots {
+    display: none;
   }
 
   .mobile-actors-scroll .actors-footer {

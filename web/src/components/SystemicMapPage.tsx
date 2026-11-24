@@ -6,6 +6,7 @@ interface SystemicMapPageProps {
   totalSteps: number;
   onPrev: () => void;
   onNext: () => void;
+  stepDots?: React.ReactNode;
 }
 
 type LinkKind = 'tutelle' | 'lien' | 'moyens';
@@ -386,6 +387,7 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
   totalSteps,
   onPrev,
   onNext,
+  stepDots,
 }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -587,6 +589,7 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
         <button type="button" className="step-nav-btn" onClick={onPrev}>
           <ChevronUp size={15} /> Précédent
         </button>
+        {stepDots}
         <button type="button" className="step-nav-btn primary" onClick={onNext}>
           Suivant <ChevronDown size={15} />
         </button>

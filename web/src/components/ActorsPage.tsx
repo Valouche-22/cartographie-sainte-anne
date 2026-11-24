@@ -6,6 +6,7 @@ interface ActorsPageProps {
   totalSteps: number;
   onPrev: () => void;
   onNext: () => void;
+  stepDots?: React.ReactNode;
 }
 
 const ACTORS = [
@@ -47,7 +48,7 @@ const ACTORS = [
   },
 ];
 
-export const ActorsPage: React.FC<ActorsPageProps> = ({ stepNumber, totalSteps, onPrev, onNext }) => {
+export const ActorsPage: React.FC<ActorsPageProps> = ({ stepNumber, totalSteps, onPrev, onNext, stepDots }) => {
   return (
     <div className="actors-inner">
       <header className="actors-header">
@@ -76,6 +77,7 @@ export const ActorsPage: React.FC<ActorsPageProps> = ({ stepNumber, totalSteps, 
         <button type="button" className="step-nav-btn" onClick={onPrev}>
           <ChevronUp size={15} /> Précédent
         </button>
+        {stepDots}
         <button type="button" className="step-nav-btn primary" onClick={onNext}>
           Suivant <ChevronDown size={15} />
         </button>

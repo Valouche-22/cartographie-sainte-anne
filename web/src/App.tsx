@@ -1012,24 +1012,28 @@ export const App: React.FC = () => {
               </div>
             );
 
+            const renderStepDots = (activeIdx: number) => (
+              <div className="step-dots" role="tablist" aria-label="Étapes de la visite">
+                {data.scenes.map((sc, idx) => (
+                  <button
+                    key={sc.id}
+                    type="button"
+                    data-scene={sc.id}
+                    className={`step-dot ${idx === activeIdx ? 'active' : ''}`}
+                    onClick={() => goToSection(idx + 1)}
+                    title={sc.title}
+                    aria-label={`Aller à ${sc.title}`}
+                  />
+                ))}
+              </div>
+            );
+
             const renderStickyBottom = () => (
               <div className="col-sticky-bottom">
                 <button type="button" className="step-nav-btn" onClick={() => stepGuided(-1)}>
                   <ChevronUp size={15} /> Précédent
                 </button>
-                <div className="step-dots" role="tablist" aria-label="Étapes de la visite">
-                  {data.scenes.map((sc, idx) => (
-                    <button
-                      key={sc.id}
-                      type="button"
-                      data-scene={sc.id}
-                      className={`step-dot ${idx === activeSceneIndex ? 'active' : ''}`}
-                      onClick={() => goToSection(idx + 1)}
-                      title={sc.title}
-                      aria-label={`Aller à ${sc.title}`}
-                    />
-                  ))}
-                </div>
+                {renderStepDots(activeSceneIndex)}
                 <button type="button" className="step-nav-btn primary" onClick={() => stepGuided(1)}>
                   Suivant <ChevronDown size={15} />
                 </button>
@@ -1134,22 +1138,36 @@ export const App: React.FC = () => {
 
                 {sysIdx >= 0 && (
                   <section className="systemic-page" id="chapter-systeme" data-scene="systeme">
+                    <div className="fullpage-progress-track" aria-hidden="true">
+                      <div
+                        className="fullpage-progress-fill"
+                        style={{ width: `${((sysIdx + 1) / totalChapters) * 100}%` }}
+                      />
+                    </div>
                     <SystemicMapPage
                       stepNumber={sysIdx + 1}
                       totalSteps={totalChapters}
                       onPrev={() => stepGuided(-1)}
                       onNext={() => stepGuided(1)}
+                      stepDots={renderStepDots(sysIdx)}
                     />
                   </section>
                 )}
 
                 {actorsIdx >= 0 && (
                   <section className="actors-page" id="chapter-acteurs" data-scene="acteurs">
+                    <div className="fullpage-progress-track" aria-hidden="true">
+                      <div
+                        className="fullpage-progress-fill"
+                        style={{ width: `${((actorsIdx + 1) / totalChapters) * 100}%` }}
+                      />
+                    </div>
                     <ActorsPage
                       stepNumber={actorsIdx + 1}
                       totalSteps={totalChapters}
                       onPrev={() => stepGuided(-1)}
                       onNext={() => stepGuided(1)}
+                      stepDots={renderStepDots(actorsIdx)}
                     />
                   </section>
                 )}
