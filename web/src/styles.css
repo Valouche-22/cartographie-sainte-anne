@@ -1608,11 +1608,10 @@ body {
 }
 
 .sys-note-bar {
-  height: 70px;
+  min-height: 70px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  overflow: hidden;
 }
 
 .sys-note-text,
@@ -1657,12 +1656,61 @@ body {
   }
 
   .sys-note-bar {
-    height: 62px;
+    min-height: 62px;
   }
 
   .sys-note-text,
   .sys-note-placeholder {
     font-size: 0.78rem;
+  }
+
+  .sys-footer {
+    padding-top: 6px;
+  }
+}
+
+/* Compact small laptop PC screens (e.g. 1280x720, 1366x768, 125%-150% Windows DPI) */
+@media (min-width: 861px) and (max-height: 740px) {
+  .systemic-page {
+    padding: 12px 24px 10px;
+  }
+
+  .sys-inner {
+    gap: 7px;
+  }
+
+  .sys-header {
+    padding-bottom: 6px;
+  }
+
+  .sys-title {
+    font-size: 1.32rem;
+  }
+
+  .sys-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .sys-legend-item {
+    font-size: 0.75rem;
+  }
+
+  .sys-canvas-wrap {
+    padding: 8px 10px;
+  }
+
+  .sys-svg {
+    max-height: 50vh;
+  }
+
+  .sys-note-bar {
+    min-height: 48px;
+  }
+
+  .sys-note-text,
+  .sys-note-placeholder {
+    font-size: 0.74rem;
+    line-height: 1.38;
   }
 
   .sys-footer {
@@ -1802,6 +1850,55 @@ body {
 
   .actors-footer {
     padding-top: 12px;
+  }
+}
+
+@media (min-width: 861px) and (max-height: 740px) {
+  .actors-page {
+    padding: 14px 28px 12px;
+  }
+
+  .actors-inner {
+    gap: 12px;
+  }
+
+  .actors-header {
+    padding-bottom: 8px;
+  }
+
+  .actors-title {
+    font-size: 1.35rem;
+  }
+
+  .actors-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .actors-grid {
+    column-gap: 28px;
+    row-gap: 10px;
+  }
+
+  .actor-entry {
+    padding-top: 8px;
+    gap: 3px;
+  }
+
+  .actor-name {
+    font-size: 0.9rem;
+  }
+
+  .actor-statut {
+    font-size: 0.72rem;
+  }
+
+  .actor-desc {
+    font-size: 0.76rem;
+    line-height: 1.4;
+  }
+
+  .actors-footer {
+    padding-top: 8px;
   }
 }
 
@@ -2085,6 +2182,79 @@ body {
   .credits-legal-list {
     font-size: 0.78rem;
     line-height: 1.44;
+  }
+}
+
+@media (min-width: 861px) and (max-height: 740px) {
+  .credits-page {
+    padding: 14px 24px 12px;
+  }
+
+  .credits-inner {
+    gap: 10px;
+  }
+
+  .credits-header {
+    padding-bottom: 8px;
+  }
+
+  .credits-title {
+    font-size: 1.35rem;
+  }
+
+  .credits-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .credits-section-label {
+    margin-bottom: 6px;
+    font-size: 0.74rem;
+  }
+
+  .credits-inst-card {
+    padding: 8px 10px 6px;
+    gap: 5px;
+  }
+
+  .credits-inst-logo-wrap {
+    height: 34px;
+  }
+
+  .credits-inst-name {
+    font-size: 0.72rem;
+  }
+
+  .credits-tools-grid {
+    gap: 6px;
+  }
+
+  .credits-tool-item {
+    padding: 6px 4px 5px;
+    gap: 4px;
+  }
+
+  .credits-tool-icon-wrap {
+    width: 22px;
+    height: 22px;
+  }
+
+  .credits-tool-name {
+    font-size: 0.67rem;
+  }
+
+  .credits-legal-grid {
+    padding-top: 10px;
+    gap: 16px;
+  }
+
+  .credits-text,
+  .credits-legal-list {
+    font-size: 0.74rem;
+    line-height: 1.38;
+  }
+
+  .credits-legal-list {
+    gap: 4px;
   }
 }
 
