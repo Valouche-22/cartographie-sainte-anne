@@ -37,9 +37,9 @@ const NODES: MapNode[] = [
     id: 'etat',
     title: 'État (Éducation nationale)',
     sub: 'programmes · salaires PE et AESH',
-    x: 310,
+    x: 314,
     y: 42,
-    w: 244,
+    w: 248,
     h: 48,
     note: "Fixe les programmes et paie les enseignants, les AESH et le mi-temps d'enseignement de la cheffe d'établissement.",
   },
@@ -57,7 +57,7 @@ const NODES: MapNode[] = [
     id: 'commune',
     title: 'Commune de Pordic',
     sub: 'forfait communal · services municipaux',
-    x: 920,
+    x: 922,
     y: 42,
     w: 240,
     h: 48,
@@ -79,9 +79,9 @@ const NODES: MapNode[] = [
     id: 'cheffe',
     title: "Cheffe d'établissement",
     sub: 'direction (OGEC) · CE2-CM1 (État)',
-    x: 562,
+    x: 556,
     y: 148,
-    w: 232,
+    w: 230,
     h: 50,
     emphasis: 'pilot',
     note: "Enseigne à mi-temps en CE2-CM1 (payée par l'État) et dirige l'école et l'OGEC (payée en partie par l'OGEC).",
@@ -90,9 +90,9 @@ const NODES: MapNode[] = [
     id: 'ogec',
     title: 'OGEC',
     sub: 'budget · locaux · employeur',
-    x: 794,
+    x: 800,
     y: 148,
-    w: 168,
+    w: 164,
     h: 50,
     note: "Gère le budget (avec l'aide de la commune), l'entretien des bâtiments et paie les ASEM ainsi que la part direction.",
   },
@@ -100,9 +100,9 @@ const NODES: MapNode[] = [
     id: 'perisco',
     title: 'Cantine et périscolaire',
     sub: 'repas · garderie · animateurs',
-    x: 1004,
+    x: 1006,
     y: 148,
-    w: 196,
+    w: 194,
     h: 50,
     note: "Gérés par la commune juste à côté de l'école : les animateurs viennent chercher les élèves dans les classes.",
   },
@@ -142,9 +142,9 @@ const NODES: MapNode[] = [
     id: 'asem',
     title: 'ASEM',
     sub: 'maternelle · salariées OGEC',
-    x: 794,
+    x: 800,
     y: 266,
-    w: 168,
+    w: 164,
     h: 50,
     note: "Salariées de l'OGEC, elles travaillent avec les enseignants en maternelle (TPS/PS/MS, PS/MS et GS).",
   },
@@ -152,9 +152,9 @@ const NODES: MapNode[] = [
     id: 'equipements',
     title: 'Équipements municipaux',
     sub: 'sport · médiathèque · Ville Robert',
-    x: 1004,
+    x: 1006,
     y: 266,
-    w: 196,
+    w: 194,
     h: 50,
     note: "Mis à disposition par la commune pour le sport, le prêt de livres et les spectacles.",
   },
@@ -164,7 +164,7 @@ const NODES: MapNode[] = [
     id: 'eleves',
     title: 'Les élèves',
     sub: '220 élèves · 9 classes · TPS au CM2',
-    x: 562,
+    x: 560,
     y: 374,
     w: 256,
     h: 52,
@@ -187,7 +187,7 @@ const NODES: MapNode[] = [
     id: 'instances',
     title: "Instances de l'école",
     sub: "conseil des maîtres · cycles · conseil d'établissement · ESS",
-    x: 562,
+    x: 560,
     y: 468,
     w: 396,
     h: 48,
@@ -212,55 +212,56 @@ const LINKS: MapLink[] = [
     to: 'enseignants',
     kind: 'tutelle',
     d: 'M 294 66 L 294 241',
-    label: { text: 'employeur', x: 286, y: 148, anchor: 'end' },
+    label: { text: 'employeur', x: 284, y: 152, anchor: 'end' },
   },
   {
     from: 'etat',
     to: 'aesh',
     kind: 'tutelle',
-    d: 'M 412 66 L 412 241',
+    d: 'M 424 66 L 424 241',
+    label: { text: 'employeur', x: 414, y: 204, anchor: 'end' },
   },
   {
     from: 'etat',
     to: 'cheffe',
     kind: 'tutelle',
-    d: 'M 432 62 L 496 123',
-    label: { text: "contrat d'État", x: 472, y: 88, anchor: 'start' },
+    d: 'M 436 62 L 494 123',
+    label: { text: "contrat d'État", x: 478, y: 88, anchor: 'start' },
   },
   {
     from: 'ddec',
     to: 'cheffe',
     kind: 'tutelle',
     d: 'M 590 66 L 590 123',
-    label: { text: 'tutelle', x: 598, y: 96, anchor: 'start' },
+    label: { text: 'tutelle', x: 600, y: 96, anchor: 'start' },
   },
   {
     from: 'ogec',
     to: 'cheffe',
     kind: 'tutelle',
-    d: 'M 710 148 L 678 148',
+    d: 'M 718 148 L 671 148',
     bidirectional: true,
-    label: { text: 'OGEC', x: 694, y: 140, anchor: 'middle' },
+    label: { text: 'direction', x: 694, y: 138, anchor: 'middle' },
   },
   {
     from: 'ogec',
     to: 'asem',
     kind: 'tutelle',
-    d: 'M 794 173 L 794 241',
-    label: { text: 'employeur', x: 802, y: 210, anchor: 'start' },
+    d: 'M 800 173 L 800 241',
+    label: { text: 'employeur', x: 810, y: 210, anchor: 'start' },
   },
   {
     from: 'commune',
     to: 'perisco',
     kind: 'tutelle',
-    d: 'M 986 66 L 986 123',
-    label: { text: 'gère', x: 994, y: 98, anchor: 'start' },
+    d: 'M 988 66 L 988 123',
+    label: { text: 'gère', x: 998, y: 98, anchor: 'start' },
   },
   {
     from: 'commune',
     to: 'equipements',
     kind: 'tutelle',
-    d: 'M 1040 42 L 1112 42 L 1112 266 L 1102 266',
+    d: 'M 1042 42 L 1114 42 L 1114 266 L 1103 266',
   },
 
   // Financement et locaux (vert pointillé)
@@ -268,22 +269,22 @@ const LINKS: MapLink[] = [
     from: 'commune',
     to: 'ogec',
     kind: 'moyens',
-    d: 'M 862 66 L 798 123',
-    label: { text: 'forfait communal', x: 816, y: 92, anchor: 'end' },
+    d: 'M 866 66 L 802 123',
+    label: { text: 'forfait communal', x: 822, y: 90, anchor: 'end' },
   },
   {
     from: 'apel',
     to: 'eleves',
     kind: 'moyens',
-    d: 'M 190 278 L 434 366',
-    label: { text: 'sorties et matériel', x: 282, y: 334, anchor: 'middle' },
+    d: 'M 190 278 L 432 366',
+    label: { text: 'sorties et matériel', x: 300, y: 332, anchor: 'middle' },
   },
   {
     from: 'equipements',
     to: 'eleves',
     kind: 'moyens',
-    d: 'M 964 291 L 964 374 L 690 374',
-    label: { text: 'prêt / accès', x: 856, y: 366, anchor: 'middle' },
+    d: 'M 966 291 L 966 374 L 688 374',
+    label: { text: 'prêt / accès', x: 836, y: 365, anchor: 'middle' },
   },
 
   // Collaboration (bleu)
@@ -293,6 +294,7 @@ const LINKS: MapLink[] = [
     kind: 'lien',
     d: 'M 190 164 L 246 241',
     bidirectional: true,
+    label: { text: 'suivi', x: 204, y: 210, anchor: 'end' },
   },
   {
     from: 'familles',
@@ -320,12 +322,13 @@ const LINKS: MapLink[] = [
     to: 'eleves',
     kind: 'lien',
     d: 'M 632 173 L 632 348',
+    label: { text: 'CE2-CM1', x: 642, y: 266, anchor: 'start' },
   },
   {
     from: 'enseignants',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 342 291 L 460 348',
+    d: 'M 342 291 L 458 348',
   },
   {
     from: 'aesh',
@@ -337,37 +340,38 @@ const LINKS: MapLink[] = [
     from: 'asem',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 754 291 L 672 348',
+    d: 'M 758 291 L 670 348',
   },
   {
     from: 'perisco',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 906 164 L 892 164 L 892 332 L 690 356',
+    d: 'M 909 164 L 896 164 L 896 332 L 688 356',
     bidirectional: true,
-    label: { text: 'midi / soir', x: 852, y: 326, anchor: 'end' },
+    label: { text: 'midi / soir', x: 878, y: 325, anchor: 'end' },
   },
   {
     from: 'eleves',
     to: 'instances',
     kind: 'lien',
-    d: 'M 562 400 L 562 444',
+    d: 'M 560 400 L 560 444',
     bidirectional: true,
   },
   {
     from: 'college',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 230 444 L 440 398',
+    d: 'M 230 444 L 438 398',
     bidirectional: true,
-    label: { text: 'lien CM2-6e', x: 312, y: 416, anchor: 'middle' },
+    label: { text: 'lien CM2-6e', x: 324, y: 416, anchor: 'middle' },
   },
   {
     from: 'paroisse',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 886 444 L 686 398',
+    d: 'M 886 444 L 684 398',
     bidirectional: true,
+    label: { text: 'paroisse', x: 794, y: 416, anchor: 'middle' },
   },
 ];
 
@@ -429,7 +433,7 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
       <div className="sys-canvas-wrap">
         <svg
           className="sys-svg"
-          viewBox="0 0 1126 504"
+          viewBox="0 0 1128 504"
           role="img"
           aria-label="Schéma des relations entre l'école Sainte-Anne, ses tutelles et ses partenaires"
           onClick={(e) => {
@@ -451,7 +455,7 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
           {/* Links */}
           {LINKS.map((lk, idx) => {
             const isRelated = !activeId || lk.from === activeId || lk.to === activeId;
-            const opacity = activeId ? (isRelated ? 0.95 : 0.14) : 0.78;
+            const opacity = activeId ? (isRelated ? 0.96 : 0.14) : 0.78;
             const sw = activeId && isRelated ? 2.2 : 1.6;
             return (
               <g key={idx} className="sys-link-group" style={{ opacity }}>
@@ -534,10 +538,10 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
           </p>
         ) : (
           <p className="sys-note-placeholder">
-            Pour résumer simplement : l'État paie les enseignants et les AESH, tandis que l'OGEC gère le budget, les
-            bâtiments et paie les ASEM. La cheffe d'établissement enseigne à mi-temps (payée par l'État) et dirige
-            l'école et l'OGEC (payée en partie par l'OGEC). À côté, la commune de Pordic aide à financer l'école et
-            met à disposition la cantine, le périscolaire, le complexe sportif, la médiathèque et La Ville Robert.
+            L'État paie les enseignants et les AESH, tandis que l'OGEC gère le budget, les bâtiments et paie les ASEM.
+            La cheffe d'établissement enseigne à mi-temps (payée par l'État) et dirige l'école et l'OGEC (payée en
+            partie par l'OGEC). À côté, la commune de Pordic aide à financer l'école et met à disposition la cantine,
+            le périscolaire, le complexe sportif, la médiathèque et La Ville Robert.
           </p>
         )}
       </div>
@@ -545,8 +549,7 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
       {/* Mobile concise reading version */}
       <div className="sys-mobile-list">
         <p>
-          Pour résumer simplement : l'État paie les enseignants et les AESH, tandis que l'OGEC gère le budget, les
-          bâtiments et paie les ASEM.
+          L'État paie les enseignants et les AESH, tandis que l'OGEC gère le budget, les bâtiments et paie les ASEM.
         </p>
         <p>
           La cheffe d'établissement enseigne à mi-temps (payée par l'État) et dirige l'école et l'OGEC (payée en

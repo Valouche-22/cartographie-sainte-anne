@@ -1195,7 +1195,11 @@ body {
   font-family: 'Inter', sans-serif;
   font-size: 9.8px;
   font-weight: 500;
-  fill: #64748b;
+  fill: #475569;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 4.5px;
+  stroke-linejoin: round;
 }
 
 .sys-node {
@@ -1204,14 +1208,14 @@ body {
 }
 
 .sys-node.is-dimmed {
-  opacity: 0.28;
+  opacity: 0.34;
 }
 
 .sys-node-rect {
   fill: #ffffff;
   stroke: #cbd5e1;
   stroke-width: 1.25;
-  transition: stroke 0.16s ease, stroke-width 0.16s ease;
+  transition: stroke 0.16s ease, stroke-width 0.16s ease, filter 0.16s ease;
 }
 
 .sys-node-pilot .sys-node-rect {
@@ -1229,6 +1233,7 @@ body {
 .sys-node.is-selected .sys-node-rect {
   stroke: #0f172a;
   stroke-width: 2;
+  filter: drop-shadow(0 3px 8px rgba(15, 23, 42, 0.08));
 }
 
 .sys-node-title {
@@ -1248,9 +1253,11 @@ body {
 }
 
 .sys-note-bar {
-  min-height: 40px;
+  height: 66px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
 .sys-note-text,
@@ -1295,7 +1302,7 @@ body {
   }
 
   .sys-note-bar {
-    min-height: 34px;
+    height: 58px;
   }
 
   .sys-note-text,
