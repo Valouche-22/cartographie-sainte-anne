@@ -1672,14 +1672,18 @@ body {
 
 .credits-home-btn {
   position: relative;
-  overflow: hidden;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 18px 11px;
+  padding: 9px 18px;
   border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #ffffff;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    var(--rainbow-loop) border-box;
+  background-size: 100% 100%, 200% 100%;
+  background-position: 0 0, 0% 50%;
+  animation: argbBorderFlow 4.2s linear infinite;
   color: var(--ink);
   font-family: inherit;
   font-size: 0.82rem;
@@ -1687,25 +1691,21 @@ body {
   cursor: pointer;
   white-space: nowrap;
   box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.credits-home-btn::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2.5px;
-  background: var(--rainbow-loop);
-  background-size: 200% 100%;
-  animation: argbFlow 4.2s linear infinite;
+@keyframes argbBorderFlow {
+  0% {
+    background-position: 0 0, 0% 50%;
+  }
+  100% {
+    background-position: 0 0, 200% 50%;
+  }
 }
 
 .credits-home-btn:hover {
-  border-color: #94a3b8;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
 }
 
 @media (min-width: 861px) and (max-height: 860px) {
