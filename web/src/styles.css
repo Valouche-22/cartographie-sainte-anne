@@ -1161,26 +1161,20 @@ body {
   gap: 8px;
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--ink-soft);
+  color: #3f4a59;
 }
 
-.sys-legend-line {
-  width: 22px;
-  height: 0;
-  border-top: 2px solid currentColor;
+.sys-legend-swatch {
+  display: block;
   flex-shrink: 0;
-}
-
-.sys-legend-line.is-dashed {
-  border-top-style: dashed;
 }
 
 .sys-canvas-wrap {
   width: 100%;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 12px 14px;
+  background: #fcfcfd;
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 14px 16px;
 }
 
 .sys-svg {
@@ -1196,13 +1190,13 @@ body {
 }
 
 .sys-edge-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 9.8px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 10px;
   font-weight: 500;
-  fill: #475569;
+  fill: #3f4a59;
   paint-order: stroke;
-  stroke: #ffffff;
-  stroke-width: 4.5px;
+  stroke: #fcfcfd;
+  stroke-width: 5.5px;
   stroke-linejoin: round;
 }
 
@@ -1217,47 +1211,50 @@ body {
 
 .sys-node-rect {
   fill: #ffffff;
-  stroke: #cbd5e1;
-  stroke-width: 1.25;
+  stroke: #c5cdd8;
+  stroke-width: 1.15;
+  filter: drop-shadow(0 1px 1.5px rgba(30, 41, 59, 0.04));
   transition: stroke 0.16s ease, stroke-width 0.16s ease, filter 0.16s ease;
 }
 
 .sys-node-pilot .sys-node-rect {
-  stroke: #334155;
-  stroke-width: 1.6;
+  fill: #f8fafc;
+  stroke: #475569;
+  stroke-width: 1.45;
 }
 
 .sys-node-center .sys-node-rect {
-  fill: #f8fafc;
-  stroke: #0f172a;
-  stroke-width: 1.9;
+  fill: #f3f6fa;
+  stroke: #2d3748;
+  stroke-width: 1.65;
 }
 
 .sys-node:hover .sys-node-rect,
 .sys-node.is-selected .sys-node-rect {
-  stroke: #0f172a;
-  stroke-width: 2;
-  filter: drop-shadow(0 3px 8px rgba(15, 23, 42, 0.08));
+  stroke: #2d3748;
+  stroke-width: 1.8;
+  filter: drop-shadow(0 3px 8px rgba(30, 41, 59, 0.08));
 }
 
 .sys-node-title {
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  font-size: 12.6px;
-  font-weight: 700;
-  fill: #0f172a;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12.2px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  fill: #1e293b;
   pointer-events: none;
 }
 
 .sys-node-sub {
-  font-family: 'Inter', sans-serif;
-  font-size: 9.9px;
-  font-weight: 500;
-  fill: #64748b;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 10.2px;
+  font-weight: 400;
+  fill: #4b5563;
   pointer-events: none;
 }
 
 .sys-note-bar {
-  height: 66px;
+  height: 70px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -1306,7 +1303,7 @@ body {
   }
 
   .sys-note-bar {
-    height: 58px;
+    height: 62px;
   }
 
   .sys-note-text,

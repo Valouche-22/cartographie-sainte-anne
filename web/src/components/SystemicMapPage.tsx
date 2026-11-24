@@ -36,17 +36,17 @@ const NODES: MapNode[] = [
   {
     id: 'etat',
     title: 'État (Éducation nationale)',
-    sub: 'programmes · salaires PE et AESH',
+    sub: 'Programmes, salaires des PE et AESH',
     x: 314,
     y: 42,
     w: 248,
     h: 48,
-    note: "Fixe les programmes et paie les enseignants, les AESH ainsi que la part d'enseignement de la cheffe d'établissement.",
+    note: "Fixe les programmes et rémunère les enseignants, les AESH ainsi que la part d'enseignement de la cheffe d'établissement.",
   },
   {
     id: 'ddec',
     title: 'Tutelle diocésaine',
-    sub: 'enseignement catholique',
+    sub: 'Enseignement catholique',
     x: 590,
     y: 42,
     w: 210,
@@ -56,19 +56,19 @@ const NODES: MapNode[] = [
   {
     id: 'commune',
     title: 'Commune de Pordic',
-    sub: 'forfait communal · services municipaux',
+    sub: 'Forfait communal et services municipaux',
     x: 922,
     y: 42,
     w: 240,
     h: 48,
-    note: "Aide financièrement l'OGEC grâce au forfait communal et gère les services et équipements utilisés par les élèves.",
+    note: "Participe au financement de l'école grâce au forfait communal et met à disposition des services et équipements municipaux.",
   },
 
   // Ligne 2 : Familles, Direction, Gestion, Cantine
   {
     id: 'familles',
     title: 'Familles',
-    sub: 'Educartable · mails · rencontres',
+    sub: 'Educartable, mails, rencontres',
     x: 102,
     y: 148,
     w: 176,
@@ -78,28 +78,28 @@ const NODES: MapNode[] = [
   {
     id: 'cheffe',
     title: "Cheffe d'établissement",
-    sub: 'direction (OGEC) · CE2-CM1 (État)',
+    sub: 'Direction (OGEC) et mi-temps CE2-CM1',
     x: 556,
     y: 148,
     w: 230,
     h: 50,
     emphasis: 'pilot',
-    note: "Enseigne à mi-temps en CE2-CM1 (payée par l'État) et assure la direction de l'école et de l'OGEC (payée en partie par l'OGEC).",
+    note: "Enseigne à mi-temps en CE2-CM1 (payée par l'État) et assure la direction de l'école ainsi que de l'OGEC (payée en partie par l'OGEC).",
   },
   {
     id: 'ogec',
     title: 'OGEC',
-    sub: 'budget · locaux · employeur',
+    sub: 'Budget, locaux, employeur',
     x: 800,
     y: 148,
     w: 164,
     h: 50,
-    note: "Gère le budget, l'entretien des bâtiments et paie les ASEM ainsi que la part direction de la cheffe d'établissement.",
+    note: "Gère le budget et l'entretien des locaux, rémunère les ASEM (qui en sont également membres) et finance la part direction de la cheffe d'établissement.",
   },
   {
     id: 'perisco',
     title: 'Cantine et périscolaire',
-    sub: 'repas · garderie · animateurs',
+    sub: 'Repas, garderie et animateurs',
     x: 1006,
     y: 148,
     w: 194,
@@ -111,7 +111,7 @@ const NODES: MapNode[] = [
   {
     id: 'apel',
     title: 'APEL',
-    sub: "parents d'élèves · sorties, matériel",
+    sub: 'Parents, sorties et matériel',
     x: 102,
     y: 266,
     w: 176,
@@ -121,37 +121,37 @@ const NODES: MapNode[] = [
   {
     id: 'enseignants',
     title: 'Enseignants (11)',
-    sub: "9 classes · payés par l'État",
+    sub: "9 classes, payés par l'État",
     x: 294,
     y: 266,
     w: 172,
     h: 50,
-    note: "11 enseignants (dont 4 à mi-temps) payés par l'État. Ils font classe de la TPS au CM2 et assurent les activités pédagogiques complémentaires.",
+    note: "11 enseignants (dont 4 à mi-temps) rémunérés par l'État. Ils font classe de la TPS au CM2 et assurent les activités pédagogiques complémentaires.",
   },
   {
     id: 'aesh',
     title: 'AESH (2)',
-    sub: "3 élèves · payées par l'État",
+    sub: "3 élèves, payées par l'État",
     x: 492,
     y: 266,
     w: 172,
     h: 50,
-    note: "2 AESH payées par l'État qui accompagnent 3 élèves en classe (CM2 et CE2-CM1) avec les enseignants.",
+    note: "2 AESH rémunérées par l'État qui accompagnent 3 élèves en classe (CM2 et CE2-CM1) avec les enseignants.",
   },
   {
     id: 'asem',
-    title: 'ASEM',
-    sub: 'maternelle · salariées OGEC',
+    title: 'ASEM (maternelle)',
+    sub: 'Salariées et membres OGEC',
     x: 800,
     y: 266,
     w: 164,
     h: 50,
-    note: "Salariées de l'OGEC, elles travaillent avec les enseignants en maternelle (TPS/PS/MS, PS/MS et GS) pour les gestes du quotidien et les activités.",
+    note: "Salariées et membres de l'OGEC, elles travaillent avec les enseignants en maternelle (TPS/PS/MS, PS/MS et GS) pour les gestes du quotidien et les activités.",
   },
   {
     id: 'equipements',
     title: 'Équipements municipaux',
-    sub: 'sport · médiathèque · Ville Robert',
+    sub: 'Sport, médiathèque, Ville Robert',
     x: 1006,
     y: 266,
     w: 194,
@@ -163,7 +163,7 @@ const NODES: MapNode[] = [
   {
     id: 'eleves',
     title: 'Les élèves',
-    sub: '220 élèves · 9 classes · TPS au CM2',
+    sub: '220 élèves, 9 classes de la TPS au CM2',
     x: 560,
     y: 374,
     w: 256,
@@ -176,7 +176,7 @@ const NODES: MapNode[] = [
   {
     id: 'college',
     title: 'Collège Saint-Pierre',
-    sub: 'Plérin · suite après le CM2',
+    sub: 'Plérin, poursuite après le CM2',
     x: 168,
     y: 468,
     w: 204,
@@ -186,7 +186,7 @@ const NODES: MapNode[] = [
   {
     id: 'instances',
     title: "Instances de l'école",
-    sub: "conseil des maîtres · cycles · conseil d'établissement · ESS",
+    sub: "Conseil des maîtres, de cycle, d'établissement et ESS",
     x: 560,
     y: 468,
     w: 396,
@@ -196,7 +196,7 @@ const NODES: MapNode[] = [
   {
     id: 'paroisse',
     title: 'Paroisse Saint-Pierre',
-    sub: "catéchèse · messes · chœur d'école",
+    sub: "Catéchèse, messes et chœur d'école",
     x: 944,
     y: 468,
     w: 216,
@@ -226,7 +226,7 @@ const LINKS: MapLink[] = [
     to: 'cheffe',
     kind: 'tutelle',
     d: 'M 436 62 L 494 123',
-    label: { text: "contrat d'État", x: 478, y: 88, anchor: 'start' },
+    label: { text: "contrat d'État", x: 472, y: 90, anchor: 'start' },
   },
   {
     from: 'ddec',
@@ -241,7 +241,7 @@ const LINKS: MapLink[] = [
     kind: 'tutelle',
     d: 'M 718 148 L 671 148',
     bidirectional: true,
-    label: { text: 'direction', x: 694, y: 138, anchor: 'middle' },
+    label: { text: 'direction', x: 694, y: 136, anchor: 'middle' },
   },
   {
     from: 'ogec',
@@ -270,21 +270,21 @@ const LINKS: MapLink[] = [
     to: 'ogec',
     kind: 'moyens',
     d: 'M 866 66 L 802 123',
-    label: { text: 'forfait communal', x: 822, y: 90, anchor: 'end' },
+    label: { text: 'forfait communal', x: 826, y: 92, anchor: 'end' },
   },
   {
     from: 'apel',
     to: 'eleves',
     kind: 'moyens',
     d: 'M 190 278 L 432 366',
-    label: { text: 'sorties et matériel', x: 300, y: 332, anchor: 'middle' },
+    label: { text: 'sorties et matériel', x: 300, y: 334, anchor: 'middle' },
   },
   {
     from: 'equipements',
     to: 'eleves',
     kind: 'moyens',
     d: 'M 966 291 L 966 374 L 688 374',
-    label: { text: 'prêt / accès', x: 836, y: 365, anchor: 'middle' },
+    label: { text: 'mise à disposition', x: 848, y: 364, anchor: 'middle' },
   },
 
   // Collaboration (bleu)
@@ -294,7 +294,7 @@ const LINKS: MapLink[] = [
     kind: 'lien',
     d: 'M 190 164 L 246 241',
     bidirectional: true,
-    label: { text: 'suivi', x: 204, y: 210, anchor: 'end' },
+    label: { text: 'échanges', x: 204, y: 208, anchor: 'end' },
   },
   {
     from: 'familles',
@@ -322,7 +322,7 @@ const LINKS: MapLink[] = [
     to: 'eleves',
     kind: 'lien',
     d: 'M 632 173 L 632 348',
-    label: { text: 'CE2-CM1', x: 642, y: 266, anchor: 'start' },
+    label: { text: 'CE2-CM1', x: 641, y: 266, anchor: 'start' },
   },
   {
     from: 'enseignants',
@@ -348,7 +348,7 @@ const LINKS: MapLink[] = [
     kind: 'lien',
     d: 'M 909 164 L 896 164 L 896 332 L 688 356',
     bidirectional: true,
-    label: { text: 'midi / soir', x: 878, y: 325, anchor: 'end' },
+    label: { text: 'midi et soir', x: 882, y: 322, anchor: 'end' },
   },
   {
     from: 'eleves',
@@ -363,7 +363,7 @@ const LINKS: MapLink[] = [
     kind: 'lien',
     d: 'M 230 444 L 438 398',
     bidirectional: true,
-    label: { text: 'lien CM2-6e', x: 324, y: 416, anchor: 'middle' },
+    label: { text: 'lien CM2-6e', x: 312, y: 408, anchor: 'middle' },
   },
   {
     from: 'paroisse',
@@ -371,14 +371,14 @@ const LINKS: MapLink[] = [
     kind: 'lien',
     d: 'M 886 444 L 684 398',
     bidirectional: true,
-    label: { text: 'paroisse', x: 794, y: 416, anchor: 'middle' },
+    label: { text: 'lien paroissial', x: 814, y: 408, anchor: 'middle' },
   },
 ];
 
 const KIND_COLOR: Record<LinkKind, string> = {
-  tutelle: '#0f172a',
-  lien: '#2563eb',
-  moyens: '#16a34a',
+  tutelle: '#2d3748',
+  lien: '#345b8d',
+  moyens: '#3b7256',
 };
 
 export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
@@ -417,15 +417,33 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
 
       <div className="sys-legend-bar" aria-label="Légende du schéma">
         <span className="sys-legend-item">
-          <span className="sys-legend-line" style={{ borderColor: '#0f172a' }} aria-hidden="true" />
+          <svg className="sys-legend-swatch" width="28" height="10" viewBox="0 0 28 10" aria-hidden="true">
+            <line x1="1" y1="5" x2="22" y2="5" stroke={KIND_COLOR.tutelle} strokeWidth="1.6" strokeLinecap="round" />
+            <path d="M 20 2.3 L 26.5 5 L 20 7.7 L 21.4 5 z" fill={KIND_COLOR.tutelle} />
+          </svg>
           Hiérarchie / employeur
         </span>
         <span className="sys-legend-item">
-          <span className="sys-legend-line" style={{ borderColor: '#2563eb' }} aria-hidden="true" />
+          <svg className="sys-legend-swatch" width="28" height="10" viewBox="0 0 28 10" aria-hidden="true">
+            <line x1="1" y1="5" x2="22" y2="5" stroke={KIND_COLOR.lien} strokeWidth="1.6" strokeLinecap="round" />
+            <path d="M 20 2.3 L 26.5 5 L 20 7.7 L 21.4 5 z" fill={KIND_COLOR.lien} />
+          </svg>
           Collaboration
         </span>
         <span className="sys-legend-item">
-          <span className="sys-legend-line is-dashed" style={{ borderColor: '#16a34a' }} aria-hidden="true" />
+          <svg className="sys-legend-swatch" width="28" height="10" viewBox="0 0 28 10" aria-hidden="true">
+            <line
+              x1="1"
+              y1="5"
+              x2="22"
+              y2="5"
+              stroke={KIND_COLOR.moyens}
+              strokeWidth="1.6"
+              strokeDasharray="5 3.5"
+              strokeLinecap="round"
+            />
+            <path d="M 20 2.3 L 26.5 5 L 20 7.7 L 21.4 5 z" fill={KIND_COLOR.moyens} />
+          </svg>
           Financement et locaux
         </span>
       </div>
@@ -441,22 +459,22 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
           }}
         >
           <defs>
-            <marker id="arr-tutelle" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
-              <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#0f172a" />
+            <marker id="arr-tutelle" viewBox="0 0 10 10" refX="8.2" refY="5" markerWidth="5.8" markerHeight="5.8" orient="auto-start-reverse">
+              <path d="M 1 2 L 8.6 5 L 1 8 L 2.5 5 z" fill={KIND_COLOR.tutelle} />
             </marker>
-            <marker id="arr-lien" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
-              <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#2563eb" />
+            <marker id="arr-lien" viewBox="0 0 10 10" refX="8.2" refY="5" markerWidth="5.8" markerHeight="5.8" orient="auto-start-reverse">
+              <path d="M 1 2 L 8.6 5 L 1 8 L 2.5 5 z" fill={KIND_COLOR.lien} />
             </marker>
-            <marker id="arr-moyens" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
-              <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#16a34a" />
+            <marker id="arr-moyens" viewBox="0 0 10 10" refX="8.2" refY="5" markerWidth="5.8" markerHeight="5.8" orient="auto-start-reverse">
+              <path d="M 1 2 L 8.6 5 L 1 8 L 2.5 5 z" fill={KIND_COLOR.moyens} />
             </marker>
           </defs>
 
           {/* Links */}
           {LINKS.map((lk, idx) => {
             const isRelated = !activeId || lk.from === activeId || lk.to === activeId;
-            const opacity = activeId ? (isRelated ? 0.96 : 0.14) : 0.78;
-            const sw = activeId && isRelated ? 2.2 : 1.6;
+            const opacity = activeId ? (isRelated ? 0.96 : 0.14) : 0.88;
+            const sw = activeId && isRelated ? 1.85 : 1.45;
             return (
               <g key={idx} className="sys-link-group" style={{ opacity }}>
                 <path
@@ -464,7 +482,9 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
                   fill="none"
                   stroke={KIND_COLOR[lk.kind]}
                   strokeWidth={sw}
-                  strokeDasharray={lk.kind === 'moyens' ? '5 3' : undefined}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeDasharray={lk.kind === 'moyens' ? '6 4' : undefined}
                   markerEnd={`url(#arr-${lk.kind})`}
                   markerStart={lk.bidirectional ? `url(#arr-${lk.kind})` : undefined}
                 />
@@ -516,13 +536,13 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
                   y={node.y - node.h / 2}
                   width={node.w}
                   height={node.h}
-                  rx="9"
+                  rx="8"
                   className="sys-node-rect"
                 />
-                <text x={node.x} y={node.y - 4} textAnchor="middle" className="sys-node-title">
+                <text x={node.x} y={node.y - 4.5} textAnchor="middle" className="sys-node-title">
                   {node.title}
                 </text>
-                <text x={node.x} y={node.y + 13} textAnchor="middle" className="sys-node-sub">
+                <text x={node.x} y={node.y + 12.5} textAnchor="middle" className="sys-node-sub">
                   {node.sub}
                 </text>
               </g>
@@ -538,10 +558,11 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
           </p>
         ) : (
           <p className="sys-note-placeholder">
-            L'État paie les enseignants et les AESH, tandis que l'OGEC gère le budget, les bâtiments et paie les ASEM.
-            La cheffe d'établissement enseigne à mi-temps (payée par l'État) et dirige l'école et l'OGEC (payée en
-            partie par l'OGEC). La commune de Pordic aide aussi à financer l'école et met à disposition la cantine, le
-            périscolaire, le complexe sportif, la médiathèque et La Ville Robert.
+            L'État rémunère les enseignants et les AESH, tandis que l'OGEC gère le budget, les locaux et rémunère les
+            ASEM (qui en sont également membres). La cheffe d'établissement enseigne à mi-temps en CE2-CM1 (payée par
+            l'État) et dirige l'école ainsi que l'OGEC (payée en partie par l'OGEC). La commune de Pordic participe
+            aussi au financement et met à disposition la cantine, le périscolaire, le complexe sportif, la médiathèque
+            et La Ville Robert.
           </p>
         )}
       </div>
@@ -549,14 +570,15 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
       {/* Mobile concise reading version */}
       <div className="sys-mobile-list">
         <p>
-          L'État paie les enseignants et les AESH, tandis que l'OGEC gère le budget, les bâtiments et paie les ASEM.
+          L'État rémunère les enseignants et les AESH, tandis que l'OGEC gère le budget, les locaux et rémunère les
+          ASEM (qui en sont également membres).
         </p>
         <p>
-          La cheffe d'établissement enseigne à mi-temps (payée par l'État) et dirige l'école et l'OGEC (payée en
-          partie par l'OGEC).
+          La cheffe d'établissement enseigne à mi-temps en CE2-CM1 (payée par l'État) et dirige l'école ainsi que
+          l'OGEC (payée en partie par l'OGEC).
         </p>
         <p>
-          La commune de Pordic aide aussi à financer l'école et met à disposition la cantine, le périscolaire, le
+          La commune de Pordic participe aussi au financement et met à disposition la cantine, le périscolaire, le
           complexe sportif, la médiathèque et La Ville Robert.
         </p>
       </div>
