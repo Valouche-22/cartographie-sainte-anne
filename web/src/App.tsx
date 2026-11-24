@@ -79,17 +79,17 @@ export const App: React.FC = () => {
     return () => mq.removeEventListener('change', update);
   }, []);
 
-  // Enforce a 3-second choreographed loading screen duration
+  // 3-second total choreographed loading transition (~2.2s intro + 0.82s split-curtain reveal)
   useEffect(() => {
-    const timer = window.setTimeout(() => setMinLoadDone(true), 3000);
+    const timer = window.setTimeout(() => setMinLoadDone(true), 2200);
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Smooth dissolve exit once both the 3s sequence and 3D model load are complete
+  // Trigger the silky split-curtain opening once both timing and 3D model load are ready
   useEffect(() => {
     if (!modelLoaded || !minLoadDone || loadError) return;
     setLoaderExiting(true);
-    const unmountTimer = window.setTimeout(() => setLoaderMounted(false), 640);
+    const unmountTimer = window.setTimeout(() => setLoaderMounted(false), 880);
     return () => window.clearTimeout(unmountTimer);
   }, [modelLoaded, minLoadDone, loadError]);
 
