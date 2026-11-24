@@ -510,32 +510,32 @@
       "title": "École Sainte-Anne",
       "rows": [
         {
-          "label": "Statut et tutelles",
-          "value": "École privée catholique sous contrat d'association avec l'État (DSDEN 22 / IEN) et sous tutelle diocésaine (DDEC 22), hors groupe scolaire"
-        },
-        {
           "label": "Effectifs",
-          "value": "220 élèves répartis en 9 classes, de la TPS au CM2 (Cycles 1, 2 et 3)"
+          "value": "220 élèves répartis en 9 classes, de la TPS au CM2"
         },
         {
-          "label": "Équipe éducative",
-          "value": "1 cheffe d'établissement (également enseignante à mi-temps en CE2 / CM1), 11 professeurs des écoles (dont 4 à mi-temps), 2 AESH pour 3 élèves, et les ASEM / personnels OGEC"
+          "label": "Équipe",
+          "value": "11 enseignants (dont 4 à mi-temps), une cheffe d'établissement également à mi-temps en classe, 2 AESH pour 3 élèves, et les ASEM / personnels OGEC"
         },
         {
           "label": "Bâtiments",
-          "value": "3 bâtiments répartis par cycle et 1 préfabriqué (destiné à être retiré)"
+          "value": "3 bâtiments et 1 préfabriqué (destiné à être retiré)"
         },
         {
           "label": "Horaires des cours",
-          "value": "8h30 – 12h00 / 13h30 – 16h15 · APC (Activités Pédagogiques Complémentaires) le mardi soir"
+          "value": "8h30 – 12h00 / 13h30 – 16h15 · Activités pédagogiques complémentaires le mardi soir"
         },
         {
-          "label": "Liaison école-collège",
-          "value": "Lien pédagogique de cycle 3 avec le collège Saint-Pierre de Plérin"
+          "label": "Organisation",
+          "value": "École privée catholique sous contrat avec l'État (tutelle diocésaine), hors groupe scolaire, en lien avec le collège Saint-Pierre de Plérin"
         },
         {
-          "label": "Associations et familles",
-          "value": "APEL (parents d'élèves) et OGEC (gestion et locaux) · Échanges via Educartable, mails et rencontres"
+          "label": "Associations",
+          "value": "APEL (parents d'élèves) et OGEC (gestion matérielle, financière et des personnels)"
+        },
+        {
+          "label": "Familles",
+          "value": "Échanges par mail, Educartable et en face à face"
         },
         {
           "label": "Transports",
@@ -566,7 +566,7 @@
     },
     {
       "id": "systeme",
-      "title": "Cartographie systémique",
+      "title": "L'organisation de l'école",
       "rows": [],
       "camera": {
         "pos": [
@@ -586,7 +586,7 @@
     },
     {
       "id": "acteurs",
-      "title": "Acteurs et instances",
+      "title": "Les acteurs de l'école",
       "rows": [],
       "camera": {
         "pos": [
@@ -671,15 +671,12 @@
       "title": "Cantine et périscolaire",
       "rows": [
         {
-          "label": "Partenaire communal",
-          "value": "Service enfance-jeunesse de la commune de Pordic, situé juste à côté de l'école"
+          "value": "Gérés par la commune de Pordic, situés juste à côté de l'école"
         },
         {
-          "label": "Relais quotidien",
           "value": "Les animateurs viennent chercher les élèves dans les classes pour le repas du midi et pour le périscolaire"
         },
         {
-          "label": "Temps périscolaires",
           "value": "Garderie le matin et le soir ; le goûter du périscolaire est pris à la cantine"
         }
       ],
@@ -744,11 +741,9 @@
       "title": "Complexe sportif Louis Auffray",
       "rows": [
         {
-          "label": "Partenariat communal",
           "value": "Salles et terrains municipaux mis à disposition par la commune de Pordic, accessibles à pied depuis l'école"
         },
         {
-          "label": "Pratique d'EPS",
           "value": "Matériel sportif fourni par la commune, utilisé en complément de la salle de motricité de l'école"
         }
       ],
@@ -776,16 +771,10 @@
       "title": "Médiathèque de l'Ic et La Ville Robert",
       "rows": [
         {
-          "label": "Médiathèque de l'Ic (commune)",
-          "value": "Médiathèque municipale accessible à pied : prêt de livres, ressources et albums de jeunesse utilisés dans les classes"
+          "value": "Médiathèque municipale (commune de Pordic) accessible à pied : prêt de livres, ressources et albums de jeunesse utilisés dans les classes"
         },
         {
-          "label": "Parc de la Médiathèque",
-          "value": "Espace public attenant à la médiathèque"
-        },
-        {
-          "label": "Centre culturel La Ville Robert (commune)",
-          "value": "Équipement culturel communal situé en face : spectacles organisés auxquels les élèves assistent"
+          "value": "Centre culturel de La Ville Robert en face (commune de Pordic) : spectacles organisés auxquels les élèves assistent"
         }
       ],
       "camera": {

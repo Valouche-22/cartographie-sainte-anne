@@ -733,7 +733,6 @@ export const App: React.FC = () => {
               <section className="mobile-reel-slide mobile-reel-hero" data-reel-index={0} id="hero-cover">
               <div className="hero-backdrop" />
               <div className="hero-inner">
-                <p className="hero-eyebrow">Cartographie systémique</p>
                 <h1 className="hero-h1">{data.school.name}</h1>
                 <p className="hero-sub">{data.school.city}</p>
                 <button
@@ -977,7 +976,6 @@ export const App: React.FC = () => {
           <section className="hero-cover" id="hero-cover">
             <div className="hero-backdrop" />
             <div className="hero-inner">
-              <p className="hero-eyebrow">Cartographie systémique</p>
               <h1 className="hero-h1">{data.school.name}</h1>
               <p className="hero-sub">{data.school.city}</p>
               <button

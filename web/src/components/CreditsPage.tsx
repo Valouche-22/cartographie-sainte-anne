@@ -36,7 +36,7 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBackHome }) => {
       <header className="credits-header">
         <div>
           <h2 className="credits-title">Crédits et mentions légales</h2>
-          <p className="credits-subtitle">Cartographie systémique 3D — École Sainte-Anne de Pordic</p>
+          <p className="credits-subtitle">Cartographie 3D — École Sainte-Anne de Pordic</p>
         </div>
         <button type="button" className="credits-home-btn" onClick={onBackHome}>
           <ArrowUp size={15} />
