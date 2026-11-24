@@ -276,8 +276,8 @@ const LINKS: MapLink[] = [
     from: 'apel',
     to: 'eleves',
     kind: 'moyens',
-    d: 'M 190 278 L 432 366',
-    label: { text: 'sorties et matériel', x: 300, y: 334, anchor: 'middle' },
+    d: 'M 142 291 L 142 374 L 432 374',
+    label: { text: 'sorties et matériel', x: 276, y: 364, anchor: 'middle' },
   },
   {
     from: 'equipements',
