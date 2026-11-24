@@ -32,16 +32,16 @@ interface MapLink {
 }
 
 const NODES: MapNode[] = [
-  // En haut : tutelles
+  // Tutelles (haut)
   {
     id: 'etat',
     title: 'État (Éducation nationale)',
     sub: 'programmes · salaires PE et AESH',
     x: 370,
     y: 44,
-    w: 230,
+    w: 232,
     h: 48,
-    note: "Contrat avec l'État : fixe les programmes, rémunère les enseignants, les AESH et la part d'enseignement de la cheffe d'établissement.",
+    note: "Fixe les programmes et paie les enseignants, les AESH et le mi-temps d'enseignement de la cheffe d'établissement.",
   },
   {
     id: 'ddec',
@@ -51,19 +51,19 @@ const NODES: MapNode[] = [
     y: 44,
     w: 220,
     h: 48,
-    note: "Confie sa mission à la cheffe d'établissement et accompagne le caractère propre de l'école catholique.",
+    note: "Confie sa mission à la cheffe d'établissement et accompagne l'école au sein de l'enseignement catholique.",
   },
 
-  // À gauche : familles, APEL, collège
+  // Familles et APEL (gauche)
   {
     id: 'familles',
     title: 'Familles',
     sub: 'Educartable · mails · rencontres',
     x: 104,
-    y: 224,
+    y: 226,
     w: 180,
     h: 50,
-    note: "Échangent régulièrement avec les enseignants et la cheffe d'établissement, et peuvent s'investir bénévolement dans l'APEL.",
+    note: "Échangent régulièrement avec les enseignants et la cheffe d'établissement, et peuvent participer à l'APEL.",
   },
   {
     id: 'apel',
@@ -73,30 +73,20 @@ const NODES: MapNode[] = [
     y: 314,
     w: 180,
     h: 50,
-    note: "Association de parents d'élèves : organise des ventes et événements pour financer des sorties, activités et du matériel pour l'école.",
-  },
-  {
-    id: 'college',
-    title: 'Collège Saint-Pierre',
-    sub: 'Plérin · suite après le CM2',
-    x: 104,
-    y: 468,
-    w: 180,
-    h: 50,
-    note: "Établissement de secteur en lien avec l'école pour préparer l'entrée en 6e des élèves de CM2.",
+    note: "Organise des ventes (comme les sapins de Noël) et des événements pour financer des sorties et du matériel.",
   },
 
-  // Au centre : dans l'école Sainte-Anne
+  // Cœur de l'école (centre)
   {
     id: 'cheffe',
     title: "Cheffe d'établissement",
     sub: 'direction (OGEC) · CE2-CM1 (État)',
     x: 520,
     y: 150,
-    w: 232,
+    w: 234,
     h: 50,
     emphasis: 'pilot',
-    note: "Enseigne à mi-temps en CE2-CM1 (payée par l'État) et assure la direction de l'école et de l'OGEC (payée en partie par l'OGEC).",
+    note: "Enseigne à mi-temps en CE2-CM1 (payée par l'État) et dirige l'école et l'OGEC (payée en partie par l'OGEC).",
   },
   {
     id: 'enseignants',
@@ -106,7 +96,7 @@ const NODES: MapNode[] = [
     y: 236,
     w: 186,
     h: 50,
-    note: "11 enseignants (dont 4 à mi-temps) rémunérés par l'État. Ils assurent les cours de la TPS au CM2 et les activités pédagogiques complémentaires.",
+    note: "11 enseignants payés par l'État qui assurent les cours de la TPS au CM2 et les activités pédagogiques complémentaires.",
   },
   {
     id: 'aesh',
@@ -116,7 +106,7 @@ const NODES: MapNode[] = [
     y: 314,
     w: 186,
     h: 48,
-    note: "2 AESH rémunérées par l'État : travaillent en classe avec les enseignants (CM2 et CE2-CM1) auprès de 3 élèves ayant besoin d'un accompagnement.",
+    note: "2 AESH payées par l'État qui aident 3 élèves en classe (CM2 et CE2-CM1) avec les enseignants.",
   },
   {
     id: 'eleves',
@@ -124,10 +114,10 @@ const NODES: MapNode[] = [
     sub: '220 élèves · TPS au CM2',
     x: 520,
     y: 274,
-    w: 138,
+    w: 140,
     h: 56,
     emphasis: 'center',
-    note: "220 élèves répartis en 9 classes sur 3 bâtiments (cycles 1, 2 et 3), au centre de toute l'organisation.",
+    note: "220 élèves répartis en 9 classes dans 3 bâtiments, de la toute petite section au CM2.",
   },
   {
     id: 'ogec',
@@ -137,30 +127,30 @@ const NODES: MapNode[] = [
     y: 236,
     w: 186,
     h: 50,
-    note: "Association de gestion : reçoit le forfait communal de Pordic, gère le budget et les bâtiments, et salarie les ASEM et la part direction.",
+    note: "Gère le budget (avec l'aide de la commune), l'entretien des bâtiments et paie les ASEM ainsi que la part direction.",
   },
   {
     id: 'asem',
     title: 'ASEM',
-    sub: "maternelle · salariées OGEC",
+    sub: 'maternelle · salariées OGEC',
     x: 712,
     y: 314,
     w: 186,
     h: 48,
-    note: "Salariées de l'OGEC, elles travaillent en binôme avec les enseignants dans les classes de maternelle (TPS/PS/MS, PS/MS, GS).",
+    note: "Salariées de l'OGEC, elles travaillent avec les enseignants en maternelle (TPS/PS/MS, PS/MS et GS).",
   },
   {
     id: 'instances',
     title: "Instances de l'école",
     sub: "conseil des maîtres · cycles · conseil d'établissement · ESS",
     x: 520,
-    y: 386,
-    w: 440,
+    y: 400,
+    w: 344,
     h: 44,
-    note: "Réunions officielles où se coordonnent la cheffe d'établissement, les enseignants, les familles, l'APEL, l'OGEC et les partenaires selon les sujets.",
+    note: "Réunions qui permettent de décider de l'organisation de l'année et de suivre la scolarité des élèves.",
   },
 
-  // À droite : Commune de Pordic (une seule fois !) et ses services
+  // Commune de Pordic (droite, une seule fois) et ses services
   {
     id: 'commune',
     title: 'Commune de Pordic',
@@ -169,7 +159,7 @@ const NODES: MapNode[] = [
     y: 150,
     w: 232,
     h: 50,
-    note: "Finance le fonctionnement matériel via le forfait communal versé à l'OGEC et gère les services et équipements utilisés par les élèves.",
+    note: "Verse une participation financière à l'OGEC et gère les services et équipements utilisés par les élèves.",
   },
   {
     id: 'perisco',
@@ -179,7 +169,7 @@ const NODES: MapNode[] = [
     y: 254,
     w: 232,
     h: 50,
-    note: "Gérés par la commune de Pordic juste à côté de l'école : les animateurs viennent chercher les élèves directement dans les classes.",
+    note: "Gérés par la commune juste à côté de l'école : les animateurs viennent chercher les élèves dans les classes.",
   },
   {
     id: 'equipements',
@@ -189,24 +179,34 @@ const NODES: MapNode[] = [
     y: 356,
     w: 232,
     h: 50,
-    note: "Mis à disposition par la commune de Pordic pour les séances de sport, le prêt de livres et les spectacles.",
+    note: "Mis à disposition par la commune pour le sport, le prêt de livres et les spectacles.",
   },
 
-  // En bas : Paroisse
+  // Partenaires extérieurs (bas)
+  {
+    id: 'college',
+    title: 'Collège Saint-Pierre',
+    sub: 'Plérin · suite après le CM2',
+    x: 270,
+    y: 474,
+    w: 204,
+    h: 48,
+    note: "Collège en lien avec l'école pour préparer le passage des CM2 en 6e.",
+  },
   {
     id: 'paroisse',
     title: 'Paroisse Saint-Pierre',
     sub: "catéchèse · messes · chœur d'école",
-    x: 712,
-    y: 468,
+    x: 754,
+    y: 474,
     w: 216,
-    h: 50,
-    note: "3 intervenants et le curé pour la catéchèse et les messes (élèves volontaires) ; l'église accueille aussi le chœur d'école en fin d'année.",
+    h: 48,
+    note: "3 intervenants et le curé pour la catéchèse et les messes (volontaires), et accueil du chœur d'école en fin d'année.",
   },
 ];
 
 const LINKS: MapLink[] = [
-  // Tutelles / employeurs (noir)
+  // Hiérarchie / employeur (noir)
   {
     from: 'etat',
     to: 'cheffe',
@@ -225,7 +225,7 @@ const LINKS: MapLink[] = [
     from: 'etat',
     to: 'aesh',
     kind: 'tutelle',
-    d: 'M 272 68 L 272 114 L 228 114 L 228 314 L 235 314',
+    d: 'M 272 68 L 272 112 L 222 112 L 222 314 L 235 314',
   },
   {
     from: 'ddec',
@@ -263,7 +263,7 @@ const LINKS: MapLink[] = [
     d: 'M 1100 150 L 1122 150 L 1122 356 L 1100 356',
   },
 
-  // Financement / moyens (vert pointillé)
+  // Financement et locaux (vert pointillé)
   {
     from: 'commune',
     to: 'ogec',
@@ -273,20 +273,20 @@ const LINKS: MapLink[] = [
   },
   {
     from: 'apel',
-    to: 'instances',
+    to: 'eleves',
     kind: 'moyens',
-    d: 'M 194 328 L 298 386',
-    label: { text: 'sorties et matériel', x: 224, y: 374, anchor: 'end' },
+    d: 'M 194 328 L 284 352 L 456 298',
+    label: { text: 'sorties et matériel', x: 248, y: 360, anchor: 'middle' },
   },
   {
     from: 'equipements',
     to: 'eleves',
     kind: 'moyens',
-    d: 'M 868 356 L 824 356',
-    label: { text: 'prêt / accès', x: 846, y: 348, anchor: 'middle' },
+    d: 'M 868 358 L 722 358 L 570 302',
+    label: { text: 'prêt / accès', x: 822, y: 372, anchor: 'middle' },
   },
 
-  // Liens pédagogiques et du quotidien (bleu)
+  // Collaboration (bleu)
   {
     from: 'cheffe',
     to: 'enseignants',
@@ -304,7 +304,7 @@ const LINKS: MapLink[] = [
     from: 'enseignants',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 421 248 L 451 264',
+    d: 'M 421 248 L 450 264',
   },
   {
     from: 'enseignants',
@@ -317,56 +317,56 @@ const LINKS: MapLink[] = [
     from: 'aesh',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 421 306 L 451 288',
+    d: 'M 421 306 L 450 288',
   },
   {
     from: 'asem',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 619 306 L 589 288',
+    d: 'M 619 306 L 590 288',
   },
   {
     from: 'eleves',
     to: 'instances',
     kind: 'lien',
-    d: 'M 520 302 L 520 364',
+    d: 'M 520 302 L 520 378',
     bidirectional: true,
   },
   {
     from: 'familles',
     to: 'enseignants',
     kind: 'lien',
-    d: 'M 194 226 L 235 234',
+    d: 'M 194 228 L 235 234',
     bidirectional: true,
   },
   {
     from: 'familles',
     to: 'apel',
     kind: 'lien',
-    d: 'M 104 249 L 104 289',
+    d: 'M 104 251 L 104 289',
     bidirectional: true,
   },
   {
     from: 'perisco',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 868 254 L 824 254',
+    d: 'M 868 264 L 832 264 L 832 344 L 584 294',
     bidirectional: true,
-    label: { text: 'midi / soir', x: 846, y: 246, anchor: 'middle' },
+    label: { text: 'midi / soir', x: 842, y: 256, anchor: 'middle' },
   },
   {
     from: 'college',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 194 468 L 328 468 L 328 424',
+    d: 'M 332 450 L 332 366 L 474 302',
     bidirectional: true,
-    label: { text: 'lien CM2-6e', x: 262, y: 460, anchor: 'middle' },
+    label: { text: 'lien CM2-6e', x: 342, y: 432, anchor: 'start' },
   },
   {
     from: 'paroisse',
     to: 'eleves',
     kind: 'lien',
-    d: 'M 712 443 L 712 424',
+    d: 'M 708 450 L 708 374 L 556 302',
     bidirectional: true,
   },
 ];
@@ -411,30 +411,27 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
         </span>
       </header>
 
-      <div className="sys-top-row">
-        <div className="sys-legend-bar" aria-label="Légende du schéma">
-          <span className="sys-legend-item">
-            <span className="sys-legend-line" style={{ borderColor: '#0f172a' }} aria-hidden="true" />
-            Tutelle / employeur / gestionnaire
-          </span>
-          <span className="sys-legend-item">
-            <span className="sys-legend-line" style={{ borderColor: '#2563eb' }} aria-hidden="true" />
-            Collaboration et suivi
-          </span>
-          <span className="sys-legend-item">
-            <span className="sys-legend-line is-dashed" style={{ borderColor: '#16a34a' }} aria-hidden="true" />
-            Financement et mise à disposition
-          </span>
-        </div>
-        <span className="sys-hint-inline">Survolez ou cliquez un bloc pour le mettre en évidence</span>
+      <div className="sys-legend-bar" aria-label="Légende du schéma">
+        <span className="sys-legend-item">
+          <span className="sys-legend-line" style={{ borderColor: '#0f172a' }} aria-hidden="true" />
+          Hiérarchie / employeur
+        </span>
+        <span className="sys-legend-item">
+          <span className="sys-legend-line" style={{ borderColor: '#2563eb' }} aria-hidden="true" />
+          Collaboration
+        </span>
+        <span className="sys-legend-item">
+          <span className="sys-legend-line is-dashed" style={{ borderColor: '#16a34a' }} aria-hidden="true" />
+          Financement et locaux
+        </span>
       </div>
 
       <div className="sys-canvas-wrap">
         <svg
           className="sys-svg"
-          viewBox="0 0 1140 508"
+          viewBox="0 0 1140 512"
           role="img"
-          aria-label="Cartographie des liens entre l'école Sainte-Anne, ses tutelles et ses partenaires"
+          aria-label="Schéma des relations entre l'école Sainte-Anne, ses tutelles et ses partenaires"
           onClick={(e) => {
             if (e.target === e.currentTarget) setActiveId(null);
           }}
@@ -450,12 +447,6 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
               <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#16a34a" />
             </marker>
           </defs>
-
-          {/* Central school frame */}
-          <rect x="218" y="104" width="604" height="318" rx="14" className="sys-zone-internal" />
-          <text x="234" y="122" className="sys-zone-label">
-            ÉCOLE SAINTE-ANNE
-          </text>
 
           {/* Links */}
           {LINKS.map((lk, idx) => {
@@ -536,7 +527,6 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
         </svg>
       </div>
 
-      {/* Single quiet line showing the note of the hovered/clicked box */}
       <div className="sys-note-bar">
         {activeNode ? (
           <p className="sys-note-text">
@@ -544,9 +534,10 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
           </p>
         ) : (
           <p className="sys-note-placeholder">
-            L'État salarie les enseignants et les AESH ; l'OGEC gère le budget, les locaux et salarie les ASEM ; la
-            cheffe d'établissement fait le lien entre l'équipe, l'OGEC, les familles, la tutelle et la commune de
-            Pordic.
+            Pour résumer simplement : l'État paie les enseignants et les AESH, tandis que l'OGEC gère le budget, les
+            bâtiments et paie les ASEM. La cheffe d'établissement enseigne à mi-temps (payée par l'État) et dirige
+            l'école et l'OGEC (payée en partie par l'OGEC). À côté, la commune de Pordic aide à financer l'école et
+            met à disposition la cantine, le périscolaire, le complexe sportif, la médiathèque et La Ville Robert.
           </p>
         )}
       </div>
@@ -554,18 +545,16 @@ export const SystemicMapPage: React.FC<SystemicMapPageProps> = ({
       {/* Mobile concise reading version */}
       <div className="sys-mobile-list">
         <p>
-          <strong>État et tutelle :</strong> l'État fixe les programmes et rémunère les enseignants, les AESH et la
-          part d'enseignement de la cheffe d'établissement. La tutelle diocésaine confie sa mission à la cheffe
-          d'établissement.
+          Pour résumer simplement : l'État paie les enseignants et les AESH, tandis que l'OGEC gère le budget, les
+          bâtiments et paie les ASEM.
         </p>
         <p>
-          <strong>OGEC et personnel non enseignant :</strong> l'OGEC reçoit le forfait communal de Pordic, gère le
-          budget et les bâtiments, et salarie les ASEM ainsi que la part direction de la cheffe d'établissement.
+          La cheffe d'établissement enseigne à mi-temps (payée par l'État) et dirige l'école et l'OGEC (payée en
+          partie par l'OGEC).
         </p>
         <p>
-          <strong>Commune de Pordic et partenaires :</strong> la commune gère la cantine, le périscolaire et met à
-          disposition le complexe sportif, la médiathèque et La Ville Robert. L'école est aussi en lien avec les
-          familles, l'APEL, le collège Saint-Pierre et la paroisse.
+          À côté, la commune de Pordic aide à financer l'école et met à disposition la cantine, le périscolaire, le
+          complexe sportif, la médiathèque et La Ville Robert.
         </p>
       </div>
 

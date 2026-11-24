@@ -1144,32 +1144,24 @@ body {
   color: var(--ink-muted);
 }
 
-.sys-top-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 18px;
-}
-
 .sys-legend-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .sys-legend-item {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 0.78rem;
+  gap: 8px;
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--ink-soft);
 }
 
 .sys-legend-line {
-  width: 20px;
+  width: 22px;
   height: 0;
   border-top: 2px solid currentColor;
   flex-shrink: 0;
@@ -1179,17 +1171,12 @@ body {
   border-top-style: dashed;
 }
 
-.sys-hint-inline {
-  font-size: 0.76rem;
-  color: var(--ink-muted);
-}
-
 .sys-canvas-wrap {
   width: 100%;
   background: #ffffff;
   border: 1px solid var(--line);
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 12px 14px;
 }
 
 .sys-svg {
@@ -1199,20 +1186,6 @@ body {
   display: block;
 }
 
-.sys-zone-internal {
-  fill: #f8fafc;
-  stroke: #cbd5e1;
-  stroke-width: 1.1;
-}
-
-.sys-zone-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  fill: #64748b;
-}
-
 .sys-link-group {
   transition: opacity 0.18s ease;
   pointer-events: none;
@@ -1220,7 +1193,7 @@ body {
 
 .sys-edge-label {
   font-family: 'Inter', sans-serif;
-  font-size: 9.5px;
+  font-size: 9.8px;
   font-weight: 500;
   fill: #64748b;
 }
@@ -1231,7 +1204,7 @@ body {
 }
 
 .sys-node.is-dimmed {
-  opacity: 0.3;
+  opacity: 0.28;
 }
 
 .sys-node-rect {
@@ -1247,7 +1220,7 @@ body {
 }
 
 .sys-node-center .sys-node-rect {
-  fill: #ffffff;
+  fill: #f8fafc;
   stroke: #0f172a;
   stroke-width: 1.9;
 }
@@ -1260,7 +1233,7 @@ body {
 
 .sys-node-title {
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  font-size: 12.2px;
+  font-size: 12.6px;
   font-weight: 700;
   fill: #0f172a;
   pointer-events: none;
@@ -1268,7 +1241,7 @@ body {
 
 .sys-node-sub {
   font-family: 'Inter', sans-serif;
-  font-size: 9.6px;
+  font-size: 9.9px;
   font-weight: 500;
   fill: #64748b;
   pointer-events: none;
@@ -2280,10 +2253,6 @@ body {
 
   .mobile-sys-scroll .sys-legend-item {
     font-size: 0.74rem;
-  }
-
-  .mobile-sys-scroll .sys-hint-inline {
-    display: none;
   }
 
   .mobile-sys-scroll .sys-canvas-wrap {
