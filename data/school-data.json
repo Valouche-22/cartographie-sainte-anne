@@ -307,13 +307,13 @@
     },
     {
       "id": "Salle_Profs",
-      "name": "Salle des profs",
+      "name": "Salle des enseignants",
       "level": "Équipe enseignante",
       "building": "Batiment_Principal_S1",
       "category": "autre",
       "color": "#eab308",
       "position": [18.87, 2.7, 8.9],
-      "description": "Salle des professeurs.",
+      "description": "Salle des enseignants (travail en équipe et réunions pédagogiques).",
       "indicative": false
     },
     {
@@ -395,13 +395,13 @@
     },
     {
       "id": "Bureau_Directrice",
-      "name": "Bureau directrice",
+      "name": "Bureau cheffe d'établissement",
       "level": "Direction",
       "building": "Batiment_Nord_N1",
       "category": "autre",
       "color": "#f59e0b",
       "position": [-18.09, 2.7, -31.99],
-      "description": "Bureau de la directrice de l'école.",
+      "description": "Bureau de la cheffe d'établissement.",
       "indicative": false
     },
     {
@@ -510,32 +510,32 @@
       "title": "École Sainte-Anne",
       "rows": [
         {
-          "label": "Effectifs",
-          "value": "220 élèves répartis en 9 classes"
+          "label": "Statut et tutelles",
+          "value": "École privée catholique sous contrat d'association avec l'État (DSDEN 22 / IEN) et sous tutelle diocésaine (DDEC 22), hors groupe scolaire"
         },
         {
-          "label": "Équipe",
-          "value": "11 enseignants (dont 4 à mi-temps), une directrice également à mi-temps en classe, 2 AESH pour 3 élèves, et les ASEM / personnels OGEC"
+          "label": "Effectifs",
+          "value": "220 élèves répartis en 9 classes, de la TPS au CM2 (Cycles 1, 2 et 3)"
+        },
+        {
+          "label": "Équipe éducative",
+          "value": "1 cheffe d'établissement (également enseignante à mi-temps en CE2 / CM1), 11 professeurs des écoles (dont 4 à mi-temps), 2 AESH pour 3 élèves, et les ASEM / personnels OGEC"
         },
         {
           "label": "Bâtiments",
-          "value": "3 bâtiments et 1 préfabriqué (destiné à être retiré)"
+          "value": "3 bâtiments répartis par cycle et 1 préfabriqué (destiné à être retiré)"
         },
         {
           "label": "Horaires des cours",
-          "value": "8h30 – 12h00 / 13h30 – 16h15 · Accompagnement personnalisé le mardi soir"
+          "value": "8h30 – 12h00 / 13h30 – 16h15 · APC (Activités Pédagogiques Complémentaires) le mardi soir"
         },
         {
-          "label": "Organisation",
-          "value": "Établissement indépendant (hors groupe scolaire), en lien avec le collège Saint-Pierre de Plérin"
+          "label": "Liaison école-collège",
+          "value": "Lien pédagogique de cycle 3 avec le collège Saint-Pierre de Plérin"
         },
         {
-          "label": "Associations",
-          "value": "APEL (parents d'élèves : soutien aux projets et sorties) et OGEC (gestion matérielle, financière et des personnels)"
-        },
-        {
-          "label": "Familles",
-          "value": "Échanges par mail, Educartable et en face à face"
+          "label": "Associations et familles",
+          "value": "APEL (parents d'élèves) et OGEC (gestion et locaux) · Échanges via Educartable, mails et rencontres"
         },
         {
           "label": "Transports",
@@ -565,8 +565,28 @@
       "swayAmp": 0.105
     },
     {
+      "id": "systeme",
+      "title": "Cartographie systémique",
+      "rows": [],
+      "camera": {
+        "pos": [
+          -82,
+          46,
+          76
+        ],
+        "target": [
+          10,
+          2,
+          4
+        ]
+      },
+      "hideRoofs": false,
+      "showLabels": false,
+      "swayAmp": 0.06
+    },
+    {
       "id": "acteurs",
-      "title": "Les acteurs de l'école",
+      "title": "Acteurs et instances",
       "rows": [],
       "camera": {
         "pos": [
@@ -651,12 +671,15 @@
       "title": "Cantine et périscolaire",
       "rows": [
         {
-          "value": "Situés juste à côté de l'école"
+          "label": "Partenaire communal",
+          "value": "Service enfance-jeunesse de la commune de Pordic, situé juste à côté de l'école"
         },
         {
+          "label": "Relais quotidien",
           "value": "Les animateurs viennent chercher les élèves dans les classes pour le repas du midi et pour le périscolaire"
         },
         {
+          "label": "Temps périscolaires",
           "value": "Garderie le matin et le soir ; le goûter du périscolaire est pris à la cantine"
         }
       ],
@@ -721,10 +744,12 @@
       "title": "Complexe sportif Louis Auffray",
       "rows": [
         {
-          "value": "Salles et terrains municipaux accessibles à pied depuis l'école"
+          "label": "Partenariat communal",
+          "value": "Salles et terrains municipaux mis à disposition par la commune de Pordic, accessibles à pied depuis l'école"
         },
         {
-          "value": "Matériel mis à disposition par la commune de Pordic, en complément de la salle de motricité"
+          "label": "Pratique d'EPS",
+          "value": "Matériel sportif fourni par la commune, utilisé en complément de la salle de motricité de l'école"
         }
       ],
       "camera": {
@@ -751,13 +776,16 @@
       "title": "Médiathèque de l'Ic et La Ville Robert",
       "rows": [
         {
+          "label": "Médiathèque de l'Ic (commune)",
           "value": "Médiathèque municipale accessible à pied : prêt de livres, ressources et albums de jeunesse utilisés dans les classes"
         },
         {
-          "value": "Parc de la Médiathèque"
+          "label": "Parc de la Médiathèque",
+          "value": "Espace public attenant à la médiathèque"
         },
         {
-          "value": "Centre culturel de La Ville Robert en face : spectacles organisés auxquels les élèves assistent"
+          "label": "Centre culturel La Ville Robert (commune)",
+          "value": "Équipement culturel communal situé en face : spectacles organisés auxquels les élèves assistent"
         }
       ],
       "camera": {
