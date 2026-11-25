@@ -44,7 +44,6 @@ export const App: React.FC = () => {
   const [activeSceneIndex, setActiveSceneIndex] = useState(0);
   const [freeExplore, setFreeExplore] = useState(false);
   const [walkMode, setWalkMode] = useState(false);
-  const [walkToast, setWalkToast] = useState(false);
   const [walkTeleportTrigger, setWalkTeleportTrigger] = useState<{ presetId: string; seq: number } | null>(null);
   const [hideRoofs, setHideRoofs] = useState(false);
   const [showLabels, setShowLabels] = useState(false);
@@ -617,19 +616,30 @@ export const App: React.FC = () => {
     };
   }, [data, freeExplore, isMobile, goToSection, stepGuided]);
 
+  const returnToGuidedTour = useCallback(() => {
+    const savedSection = sectionIdxRef.current;
+    setWalkMode(false);
+    setFreeExplore(false);
+    setSelectedBuilding(null);
+    setSelectedRoom(null);
+    setTimeout(() => {
+      goToSection(savedSection, true);
+    }, 50);
+  }, [goToSection]);
+
   // Secret Easter Egg: type "22590" (Pordic postal code) anywhere to explore the school on foot
   useEffect(() => {
     let buffer = '';
     let lastTs = 0;
-    let toastTimer: number | null = null;
 
     const onSecretKeyDown = (e: KeyboardEvent) => {
       if (loaderLockedRef.current) return;
       if (e.key === 'Escape' && walkMode) {
-        setWalkMode(false);
-        setShowLabels(true);
+        returnToGuidedTour();
         return;
       }
+
+      if (walkMode) return;
 
       let digit: string | null = null;
       if (e.key >= '0' && e.key <= '9') {
@@ -656,18 +666,14 @@ export const App: React.FC = () => {
         setSelectedRoom(null);
         setHideRoofs(false);
         setShowLabels(false);
-        setWalkToast(true);
-        if (toastTimer) window.clearTimeout(toastTimer);
-        toastTimer = window.setTimeout(() => setWalkToast(false), 3600);
       }
     };
 
     window.addEventListener('keydown', onSecretKeyDown);
     return () => {
       window.removeEventListener('keydown', onSecretKeyDown);
-      if (toastTimer) window.clearTimeout(toastTimer);
     };
-  }, [walkMode]);
+  }, [walkMode, returnToGuidedTour]);
 
   const enterFreeExplore = () => {
     scrollTweenRef.current?.kill();
@@ -677,17 +683,6 @@ export const App: React.FC = () => {
     setSelectedBuilding(null);
     setSelectedRoom(null);
     setShowLabels(true);
-  };
-
-  const returnToGuidedTour = () => {
-    const savedSection = sectionIdxRef.current;
-    setWalkMode(false);
-    setFreeExplore(false);
-    setSelectedBuilding(null);
-    setSelectedRoom(null);
-    setTimeout(() => {
-      goToSection(savedSection, true);
-    }, 50);
   };
 
   const triggerWalkTeleport = (presetId: string) => {
@@ -751,6 +746,7 @@ export const App: React.FC = () => {
           freeExplore={freeExplore}
           walkMode={walkMode}
           walkTeleportTrigger={walkTeleportTrigger}
+          onExitWalkMode={returnToGuidedTour}
           hideRoofs={
             hideRoofs && !(isMobile && !freeExplore && activeSceneId === 'classes' && classBuildingFocus === 'all')
           }
@@ -1297,13 +1293,6 @@ export const App: React.FC = () => {
         </main>
       )}
 
-      {/* Easter Egg 22590 activation toast */}
-      {walkToast && (
-        <div className="walk-toast" role="status" aria-live="polite">
-          Code 22590 · Mode personnage activé
-        </div>
-      )}
-
       {/* Free Explore info box */}
       {freeExplore && !walkMode && (selectedBuilding || selectedRoom) && (
         <aside
@@ -1376,7 +1365,7 @@ export const App: React.FC = () => {
       {freeExplore && walkMode && (
         <div className="walk-hud">
           <div className="walk-controls-hint">
-            ZQSD / Flèches : marcher · Souris (glisser) : caméra · Maj : courir · Espace : sauter · Échap : vue libre
+            ZQSD / Flèches : bouger · Souris : regarder · Maj : courir · Espace : sauter · 1–6 : lieux · Échap : quitter
           </div>
           <nav className="toolbar walk-toolbar" aria-label="Téléportation personnage">
             {WALK_TELEPORT_PRESETS.map((p) => (
@@ -1389,20 +1378,9 @@ export const App: React.FC = () => {
                   triggerWalkTeleport(p.id);
                 }}
               >
-                {p.label}
+                <span className="walk-key-num">{p.keyNum}</span> {p.label}
               </button>
             ))}
-            <span className="tool-sep" />
-            <button
-              type="button"
-              className="tool-btn active"
-              onClick={() => {
-                setWalkMode(false);
-                setShowLabels(true);
-              }}
-            >
-              Vue libre
-            </button>
           </nav>
         </div>
       )}

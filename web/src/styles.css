@@ -1056,37 +1056,6 @@ body {
 }
 
 /* Easter Egg 22590 third-person walk HUD */
-.walk-toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 55;
-  padding: 9px 18px;
-  border-radius: 999px;
-  background: rgba(15, 37, 68, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #ffffff;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  box-shadow: 0 10px 28px rgba(15, 37, 68, 0.24);
-  pointer-events: none;
-  animation: walkToastIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-@keyframes walkToastIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -10px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
 .walk-hud {
   position: fixed;
   bottom: 18px;
@@ -1117,6 +1086,20 @@ body {
   position: static;
   transform: none;
   pointer-events: auto;
+}
+
+.walk-key-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  margin-right: 4px;
+  border-radius: 5px;
+  background: rgba(15, 37, 68, 0.08);
+  color: #0f2544;
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
 /* Loading screen — 3s kinetic typography & split-curtain prism transition */

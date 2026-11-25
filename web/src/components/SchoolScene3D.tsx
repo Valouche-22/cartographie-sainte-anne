@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import gsap from 'gsap';
 import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from '../types';
 import {
-  buildWalkColliders,
+  buildWalkWorldData,
   ThirdPersonWalkController,
   WALK_TELEPORT_PRESETS,
 } from '../utils/walkController';
@@ -17,6 +17,7 @@ interface Props {
   freeExplore: boolean;
   walkMode: boolean;
   walkTeleportTrigger: { presetId: string; seq: number } | null;
+  onExitWalkMode: () => void;
   hideRoofs: boolean;
   showLabels: boolean;
   selectedBuilding: BuildingInfo | null;
@@ -564,6 +565,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   freeExplore,
   walkMode,
   walkTeleportTrigger,
+  onExitWalkMode,
   hideRoofs,
   showLabels,
   selectedBuilding,
@@ -613,6 +615,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   const hideRoofsRef = useRef(hideRoofs);
   const freeExploreRef = useRef(freeExplore);
   const walkModeRef = useRef(walkMode);
+  const onExitWalkModeRef = useRef(onExitWalkMode);
   const isHeroRef = useRef(isHero);
   const activeSceneIndexRef = useRef(activeSceneIndex);
   const classBuildingFocusRef = useRef(classBuildingFocus);
@@ -621,6 +624,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   hideRoofsRef.current = hideRoofs;
   freeExploreRef.current = freeExplore;
   walkModeRef.current = walkMode;
+  onExitWalkModeRef.current = onExitWalkMode;
   isHeroRef.current = isHero;
   activeSceneIndexRef.current = activeSceneIndex;
   classBuildingFocusRef.current = classBuildingFocus;
@@ -737,7 +741,9 @@ export const SchoolScene3D: React.FC<Props> = ({
     controls.update();
     controlsRef.current = controls;
 
-    const walkCtrl = new ThirdPersonWalkController(scene, renderer.domElement);
+    const walkCtrl = new ThirdPersonWalkController(scene, renderer.domElement, () => {
+      onExitWalkModeRef.current();
+    });
     walkCtrlRef.current = walkCtrl;
 
     const hemi = new THREE.HemisphereLight(0xf0f7ff, 0x7c8774, 0.92);
@@ -814,8 +820,7 @@ export const SchoolScene3D: React.FC<Props> = ({
         }
         scene.add(root);
         root.updateMatrixWorld(true);
-        const { colliders, stepSurfaces, gateLeaves } = buildWalkColliders(root);
-        walkCtrl.setWorldColliders(colliders, stepSurfaces, gateLeaves);
+        walkCtrl.setWorldData(buildWalkWorldData(root));
         const crossObj =
           root.getObjectByName('Clocher_Croix_Mat') || root.getObjectByName('Clocher_Eglise_Fleche');
         if (crossObj) {
@@ -1078,7 +1083,7 @@ export const SchoolScene3D: React.FC<Props> = ({
       renderer.render(scene, camera);
 
       frameCount++;
-      if (frameCount % 3 === 0) {
+      if (!walkModeRef.current && frameCount % 3 === 0) {
         if (!showLabelsRef.current || (isHeroRef.current && !freeExploreRef.current)) {
           setLabels((prev) => (prev.length ? [] : prev));
         } else {
