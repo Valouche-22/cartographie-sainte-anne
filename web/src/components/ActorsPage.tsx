@@ -24,25 +24,25 @@ const ACTORS = [
   },
   {
     title: 'Les AESH',
-    statut: "Rémunérées par l'État (Éducation nationale)",
+    statut: "Accompagnants d'élèves en situation de handicap · Rémunérées par l'État (Éducation nationale)",
     description:
       "Les AESH accompagnent les élèves qui ont besoin d'une aide particulière pour suivre leur scolarité. Elles les aident à comprendre les consignes, à participer aux activités de la classe et à gagner en autonomie, tout en s'adaptant à leurs besoins.",
   },
   {
     title: 'Les ASEM',
-    statut: "Salariées de l'OGEC",
+    statut: "Agents spécialisés des écoles maternelles · Salariées de l'OGEC",
     description:
       "Les ASEM travaillent auprès des plus petits, principalement en maternelle. Elles aident les enfants à s'habiller, à aller aux toilettes et à gagner en autonomie dans les gestes du quotidien. Elles participent aussi aux activités en classe, préparent le matériel et accompagnent les enseignants tout au long de la journée. Elles sont toutes salariées de l'OGEC.",
   },
   {
     title: "L'APEL",
-    statut: "Association de parents d'élèves",
+    statut: "Association de parents d'élèves de l'enseignement libre",
     description:
       "L'APEL rassemble les parents qui souhaitent s'investir dans la vie de l'école. Ils organisent des événements et des ventes, comme la vente de sapins de Noël, tout au long de l'année. L'argent récolté permet de financer des sorties, des activités et du matériel pour les élèves.",
   },
   {
     title: "L'OGEC",
-    statut: 'Association de gestion financière et matérielle',
+    statut: "Organisme de gestion de l'enseignement catholique · Gestion financière et matérielle",
     description:
       "L'OGEC s'occupe de tout ce qui permet à l'école de fonctionner en dehors de la classe. Il gère le budget, les bâtiments, leur entretien et le personnel non enseignant. C'est notamment grâce à lui que les locaux sont entretenus et que l'école dispose des moyens matériels nécessaires à son fonctionnement.",
   },
