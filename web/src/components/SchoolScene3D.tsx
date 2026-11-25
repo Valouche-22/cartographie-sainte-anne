@@ -4,12 +4,19 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import gsap from 'gsap';
 import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from '../types';
+import {
+  buildWalkColliders,
+  ThirdPersonWalkController,
+  WALK_TELEPORT_PRESETS,
+} from '../utils/walkController';
 
 interface Props {
   data: SchoolData;
   isHero: boolean;
   activeSceneIndex: number;
   freeExplore: boolean;
+  walkMode: boolean;
+  walkTeleportTrigger: { presetId: string; seq: number } | null;
   hideRoofs: boolean;
   showLabels: boolean;
   selectedBuilding: BuildingInfo | null;
@@ -335,8 +342,8 @@ function adaptPoseForMobile(
     sceneKey === 'culture'
       ? [-190, 2, -194]
       : sceneKey === 'hero'
-      ? [14, 0, 12.5]
-      : target;
+        ? [14, 0, 12.5]
+        : target;
 
   return {
     pos: [
@@ -555,6 +562,8 @@ export const SchoolScene3D: React.FC<Props> = ({
   isHero,
   activeSceneIndex,
   freeExplore,
+  walkMode,
+  walkTeleportTrigger,
   hideRoofs,
   showLabels,
   selectedBuilding,
@@ -571,6 +580,8 @@ export const SchoolScene3D: React.FC<Props> = ({
   const mountRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
+  const walkCtrlRef = useRef<ThirdPersonWalkController | null>(null);
+  const prevWalkModeRef = useRef(false);
   const classroomRoofsRef = useRef<THREE.Object3D[]>([]);
   const roomMeshesRef = useRef<Map<string, THREE.Mesh>>(new Map());
   const churchCrossTopRef = useRef<[number, number, number] | null>(null);
@@ -601,6 +612,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   const showLabelsRef = useRef(showLabels);
   const hideRoofsRef = useRef(hideRoofs);
   const freeExploreRef = useRef(freeExplore);
+  const walkModeRef = useRef(walkMode);
   const isHeroRef = useRef(isHero);
   const activeSceneIndexRef = useRef(activeSceneIndex);
   const classBuildingFocusRef = useRef(classBuildingFocus);
@@ -608,6 +620,7 @@ export const SchoolScene3D: React.FC<Props> = ({
   showLabelsRef.current = showLabels;
   hideRoofsRef.current = hideRoofs;
   freeExploreRef.current = freeExplore;
+  walkModeRef.current = walkMode;
   isHeroRef.current = isHero;
   activeSceneIndexRef.current = activeSceneIndex;
   classBuildingFocusRef.current = classBuildingFocus;
@@ -720,9 +733,12 @@ export const SchoolScene3D: React.FC<Props> = ({
     controls.minDistance = 12;
     controls.maxDistance = isMobInit ? 960 : 680;
     controls.target.set(...initHero.target);
-    controls.enabled = freeExploreRef.current;
+    controls.enabled = freeExploreRef.current && !walkModeRef.current;
     controls.update();
     controlsRef.current = controls;
+
+    const walkCtrl = new ThirdPersonWalkController(scene, renderer.domElement);
+    walkCtrlRef.current = walkCtrl;
 
     const hemi = new THREE.HemisphereLight(0xf0f7ff, 0x7c8774, 0.92);
     scene.add(hemi);
@@ -798,6 +814,8 @@ export const SchoolScene3D: React.FC<Props> = ({
         }
         scene.add(root);
         root.updateMatrixWorld(true);
+        const { colliders, stepSurfaces, gateLeaves } = buildWalkColliders(root);
+        walkCtrl.setWorldColliders(colliders, stepSurfaces, gateLeaves);
         const crossObj =
           root.getObjectByName('Clocher_Croix_Mat') || root.getObjectByName('Clocher_Eglise_Fleche');
         if (crossObj) {
@@ -829,7 +847,7 @@ export const SchoolScene3D: React.FC<Props> = ({
     };
 
     const onPointerUp = (e: PointerEvent) => {
-      if (!freeExploreRef.current) return;
+      if (!freeExploreRef.current || walkModeRef.current) return;
       if (Math.hypot(e.clientX - downX, e.clientY - downY) > 6) return;
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -897,13 +915,13 @@ export const SchoolScene3D: React.FC<Props> = ({
             const rawPos = isMatCour
               ? COUR_MATERNELLE_VIEW.pos
               : fm !== 'all'
-              ? CLASS_FOCUS_VIEWS[fm].pos
-              : sc.camera.pos;
+                ? CLASS_FOCUS_VIEWS[fm].pos
+                : sc.camera.pos;
             const rawTgt = isMatCour
               ? COUR_MATERNELLE_VIEW.target
               : fm !== 'all'
-              ? CLASS_FOCUS_VIEWS[fm].target
-              : sc.camera.target;
+                ? CLASS_FOCUS_VIEWS[fm].target
+                : sc.camera.target;
             const key = isMatCour ? 'cour-maternelle' : fm !== 'all' ? fm : sc.id;
             const p = adaptPoseForMobile(rawPos, rawTgt, key, w, h);
             basePosRef.current = { x: p.pos[0], y: p.pos[1], z: p.pos[2] };
@@ -1036,6 +1054,15 @@ export const SchoolScene3D: React.FC<Props> = ({
           }
           camera.lookAt(tx, ty, tz);
         }
+      } else if (walkModeRef.current) {
+        if (heroDissolveRef.current && heroDissolveRef.current.style.opacity !== '0') {
+          heroReelRef.current.dissolve = 0;
+          heroDissolveRef.current.style.opacity = '0';
+        }
+        if (camera.view && camera.view.enabled) {
+          camera.clearViewOffset();
+        }
+        walkCtrl.update(dt, camera);
       } else {
         if (heroDissolveRef.current && heroDissolveRef.current.style.opacity !== '0') {
           heroReelRef.current.dissolve = 0;
@@ -1081,60 +1108,60 @@ export const SchoolScene3D: React.FC<Props> = ({
           const isCourStep = !freeExploreRef.current && !isHeroRef.current && activeScene?.id === 'cour';
           const items = hideRoofsRef.current && !mobileClassesOverview
             ? data.rooms
-                .filter((r) => !allowedBuildings || allowedBuildings.includes(r.building))
-                .map((r) => {
-                  const staff = focusMode !== 'all' ? BUILDING_VIEW_ROOM_STAFF[r.id] : undefined;
-                  return {
-                    id: r.id,
-                    label: staff ? `${r.name} (${staff})` : r.name,
-                    color: r.color,
-                    pos: r.position,
-                    kind: 'room' as const,
-                    offsetOutside: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Nord_N1',
-                    offsetAbove: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Est_E2',
-                  };
-                })
+              .filter((r) => !allowedBuildings || allowedBuildings.includes(r.building))
+              .map((r) => {
+                const staff = focusMode !== 'all' ? BUILDING_VIEW_ROOM_STAFF[r.id] : undefined;
+                return {
+                  id: r.id,
+                  label: staff ? `${r.name} (${staff})` : r.name,
+                  color: r.color,
+                  pos: r.position,
+                  kind: 'room' as const,
+                  offsetOutside: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Nord_N1',
+                  offsetAbove: !isMobileNow && focusMode === 'all' && r.building === 'Batiment_Est_E2',
+                };
+              })
             : [
-                ...data.buildings
-                  .filter(
-                    (b) =>
-                      (!effectiveFocusIds || effectiveFocusIds.includes(b.id)) &&
-                      !(isMobileNow && b.id === 'Parc_Mediatheque')
-                  )
-                  .map((b) => ({
-                    id: b.id,
-                    label: b.name,
-                    color: b.color,
-                    pos: (b.id === 'Eglise_Saint_Pierre'
-                      ? churchCrossTopRef.current ?? [b.position[0], 52.7, b.position[2]]
-                      : [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]]) as [number, number, number],
+              ...data.buildings
+                .filter(
+                  (b) =>
+                    (!effectiveFocusIds || effectiveFocusIds.includes(b.id)) &&
+                    !(isMobileNow && b.id === 'Parc_Mediatheque')
+                )
+                .map((b) => ({
+                  id: b.id,
+                  label: b.name,
+                  color: b.color,
+                  pos: (b.id === 'Eglise_Saint_Pierre'
+                    ? churchCrossTopRef.current ?? [b.position[0], 52.7, b.position[2]]
+                    : [b.position[0], b.position[1] + b.height_m * 0.92, b.position[2]]) as [number, number, number],
+                  kind: 'building' as const,
+                  offsetOutside: false,
+                  offsetAbove: false,
+                })),
+              ...(isCourStep
+                ? [
+                  {
+                    id: 'Zone_Cour_Elementaire',
+                    label: 'Cour élémentaire',
+                    color: '#ef4444',
+                    pos: [-16.5, 1.8, 4.5] as [number, number, number],
                     kind: 'building' as const,
                     offsetOutside: false,
                     offsetAbove: false,
-                  })),
-                ...(isCourStep
-                  ? [
-                      {
-                        id: 'Zone_Cour_Elementaire',
-                        label: 'Cour élémentaire',
-                        color: '#ef4444',
-                        pos: [-16.5, 1.8, 4.5] as [number, number, number],
-                        kind: 'building' as const,
-                        offsetOutside: false,
-                        offsetAbove: false,
-                      },
-                      {
-                        id: 'Zone_Cour_Maternelle',
-                        label: 'Cour maternelle',
-                        color: '#2563eb',
-                        pos: [16.5, 1.8, 29.0] as [number, number, number],
-                        kind: 'building' as const,
-                        offsetOutside: false,
-                        offsetAbove: false,
-                      },
-                    ]
-                  : []),
-              ];
+                  },
+                  {
+                    id: 'Zone_Cour_Maternelle',
+                    label: 'Cour maternelle',
+                    color: '#2563eb',
+                    pos: [16.5, 1.8, 29.0] as [number, number, number],
+                    kind: 'building' as const,
+                    offsetOutside: false,
+                    offsetAbove: false,
+                  },
+                ]
+                : []),
+            ];
 
           const next: ProjectedLabel[] = [];
           const mobDistScale = isMobileNow ? 1.65 : 1.0;
@@ -1152,8 +1179,8 @@ export const SchoolScene3D: React.FC<Props> = ({
                 it.kind === 'room'
                   ? 160 * mobDistScale
                   : it.id === 'Stade_Louis_Auffray'
-                  ? 340 * mobDistScale
-                  : 235 * mobDistScale;
+                    ? 340 * mobDistScale
+                    : 235 * mobDistScale;
               const maxTarget = it.kind === 'room' ? 75 : it.id === 'Stade_Louis_Auffray' ? 135 : 115;
               withinFreeRange = distCam <= maxCam && distTargetXZ <= maxTarget;
             }
@@ -1172,21 +1199,21 @@ export const SchoolScene3D: React.FC<Props> = ({
               const initX = isDirectrice
                 ? ax + 10
                 : isChurchNearTop
-                ? Math.min(w - 92, ax + 90)
-                : it.offsetOutside
-                ? ax - 42
-                : ax;
+                  ? Math.min(w - 92, ax + 90)
+                  : it.offsetOutside
+                    ? ax - 42
+                    : ax;
               const initY = isDirectrice
                 ? ay + 46
                 : isChurchNearTop
-                ? Math.max(topLimit + 18, ay)
-                : it.id === 'Eglise_Saint_Pierre'
-                ? ay - 18
-                : it.offsetOutside
-                ? ay - 48
-                : it.offsetAbove
-                ? ay - 42
-                : ay - 24;
+                  ? Math.max(topLimit + 18, ay)
+                  : it.id === 'Eglise_Saint_Pierre'
+                    ? ay - 18
+                    : it.offsetOutside
+                      ? ay - 48
+                      : it.offsetAbove
+                        ? ay - 42
+                        : ay - 24;
               next.push({ id: it.id, label: it.label, color: it.color, ax, ay, x: initX, y: initY, visible, kind: it.kind });
             }
           }
@@ -1211,6 +1238,8 @@ export const SchoolScene3D: React.FC<Props> = ({
       window.removeEventListener('resize', onWindowResize);
       renderer.domElement.removeEventListener('pointerdown', onPointerDown);
       renderer.domElement.removeEventListener('pointerup', onPointerUp);
+      walkCtrl.dispose();
+      walkCtrlRef.current = null;
       controls.dispose();
       renderer.dispose();
       if (container.contains(renderer.domElement)) {
@@ -1219,12 +1248,23 @@ export const SchoolScene3D: React.FC<Props> = ({
     };
   }, [data]);
 
-  // Sync freeExplore toggle cleanly
+  // Sync freeExplore & walkMode toggles cleanly
   useEffect(() => {
     const cam = cameraRef.current;
     const ctrl = controlsRef.current;
+    const walkCtrl = walkCtrlRef.current;
     if (ctrl) {
-      ctrl.enabled = freeExplore;
+      ctrl.enabled = freeExplore && !walkMode;
+    }
+    if (walkCtrl) {
+      walkCtrl.setActive(walkMode);
+    }
+    if (cam) {
+      const targetNear = walkMode ? 0.25 : 2.5;
+      if (cam.near !== targetNear) {
+        cam.near = targetNear;
+        cam.updateProjectionMatrix();
+      }
     }
     if (freeExplore) {
       gsap.killTweensOf(viewOffsetRef.current);
@@ -1232,6 +1272,10 @@ export const SchoolScene3D: React.FC<Props> = ({
       viewOffsetRef.current.y = 0;
       if (cam && cam.view && cam.view.enabled) {
         cam.clearViewOffset();
+      }
+      if (prevWalkModeRef.current && !walkMode && cam && ctrl && walkCtrl) {
+        ctrl.target.set(walkCtrl.pos.x, walkCtrl.pos.y + 1.5, walkCtrl.pos.z);
+        ctrl.update();
       }
     } else if (cam && ctrl) {
       // Seed base pose from current free camera so returning to guided tour transitions smoothly
@@ -1242,7 +1286,16 @@ export const SchoolScene3D: React.FC<Props> = ({
       baseTargetRef.current.y = ctrl.target.y;
       baseTargetRef.current.z = ctrl.target.z;
     }
-  }, [freeExplore]);
+    prevWalkModeRef.current = walkMode;
+  }, [freeExplore, walkMode]);
+
+  useEffect(() => {
+    if (!walkTeleportTrigger || !walkCtrlRef.current) return;
+    const preset = WALK_TELEPORT_PRESETS.find((p) => p.id === walkTeleportTrigger.presetId);
+    if (preset) {
+      walkCtrlRef.current.teleportTo(preset);
+    }
+  }, [walkTeleportTrigger]);
 
   // Guided camera, frustum offset (zero-stutter split framing), and sway amplitude
   useEffect(() => {

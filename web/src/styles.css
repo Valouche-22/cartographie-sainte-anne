@@ -1055,6 +1055,70 @@ body {
   color: var(--ink-soft);
 }
 
+/* Easter Egg 22590 third-person walk HUD */
+.walk-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 55;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(15, 37, 68, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 10px 28px rgba(15, 37, 68, 0.24);
+  pointer-events: none;
+  animation: walkToastIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes walkToastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.walk-hud {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 42;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.walk-controls-hint {
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(15, 37, 68, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 0.74rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(15, 37, 68, 0.16);
+}
+
+.walk-toolbar {
+  position: static;
+  transform: none;
+  pointer-events: auto;
+}
+
 /* Loading screen — 3s kinetic typography & split-curtain prism transition */
 .loader-screen {
   position: fixed;

@@ -8,6 +8,7 @@ import { ActorsPage } from './components/ActorsPage';
 import { CreditsPage } from './components/CreditsPage';
 import { LoadingScreen } from './components/LoadingScreen';
 import { BuildingInfo, CameraPreset, RoomInfo, SchoolData } from './types';
+import { WALK_TELEPORT_PRESETS } from './utils/walkController';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -42,6 +43,9 @@ export const App: React.FC = () => {
   const [isCredits, setIsCredits] = useState(false);
   const [activeSceneIndex, setActiveSceneIndex] = useState(0);
   const [freeExplore, setFreeExplore] = useState(false);
+  const [walkMode, setWalkMode] = useState(false);
+  const [walkToast, setWalkToast] = useState(false);
+  const [walkTeleportTrigger, setWalkTeleportTrigger] = useState<{ presetId: string; seq: number } | null>(null);
   const [hideRoofs, setHideRoofs] = useState(false);
   const [showLabels, setShowLabels] = useState(false);
   const [selectedBuilding, setSelectedBuilding] = useState<BuildingInfo | null>(null);
@@ -613,9 +617,62 @@ export const App: React.FC = () => {
     };
   }, [data, freeExplore, isMobile, goToSection, stepGuided]);
 
+  // Secret Easter Egg: type "22590" (Pordic postal code) anywhere to explore the school on foot
+  useEffect(() => {
+    let buffer = '';
+    let lastTs = 0;
+    let toastTimer: number | null = null;
+
+    const onSecretKeyDown = (e: KeyboardEvent) => {
+      if (loaderLockedRef.current) return;
+      if (e.key === 'Escape' && walkMode) {
+        setWalkMode(false);
+        setShowLabels(true);
+        return;
+      }
+
+      let digit: string | null = null;
+      if (e.key >= '0' && e.key <= '9') {
+        digit = e.key;
+      } else if (e.code.startsWith('Digit') && e.code.length === 6) {
+        digit = e.code[5];
+      } else if (e.code.startsWith('Numpad') && e.code.length === 7 && e.code[6] >= '0' && e.code[6] <= '9') {
+        digit = e.code[6];
+      }
+      if (!digit) return;
+
+      const now = performance.now();
+      if (now - lastTs > 2600) buffer = '';
+      lastTs = now;
+      buffer = (buffer + digit).slice(-5);
+
+      if (buffer === '22590') {
+        buffer = '';
+        scrollTweenRef.current?.kill();
+        isAutoScrollingRef.current = false;
+        setFreeExplore(true);
+        setWalkMode(true);
+        setSelectedBuilding(null);
+        setSelectedRoom(null);
+        setHideRoofs(false);
+        setShowLabels(false);
+        setWalkToast(true);
+        if (toastTimer) window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => setWalkToast(false), 3600);
+      }
+    };
+
+    window.addEventListener('keydown', onSecretKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onSecretKeyDown);
+      if (toastTimer) window.clearTimeout(toastTimer);
+    };
+  }, [walkMode]);
+
   const enterFreeExplore = () => {
     scrollTweenRef.current?.kill();
     isAutoScrollingRef.current = false;
+    setWalkMode(false);
     setFreeExplore(true);
     setSelectedBuilding(null);
     setSelectedRoom(null);
@@ -624,12 +681,17 @@ export const App: React.FC = () => {
 
   const returnToGuidedTour = () => {
     const savedSection = sectionIdxRef.current;
+    setWalkMode(false);
     setFreeExplore(false);
     setSelectedBuilding(null);
     setSelectedRoom(null);
     setTimeout(() => {
       goToSection(savedSection, true);
     }, 50);
+  };
+
+  const triggerWalkTeleport = (presetId: string) => {
+    setWalkTeleportTrigger((prev) => ({ presetId, seq: (prev?.seq || 0) + 1 }));
   };
 
   const triggerPreset = (preset: CameraPreset) => {
@@ -687,6 +749,8 @@ export const App: React.FC = () => {
           isHero={isHero}
           activeSceneIndex={activeSceneIndex}
           freeExplore={freeExplore}
+          walkMode={walkMode}
+          walkTeleportTrigger={walkTeleportTrigger}
           hideRoofs={
             hideRoofs && !(isMobile && !freeExplore && activeSceneId === 'classes' && classBuildingFocus === 'all')
           }
@@ -1233,8 +1297,15 @@ export const App: React.FC = () => {
         </main>
       )}
 
+      {/* Easter Egg 22590 activation toast */}
+      {walkToast && (
+        <div className="walk-toast" role="status" aria-live="polite">
+          Code 22590 · Mode personnage activé
+        </div>
+      )}
+
       {/* Free Explore info box */}
-      {freeExplore && (selectedBuilding || selectedRoom) && (
+      {freeExplore && !walkMode && (selectedBuilding || selectedRoom) && (
         <aside
           className="info-panel"
           style={
@@ -1267,8 +1338,8 @@ export const App: React.FC = () => {
         </aside>
       )}
 
-      {/* Free Explore toolbar */}
-      {freeExplore && (
+      {/* Free Explore toolbar (normal aerial mode) */}
+      {freeExplore && !walkMode && (
         <nav className="toolbar" aria-label="Navigation libre">
           <button className="tool-btn" onClick={() => triggerPreset('general')}>
             École
@@ -1299,6 +1370,41 @@ export const App: React.FC = () => {
             Étiquettes
           </button>
         </nav>
+      )}
+
+      {/* Third-person character HUD (Easter Egg 22590) */}
+      {freeExplore && walkMode && (
+        <div className="walk-hud">
+          <div className="walk-controls-hint">
+            ZQSD / Flèches : marcher · Souris (glisser) : caméra · Maj : courir · Espace : sauter · Échap : vue libre
+          </div>
+          <nav className="toolbar walk-toolbar" aria-label="Téléportation personnage">
+            {WALK_TELEPORT_PRESETS.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className="tool-btn"
+                onClick={(e) => {
+                  e.currentTarget.blur();
+                  triggerWalkTeleport(p.id);
+                }}
+              >
+                {p.label}
+              </button>
+            ))}
+            <span className="tool-sep" />
+            <button
+              type="button"
+              className="tool-btn active"
+              onClick={() => {
+                setWalkMode(false);
+                setShowLabels(true);
+              }}
+            >
+              Vue libre
+            </button>
+          </nav>
+        </div>
       )}
     </>
   );
